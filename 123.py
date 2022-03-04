@@ -7,6 +7,7 @@ img = Image.open("C:/Users/Administrator/Desktop/Zen Baboon - Hidden Frogs/cover
 b = ImageColor.getcolor("blue", "L")
 ai = np.asarray(img)
 
+#hi I'm Moodz
 
 plt.subplot(1,5,1)
 orin = Image.fromarray(ai[:,:, [0,1,2]])
