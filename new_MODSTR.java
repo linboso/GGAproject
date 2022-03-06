@@ -12,7 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-public class MODSTR {
+public class new_MODSTR {
 	public static void main(String[] args) throws IOException{
 		int chooseReturnRate=15;
 		int chooseMDD=0;
