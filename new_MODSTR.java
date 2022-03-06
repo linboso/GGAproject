@@ -21,7 +21,7 @@ public class new_MODSTR {
 		
 		int K = 3; //將股票分為K群, 目前可以跑的有K= 3, 4, 5, 6都可以正常運作
 		int maxCaptial = 100000;
-		int pSize = 10;
+		int pSize = 10; // popuation size
 		int numberofST= chooseReturnRate+chooseMDD+choosecount;
 		int generation = 100; 
 		double crossoverRate = 0.8;
@@ -52,7 +52,7 @@ public class new_MODSTR {
 		Training=new String[]{"2012.txt", "2013.txt", "2014.txt", "2015.txt"};
 		Testing=new String[]{"2013.txt", "2014.txt", "2015.txt", "2016.txt"};
 		*/
-			for(int trte=0;trte<Testing.length;trte++){
+			for(int trte=0; trte<Testing.length;trte++){ // trte = traning & testing
 				String fileTEC =  Training[trte];
 				String TestfileTEC = Testing[trte];
 
@@ -60,17 +60,17 @@ public class new_MODSTR {
 				int num1=readTECInputData(TestfileTEC);//讀TESTING有幾天
 				String[][] inputDataTEC = readTECInputData1(fileTEC, num);//讀training幾年的所有資料
 				String[][] inputTestfileTEC = readTECInputData1(TestfileTEC, num1);//讀testing幾年的所有資料
-				long startTime = System.currentTimeMillis();
+				long startTime = System.currentTimeMillis(); // 取得現在的時間 (毫秒) 
 
 				double[] a=new double[20];
 				double[] b=new double[20];
 				double[] c=new double[20];
 				double[] d=new double[20];
 				
-				double STOPPP[]={0.0, 0.05, 0.10, 0.15, 0.05, 0.05, 0.10, 0.15, 0.15};
-				double STOPLOSE[]={0.0, -0.05, -0.10, -0.15, -0.10, -0.15, -0.05, -0.05, -0.10};
-				Hashtable<String,Hashtable> input=new Hashtable<String,Hashtable>();
-				Hashtable<String,Hashtable> input1=new Hashtable<String,Hashtable>();
+				double STOPPP[]={0.0, 0.05, 0.10, 0.15, 0.05, 0.05, 0.10, 0.15, 0.15}; // 停利點
+				double STOPLOSE[]={0.0, -0.05, -0.10, -0.15, -0.10, -0.15, -0.05, -0.05, -0.10}; // 停損點
+				Hashtable<String,Hashtable> input = new Hashtable<String,Hashtable>();
+				Hashtable<String,Hashtable> input1= new Hashtable<String,Hashtable>();
 				
 				for(int C=0;C<=8;C++){
 					input=pop(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input);
@@ -79,6 +79,7 @@ public class new_MODSTR {
 				for(int C=0;C<=8;C++){
 				
 					BufferedWriter Finalr = new BufferedWriter(new FileWriter("Final"+"["+ STOPPP[C]+","+STOPLOSE[C]+"]"+Testing[trte]+"("+Training[trte]+").txt"));
+					
 					for(int r=0;r<10;r++){
 						String s = Integer.toString(r);
 						BufferedWriter br = new BufferedWriter(new FileWriter("FinalResult"+"["+ STOPPP[C]+","+STOPLOSE[C]+"]"+Testing[trte]+"("+Training[trte]+")"+r+".txt"));
@@ -102,25 +103,24 @@ public class new_MODSTR {
 							population = executeSelectionOperator(population, pSize);
 							printPopulation(population);
 							if(i == generation-1){
-									if(C(population,findbestChromosome(population))){
-										System.out.println("FinalBest");
-										double first=printAChromosome(population, findbestChromosome(population), input, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
-										a[r]=first;
-										double secound[]=printAChromosome1(population, findbestChromosome(population),input, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
+								if(C(population,findbestChromosome(population))){
+									System.out.println("FinalBest");
+									double first=printAChromosome(population, findbestChromosome(population), input, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
+									a[r]=first;
+									double secound[]=printAChromosome1(population, findbestChromosome(population),input, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
 
-										b[r]=secound[0];//平均
-										c[r]=secound[1];//最大
-										d[r]=secound[2];//最小
-										writeExperimentValuetoFile(population, br, i, System.currentTimeMillis() - startTime);
-										br.close();
-									}
-									else{
-										f.delete();
-										/*population = generateInitialPopulation(pSize,inputData, K);
-										outPutInitialChromosome(population, f,K);*/
-										r--;
-									}
-
+									b[r]=secound[0];//平均
+									c[r]=secound[1];//最大
+									d[r]=secound[2];//最小
+									writeExperimentValuetoFile(population, br, i, System.currentTimeMillis() - startTime);
+									br.close();
+								}
+								else{
+									f.delete();
+									/*population = generateInitialPopulation(pSize,inputData, K);
+									outPutInitialChromosome(population, f,K);*/
+									r--;
+								}
 							}
 							else if (i%5 == 0 && i!=0){
 								writeExperimentValuetoFile(population, br, i, System.currentTimeMillis()- startTime);
@@ -344,19 +344,19 @@ public class new_MODSTR {
 	private static Hashtable<String, Hashtable> pop( double stopPP, double stoplose, String[][] inputDataTEC, String[][] inputTestfileTEC, int num, int chooseReturnRate, int chooseMDD, int choosecount,int num1, Hashtable<String, Hashtable> input) {
 		// TODO Auto-generated method stub
 		//System.out.println(num);
-		double RankReturnRate[]=new double[100];
-		double Rank1ReturnRate[]=new double[100];
+		double RankReturnRate[]=new double[100]; // ranking returnrate
+		double Rank1ReturnRate[]=new double[100];// same
 		double Rank1[][]=new double[100][6];
-		double RankMDD[]=new double[100];
-		double Rank1MDD[]=new double[100];
-		double Rankcount[]=new double[100];
+		double RankMDD[]=new double[100];		//ranking MDD
+		double Rank1MDD[]=new double[100];		//same
+		double Rankcount[]=new double[100];		//ranking count
 		double Rank1count[]=new double[100];
 		int co = 7;
 
-		String stopp=stopPP+","+stoplose;
+		String stopp=stopPP+","+stoplose; // 沒用
 		System.out.println( "*&**"+stopPP+","+stoplose);
 
-		ArrayList<Integer> alre=new ArrayList<>();
+		ArrayList<Integer> alre =new ArrayList<>(); //
 		while(co!=107){
 			//System.out.println(co+","+"co");
 			ArrayList<String[]>str= STR11(inputDataTEC, num,co,stopPP,stoplose);
