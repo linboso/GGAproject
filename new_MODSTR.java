@@ -57,27 +57,21 @@ public class new_MODSTR {
 				String TestfileTEC = Testing[trte];
 
 				int num=readTECInputData(fileTEC);//讀training的有幾天
-
 				int num1=readTECInputData(TestfileTEC);//讀TESTING有幾天
-
 				String[][] inputDataTEC = readTECInputData1(fileTEC, num);//讀training幾年的所有資料
-
 				String[][] inputTestfileTEC = readTECInputData1(TestfileTEC, num1);//讀testing幾年的所有資料
-
 				long startTime = System.currentTimeMillis();
 
 				double[] a=new double[20];
-
 				double[] b=new double[20];
-
 				double[] c=new double[20];
-
 				double[] d=new double[20];
 				
 				double STOPPP[]={0.0, 0.05, 0.10, 0.15, 0.05, 0.05, 0.10, 0.15, 0.15};
 				double STOPLOSE[]={0.0, -0.05, -0.10, -0.15, -0.10, -0.15, -0.05, -0.05, -0.10};
 				Hashtable<String,Hashtable> input=new Hashtable<String,Hashtable>();
 				Hashtable<String,Hashtable> input1=new Hashtable<String,Hashtable>();
+				
 				for(int C=0;C<=8;C++){
 					input=pop(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input);
 					input1=pop1(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input1);//加交易稅的
@@ -923,8 +917,6 @@ public class new_MODSTR {
 		}
 		return sum/(mA.size()/2);
 	}
-
-	
 
 	public static double mareturnrate1(ArrayList<String[]> mA) {
 		// TODO Auto-generated method stub
@@ -2133,376 +2125,327 @@ public class new_MODSTR {
 	}
 		
 		
-		
-		private static double[] printAChromosome1(Hashtable<String, chromosome> population, int i, Hashtable<String, Hashtable> input, BufferedWriter finalr, int maxCaptial,double stoppp,double stoplose) throws NumberFormatException, IOException  {
-			// TODO Auto-generated method stub
-			double aa[]=new double[7];
-			double a=0;
-			double b=0;
-			double c=0;
-			double ROI=0;
-			double sumROI=0;
-			double sumcap=0;
+	private static double[] printAChromosome1(Hashtable<String, chromosome> population, int i, Hashtable<String, Hashtable> input, BufferedWriter finalr, int maxCaptial,double stoppp,double stoplose) throws NumberFormatException, IOException  {
+		// TODO Auto-generated method stub
+		double aa[]=new double[7];
+		double a=0;
+		double b=0;
+		double c=0;
+		double ROI=0;
+		double sumROI=0;
+		double sumcap=0;
 
-			String STOPP=stoppp+","+stoplose;
-			Hashtable s2 = input.get(STOPP);
-			double[][] inputData=(double[][]) s2.get("1");//testing
-		  
-			int stockName[]=new int[inputData.length];
-			for(int hh=0;hh<inputData.length;hh++){
-				stockName[hh]=(int)(inputData[hh][0]);
-			}
-				  
-			Hashtable htt = (Hashtable) population.get(""+i).groupPart;
-			String[][] sst = new String[htt.size()][];
-			for(int k=0; k<htt.size();k++){
-				//System.out.println("sssA="+population.get(""+j).groupPart.get(""+k));
-				sst[k] = population.get(""+i).groupPart.get(""+k).toString().split(",");
-			}
+		String STOPP=stoppp+","+stoplose;
+		Hashtable s2 = input.get(STOPP);
+		double[][] inputData=(double[][]) s2.get("1");//testing
+	  
+		int stockName[]=new int[inputData.length];
+		for(int hh=0;hh<inputData.length;hh++){
+			stockName[hh]=(int)(inputData[hh][0]);
+		}
 
-			ArrayList<String> possibleStockCombination = new ArrayList<String>();
-			possibleStockCombination = getCombination(sst, htt.size());
-			ArrayList<String[]> listnum = new ArrayList<String[]>();//放每個資金,ROI和哪些策略
-					
-			 for(int l=0; l<possibleStockCombination.size(); l++){
-				String TSname="" ;
-				ROI=0; double cap=0;double Ccap=0;
-				String[] stockCombi =  possibleStockCombination.get(l).split(",");
-				for(int r=0;r<stockCombi.length;r++){
-					if(population.get(""+i).strategyweight.get(r+2).getClass() == Double.class){
-						b = (double) population.get(""+i).strategyweight.get(r+2);
-					}else{
-						b = Double.parseDouble((String) population.get(""+i).strategyweight.get(r+2));
-					}
-					a=inputData[Integer.parseInt(stockCombi[r])][2]*b;
-					ROI=ROI+(a*maxCaptial);
-					if(inputData[Integer.parseInt(stockCombi[r])][2]==0){
-						b=0;
-					}
-					cap=cap+(b*maxCaptial);
-					
-					TSname =TSname+(stockName[Integer.parseInt(stockCombi[r])]+",");
-				}
-				String nuum[]=new String[4];
-				nuum[0]=String.valueOf(ROI);
-				nuum[1]=String.valueOf(cap);
-				nuum[2]=TSname;
-				if(cap==0){
-					nuum[3]="0.00";	
-				}
-				if(cap!=0){
-					nuum[3]=String.valueOf(ROI/cap);
-				}
-				listnum.add(nuum);
-				sumROI=sumROI+ROI;
-				sumcap=sumcap+cap;
-				System.out.print("dd"+ROI+",");
-				System.out.println("dd"+cap);
-		//	System.out.println("d "+nuum[3]);
-			}
+		Hashtable htt = (Hashtable) population.get(""+i).groupPart;
+		String[][] sst = new String[htt.size()][];
+		for(int k=0; k<htt.size();k++){
+			//System.out.println("sssA="+population.get(""+j).groupPart.get(""+k));
+			sst[k] = population.get(""+i).groupPart.get(""+k).toString().split(",");
+		}
 
-			double min=999999999;
-			double max=-999999999;
-			String witchname="";
-			String ro="";
-			String ro1="";
-			String witchname1="";
-			String mon="";
-			String mon1="";
-			double ss=0;
-	//算最大最小值
-			for(int w=0;w<listnum.size();w++){
-					String[] a1 =listnum.get(w);
-					ss+=Double.valueOf(a1[3]);
-					if(Double.valueOf(a1[3])<min){
-						min=Double.valueOf(a1[3]);
-						ro=a1[0];
-						witchname=a1[2];
-						mon=a1[1];
-					}
-					if(Double.valueOf(a1[3])>max){
-						max=Double.valueOf(a1[3]);
-						witchname1=a1[2];
-						mon1=a1[1];
-						ro1=a1[0];
-					}
-					System.out.println("ai "+a1 [0]+"///"+a1[1]+"///"+a1[2]);
-					System.out.println("ss "+ss);
-					
+		ArrayList<String> possibleStockCombination = new ArrayList<String>();
+		possibleStockCombination = getCombination(sst, htt.size());
+		ArrayList<String[]> listnum = new ArrayList<String[]>();//放每個資金,ROI和哪些策略
+				
+		for(int l=0; l<possibleStockCombination.size(); l++){
+			String TSname="" ;
+			ROI=0; double cap=0;double Ccap=0;
+			String[] stockCombi =  possibleStockCombination.get(l).split(",");
+			for(int r=0;r<stockCombi.length;r++){
+				if(population.get(""+i).strategyweight.get(r+2).getClass() == Double.class){
+					b = (double) population.get(""+i).strategyweight.get(r+2);
+				}else{
+					b = Double.parseDouble((String) population.get(""+i).strategyweight.get(r+2));
 				}
-				System.out.println(min+" MAX"+max+" "+ witchname+"11"+" "+ro+"  "+ro1+ witchname1+" "+ mon+" "+mon1);
-				finalr.newLine();
-				finalr.write(" MAX="+max+" MAXROI="+ro1+"  MAXTS="+witchname1+" MAXCap="+ mon1);
-				finalr.newLine();
-				finalr.write(" Min="+min+" MinROI="+ro+ "  MinTS="+witchname+" MinCap="+ mon);
-				finalr.newLine();
+				a=inputData[Integer.parseInt(stockCombi[r])][2]*b;
+				ROI=ROI+(a*maxCaptial);
+				if(inputData[Integer.parseInt(stockCombi[r])][2]==0){
+					b=0;
+				}
+				cap=cap+(b*maxCaptial);
+				
+				TSname =TSname+(stockName[Integer.parseInt(stockCombi[r])]+",");
+			}
+			String nuum[]=new String[4];
+			nuum[0]=String.valueOf(ROI);
+			nuum[1]=String.valueOf(cap);
+			nuum[2]=TSname;
+			if(cap==0){
+				nuum[3]="0.00";	
+			}
+			if(cap!=0){
+				nuum[3]=String.valueOf(ROI/cap);
+			}
+			listnum.add(nuum);
+			sumROI=sumROI+ROI;
+			sumcap=sumcap+cap;
+			System.out.print("dd"+ROI+",");
+			System.out.println("dd"+cap);
+	//	System.out.println("d "+nuum[3]);
+		}
+
+		double min=999999999;
+		double max=-999999999;
+		String witchname="";
+		String ro="";
+		String ro1="";
+		String witchname1="";
+		String mon="";
+		String mon1="";
+		double ss=0;
+//算最大最小值
+		for(int w=0;w<listnum.size();w++){
+			String[] a1 =listnum.get(w);
+			ss+=Double.valueOf(a1[3]);
+			if(Double.valueOf(a1[3])<min){
+				min=Double.valueOf(a1[3]);
+				ro=a1[0];
+				witchname=a1[2];
+				mon=a1[1];
+			}
+			if(Double.valueOf(a1[3])>max){
+				max=Double.valueOf(a1[3]);
+				witchname1=a1[2];
+				mon1=a1[1];
+				ro1=a1[0];
+			}
+			System.out.println("ai "+a1 [0]+"///"+a1[1]+"///"+a1[2]);
+			System.out.println("ss "+ss);
+				
+		}
+		System.out.println(min+" MAX"+max+" "+ witchname+"11"+" "+ro+"  "+ro1+ witchname1+" "+ mon+" "+mon1);
+		finalr.newLine();
+		finalr.write(" MAX="+max+" MAXROI="+ro1+"  MAXTS="+witchname1+" MAXCap="+ mon1);
+		finalr.newLine();
+		finalr.write(" Min="+min+" MinROI="+ro+ "  MinTS="+witchname+" MinCap="+ mon);
+		finalr.newLine();
 //					System.out.println("測試"+possibleStockCombination.size()+"  "+ss/listnum.size()+"R"+sumROI/possibleStockCombination.size()+" C  "+sumcap/possibleStockCombination.size());
-					 
-
+		 
 //					c=Double.parseDouble((population.get(""+i).strategyweight.get(1).toString()))*maxCaptial;
-					System.out.println("平均:"+ss/listnum.size()); 
-					finalr.write("平均:"+ss/listnum.size()); 
-					double variance=va(listnum,ss/listnum.size());
-					finalr.newLine();
-					 finalr.write(" VAR="+variance);
-					finalr.newLine();
-					finalr.newLine();
-					finalr.newLine();
-					
-					aa[0]=ss/listnum.size();//平均
-					
+		System.out.println("平均:"+ss/listnum.size()); 
+		finalr.write("平均:"+ss/listnum.size()); 
+		double variance=va(listnum,ss/listnum.size());
+		finalr.newLine();
+		 finalr.write(" VAR="+variance);
+		finalr.newLine();
+		finalr.newLine();
+		finalr.newLine();
 
-					if(Double.valueOf(mon1)==0){
-
-						aa[1]=0.00;
-
-					}
-
-					if(Double.valueOf(mon1)!=0){
-
-						aa[1]=Double.valueOf(ro1)/Double.valueOf(mon1);//最大
-
-					}
-
-					
-
-					if(Double.valueOf(mon)==0){
-
-						aa[2]=0.00;
-
-					}
-
-					if(Double.valueOf(mon)!=0){
-
-						aa[2]=Double.valueOf(ro)/Double.valueOf(mon);
-
-					}
-
-					
-
-				
-
-					
-
-					
-
-					
-
-			return aa;
-
-		}
+		aa[0]=ss/listnum.size();//平均
 		
-		private static double va(ArrayList<String[]> listnum, double s) {
-
-			// TODO Auto-generated method stub
-
-			double var=0;
-
-			 for(int w=0;w<listnum.size();w++){
-
-				 String[] a1 =listnum.get(w);
-
+		if(Double.valueOf(mon1)==0){
+			aa[1]=0.00;
+		}
+		if(Double.valueOf(mon1)!=0){
+			aa[1]=Double.valueOf(ro1)/Double.valueOf(mon1);//最大
+		}
+		if(Double.valueOf(mon)==0){
+			aa[2]=0.00;
+		}
+		if(Double.valueOf(mon)!=0){
+			aa[2]=Double.valueOf(ro)/Double.valueOf(mon);
+		}
+		return aa;
+	}
+		
+	private static double va(ArrayList<String[]> listnum, double s) {
+		// TODO Auto-generated method stub
+		double var=0;
+		for(int w=0;w<listnum.size();w++){
+			String[] a1 =listnum.get(w);
 			var+=Math.pow((Double.valueOf(a1[3])-s),2);
+		}
+		System.out.println("VAR"+var); 
+		System.out.println(var/(listnum.size()-1));
+		return var/(listnum.size()-1);
+	}
 
-				
+	private static double va(double[] avgnum, double d) {
+		// TODO Auto-generated method stub
+		double var=0;
+		for(int i=0;i<avgnum.length;i++){
+			var+=Math.pow(((avgnum[i]*100)-d),2);
+		}
+		System.out.println(var/(avgnum.length-1));
+		return var/(avgnum.length-1);
+	}
 
-				 
+	private static Hashtable<String, Hashtable> pop1( double stopPP, double stoplose, String[][] inputDataTEC, String[][] inputTestfileTEC, int num, int chooseReturnRate, int chooseMDD, int choosecount,int num1, Hashtable<String, Hashtable> input1) {
+		// TODO Auto-generated method stub
+		double RankReturnRate[]=new double[100];
+		double Rank1ReturnRate[]=new double[100];
+		double Rank1[][]=new double[100][6];
+		double RankMDD[]=new double[100];
+		double Rank1MDD[]=new double[100];
+		double Rankcount[]=new double[100];
+		double Rank1count[]=new double[100];
+		int co=7;
 
-			
+		String stopp=stopPP+","+stoplose;
+		System.out.println( "*&**"+stopPP+","+stoplose);
+		ArrayList<Integer> alre=new ArrayList<>();
+		
+		while(co!=107){
+			//System.out.println(co+","+"co");
+			ArrayList<String[]>str= STR11(inputDataTEC, num,co,stopPP,stoplose);
+			if(stopPP==0.0 && stoplose==-0.0){
+				str= STR(inputDataTEC, num,co);
+			}
+			for(int i=0;i<str.size();i++){
+				String aaa[]=str.get(i);
+			//System.out.println(aaa[1]+" "+aaa[2]+" "+aaa[3]);
+			}
+			if(str.size()==0){
+				//System.out.println("NULL");
+				RankReturnRate[co-7]=-999999;
+				RankMDD[co-7]=-999999;
+				Rankcount[co-7]=999999;
+				Rank1ReturnRate[co-7]=co-6;
+				Rank1MDD[co-7]=co-6;
+				Rank1count[co-7]=co-6;
+				Rank1[co-7][0]=co-6;
+				Rank1[co-7][1]=-999999;
+				Rank1[co-7][2]=-999999;
+				Rank1[co-7][3]=999999;
+				Rank1[co-7][4]=-999999;
+				Rank1[co-7][5]=-999999;
+			}
+			else{
+				int Count =count(str);
+				double ReturnRate=mareturnrate(str);
+				double ReturnRate1=mareturnrate1(str);
+				double MDD=MDD(str,Count);//價差取最大客略虧損
+				double MDD1=MDD1(str,Count);//以前的
+			//System.out.println(num+","+Count+","+Return+","+Return1+","+ReturnRate+","+ReturnRate1+","+PPT+","+PPT1+","+count1+","+count2+","+WinRate+","+WinRate1+","+WinAve+","+WinAve1+","+LosAve+","+LosAve1+","+MDD+","+tax+","+onceReturnRate);
+			//System.out.println("OOO"+PF);
+				RankReturnRate[co-7]=ReturnRate1;
+				RankMDD[co-7]=MDD1;
+				Rankcount[co-7]=Count;
+				Rank1ReturnRate[co-7]=co-6;
+				Rank1MDD[co-7]=co-6;
+				Rank1count[co-7]=co-6;
+				//Rank1[co-46][1]=ReturnRate;
+				Rank1[co-7][0]=co-6;//第幾個策略
+				Rank1[co-7][1]=ReturnRate;
+				Rank1[co-7][2]=MDD;
+				Rank1[co-7][3]=Count;
+				Rank1[co-7][4]=ReturnRate1;
+				Rank1[co-7][5]=MDD1;
+				System.gc();
+			}
+			co++;
+		}
+		for (int i =  RankReturnRate.length - 1; i > 0; --i)
+			for (int j = 0; j < i; ++j)
+				if (RankReturnRate[j] < RankReturnRate[j + 1]){
+					Swap(RankReturnRate, j, j + 1);
+					Swap(Rank1ReturnRate, j, j + 1);
+				}
+		alre=RReturnRate(RankReturnRate,Rank1ReturnRate,chooseReturnRate,alre);
+		System.gc();
 
-				 
+		double Rank1bMDD[] = new double[RankMDD.length-alre.size()];
+		double RankbMDD[] = new double[RankMDD.length-alre.size()];
 
-			 } 
-
-			  System.out.println("VAR"+var); 
-
-			  System.out.println(var/(listnum.size()-1));
-
-			return var/(listnum.size()-1);
-
+		int c=0;
+		for(int i=0;i<Rank1MDD.length;i++){
+			if(alre.contains((int)(Rank1MDD[i])))
+				continue;
+			else{
+				Rank1bMDD[c]=Rank1MDD[i];
+				RankbMDD[c]=RankMDD[i];
+				c++;
+			}
 		}
 
-		private static double va(double[] avgnum, double d) {
-			// TODO Auto-generated method stub
-			double var=0;
-			for(int i=0;i<avgnum.length;i++){
-				var+=Math.pow(((avgnum[i]*100)-d),2);
+		for (int i =  RankbMDD.length - 1; i > 0; --i)
+			for (int j = 0; j < i; ++j)
+				if ( RankbMDD[j] < RankbMDD[j + 1]){
+					Swap(RankbMDD, j, j + 1);
+					Swap(Rank1bMDD, j, j + 1);
+				}
+		alre=RReturnRate(RankbMDD,Rank1bMDD,chooseMDD,alre);
+		double Rank1bcount[]=new double[Rankcount.length-alre.size()];
+		double Rankbcount[]=new double[Rankcount.length-alre.size()];
+		int d=0;
+		for(int i=0;i<Rank1count.length;i++){
+			if(alre.contains((int)(Rank1count[i])))
+				continue;
+			else{
+				Rank1bcount[d]=Rank1count[i];
+				Rankbcount[d]=Rankcount[i];
+				d++;
 			}
-			 System.out.println(var/(avgnum.length-1));
-				return var/(avgnum.length-1);
 		}
-
-		private static Hashtable<String, Hashtable> pop1( double stopPP, double stoplose, String[][] inputDataTEC, String[][] inputTestfileTEC, int num, int chooseReturnRate, int chooseMDD, int choosecount,int num1, Hashtable<String, Hashtable> input1) {
-			// TODO Auto-generated method stub
-			//System.out.println(num);
-			double RankReturnRate[]=new double[100];
-			double Rank1ReturnRate[]=new double[100];
-			double Rank1[][]=new double[100][6];
-			double RankMDD[]=new double[100];
-			double Rank1MDD[]=new double[100];
-			double Rankcount[]=new double[100];
-			double Rank1count[]=new double[100];
-			int co=7;
+		for (int i =  Rankbcount.length - 1; i > 0; --i)
+			for (int j = 0; j < i; ++j)
+				if ( Rankbcount[j] > Rankbcount[j + 1]){
+					Swap(Rankbcount, j, j + 1);
+					Swap(Rank1bcount, j, j + 1);
+				}
+		//for(int i=0;i<Rank1bcount.length;i++){
+		//	System.out.println("i"+i+","+"R"+Rank1bcount[i]+","+Rankbcount[i]);
+		//}
+		alre=RReturnRate1(Rankbcount,Rank1bcount,choosecount,alre);
+		System.out.println(alre);
+		double storea[][]=new double[alre.size()][4];
+		double storeb[][]=new double[alre.size()][4];
 			
-			String stopp=stopPP+","+stoplose;
-			System.out.println( "*&**"+stopPP+","+stoplose);
-			ArrayList<Integer> alre=new ArrayList<>();
-			
-			while(co!=107){
-				//System.out.println(co+","+"co");
-				ArrayList<String[]>str= STR11(inputDataTEC, num,co,stopPP,stoplose);
-				if(stopPP==0.0 && stoplose==-0.0){
-					str= STR(inputDataTEC, num,co);
-				}
-				for(int i=0;i<str.size();i++){
-					String aaa[]=str.get(i);
-				//System.out.println(aaa[1]+" "+aaa[2]+" "+aaa[3]);
-				}
-				if(str.size()==0){
-					//System.out.println("NULL");
-					RankReturnRate[co-7]=-999999;
-					RankMDD[co-7]=-999999;
-					Rankcount[co-7]=999999;
-					Rank1ReturnRate[co-7]=co-6;
-					Rank1MDD[co-7]=co-6;
-					Rank1count[co-7]=co-6;
-					Rank1[co-7][0]=co-6;
-					Rank1[co-7][1]=-999999;
-					Rank1[co-7][2]=-999999;
-					Rank1[co-7][3]=999999;
-					Rank1[co-7][4]=-999999;
-					Rank1[co-7][5]=-999999;
-				}
-				else{
-					int Count =count(str);
-					double ReturnRate=mareturnrate(str);
-					double ReturnRate1=mareturnrate1(str);
-					double MDD=MDD(str,Count);//價差取最大客略虧損
-					double MDD1=MDD1(str,Count);//以前的
-				//System.out.println(num+","+Count+","+Return+","+Return1+","+ReturnRate+","+ReturnRate1+","+PPT+","+PPT1+","+count1+","+count2+","+WinRate+","+WinRate1+","+WinAve+","+WinAve1+","+LosAve+","+LosAve1+","+MDD+","+tax+","+onceReturnRate);
-				//System.out.println("OOO"+PF);
-					RankReturnRate[co-7]=ReturnRate1;
-					RankMDD[co-7]=MDD1;
-					Rankcount[co-7]=Count;
-					Rank1ReturnRate[co-7]=co-6;
-					Rank1MDD[co-7]=co-6;
-					Rank1count[co-7]=co-6;
-					//Rank1[co-46][1]=ReturnRate;
-					Rank1[co-7][0]=co-6;//第幾個策略
-					Rank1[co-7][1]=ReturnRate;
-					Rank1[co-7][2]=MDD;
-					Rank1[co-7][3]=Count;
-					Rank1[co-7][4]=ReturnRate1;
-					Rank1[co-7][5]=MDD1;
-					System.gc();
-				}
-				co++;
-			}
-			for (int i =  RankReturnRate.length - 1; i > 0; --i)
-				for (int j = 0; j < i; ++j)
-					if (RankReturnRate[j] < RankReturnRate[j + 1]){
-						Swap(RankReturnRate, j, j + 1);
-						Swap(Rank1ReturnRate, j, j + 1);
-					}
-			alre=RReturnRate(RankReturnRate,Rank1ReturnRate,chooseReturnRate,alre);
-			System.gc();
-
-			double Rank1bMDD[] = new double[RankMDD.length-alre.size()];
-			double RankbMDD[] = new double[RankMDD.length-alre.size()];
-
-			int c=0;
-			for(int i=0;i<Rank1MDD.length;i++){
-				if(alre.contains((int)(Rank1MDD[i])))
-						continue;
-				else{
-					Rank1bMDD[c]=Rank1MDD[i];
-					RankbMDD[c]=RankMDD[i];
-					c++;
-				}
-			}
-
-			for (int i =  RankbMDD.length - 1; i > 0; --i)
-				for (int j = 0; j < i; ++j)
-					if ( RankbMDD[j] < RankbMDD[j + 1]){
-						Swap(RankbMDD, j, j + 1);
-						Swap(Rank1bMDD, j, j + 1);
-					}
-			alre=RReturnRate(RankbMDD,Rank1bMDD,chooseMDD,alre);
-			double Rank1bcount[]=new double[Rankcount.length-alre.size()];
-			double Rankbcount[]=new double[Rankcount.length-alre.size()];
-			int d=0;
-			for(int i=0;i<Rank1count.length;i++){
-				if(alre.contains((int)(Rank1count[i])))
-						continue;
-				else{
-					Rank1bcount[d]=Rank1count[i];
-					Rankbcount[d]=Rankcount[i];
-					d++;
-					}
-			}
-			for (int i =  Rankbcount.length - 1; i > 0; --i)
-				for (int j = 0; j < i; ++j)
-					if ( Rankbcount[j] > Rankbcount[j + 1]){
-						Swap(Rankbcount, j, j + 1);
-						Swap(Rank1bcount, j, j + 1);
-					}
-			//for(int i=0;i<Rank1bcount.length;i++){
-			//	System.out.println("i"+i+","+"R"+Rank1bcount[i]+","+Rankbcount[i]);
-			//}
-			alre=RReturnRate1(Rankbcount,Rank1bcount,choosecount,alre);
-			System.out.println(alre);
-			double storea[][]=new double[alre.size()][4];
-			double storeb[][]=new double[alre.size()][4];
-			 	
-			 Hashtable<String,double[][]> store = new Hashtable<String,double[][]>();
-			for(int i=0;i<alre.size();i++){
-				co=alre.get(i);//第幾個策略(從15個策略選出)
+		 Hashtable<String,double[][]> store = new Hashtable<String,double[][]>();
+		for(int i=0;i<alre.size();i++){
+			co=alre.get(i);//第幾個策略(從15個策略選出)
+			storea[i][0]=co;//第幾個策略
+			storea[i][1]=Rank1[co-1][3];
+			storea[i][2]=Rank1[co-1][4];
+			storea[i][3]=Rank1[co-1][5];
+			if(storea[i][1]==999999||storea[i][2]==-999999||storea[i][3]==-999999){
 				storea[i][0]=co;//第幾個策略
-				storea[i][1]=Rank1[co-1][3];
-				storea[i][2]=Rank1[co-1][4];
-				storea[i][3]=Rank1[co-1][5];
-				if(storea[i][1]==999999||storea[i][2]==-999999||storea[i][3]==-999999){
-					storea[i][0]=co;//第幾個策略
-					storea[i][1]=0;
-					storea[i][2]=0;
-					storea[i][3]=0;
-				}
-				co=co+6;
-				// System.out.println(co+","+"co11");
-				ArrayList<String[]>str1= STR11(inputTestfileTEC, num1,co,stopPP,stoplose);
-				if(Double.valueOf(stopPP)==0.00 && Double.valueOf(stoplose)==-0.00){
-					str1= STR(inputTestfileTEC, num1,co);
-				}
-			
-				if(str1.size()==0){
-					storeb[i][0]=co-6;//第幾個策略(1-15)
-					storeb[i][1]=0;
-					storeb[i][2]=0;
-					storeb[i][3]=0;
-				}
-				else{
-					
-					int Count =count(str1);
-					double ReturnRate=mareturnrate(str1);
-					double ReturnRate1=mareturnrate1(str1);
-					double MDD=MDD(str1,Count);//價差取最大策略虧損
-					double MDD1=MDD1(str1,Count);//價差取最大策略虧損-tax
-					storeb[i][0]=co-6;
-					storeb[i][1]=Count;
-					storeb[i][2]=ReturnRate1;
-					storeb[i][3]=MDD1;
-				}
+				storea[i][1]=0;
+				storea[i][2]=0;
+				storea[i][3]=0;
 			}
-	//	 	String Point=population.get(""+p).point.get(1)+","+stoplose;
-			store.put(""+0,storea);
-			store.put(""+1,storeb);
-			input1.put(""+stopp,store);
-			Enumeration<String> e = input1.keys();
-			while(e. hasMoreElements()){
-				String s= e.nextElement().toString();
-				Hashtable s2 = input1.get(s);
-				System.out.println(s);
+			co=co+6;
+			// System.out.println(co+","+"co11");
+			ArrayList<String[]>str1= STR11(inputTestfileTEC, num1,co,stopPP,stoplose);
+			if(Double.valueOf(stopPP)==0.00 && Double.valueOf(stoplose)==-0.00){
+				str1= STR(inputTestfileTEC, num1,co);
 			}
+			if(str1.size()==0){
+				storeb[i][0]=co-6;//第幾個策略(1-15)
+				storeb[i][1]=0;
+				storeb[i][2]=0;
+				storeb[i][3]=0;
+			}
+			else{
+				int Count =count(str1);
+				double ReturnRate=mareturnrate(str1);
+				double ReturnRate1=mareturnrate1(str1);
+				double MDD=MDD(str1,Count);//價差取最大策略虧損
+				double MDD1=MDD1(str1,Count);//價差取最大策略虧損-tax
+				storeb[i][0]=co-6;
+				storeb[i][1]=Count;
+				storeb[i][2]=ReturnRate1;
+				storeb[i][3]=MDD1;
+			}
+		}
+//	 	String Point=population.get(""+p).point.get(1)+","+stoplose;
+		store.put(""+0,storea);
+		store.put(""+1,storeb);
+		input1.put(""+stopp,store);
+		Enumeration<String> e = input1.keys();
+		while(e. hasMoreElements()){
+			String s= e.nextElement().toString();
+			Hashtable s2 = input1.get(s);
+			System.out.println(s);
+		}
 		return input1;
 	}
 }
