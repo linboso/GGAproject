@@ -592,7 +592,7 @@ public class new_MODSTR {
 								j=-1;
 								value = (int) (Math.random()*(K+part));
 							}
-						}
+						} //驗證value 是否已存在
 						R[i]=value; 
 					}
 					i++;
@@ -611,10 +611,10 @@ public class new_MODSTR {
 					else
 						weight=weight+"1";
 					count=0;
-				}
+				}// 用0 區分 k 群的權重
 		//	AL.add(weight);
 				int count1=0;
-				double[] CO=new double[K+1];
+				double[] CO=new double[K+1]; //個別weight 的長度
 				String a=weight;
 					
 				String[] aa=a.split("0");
@@ -625,7 +625,8 @@ public class new_MODSTR {
 				population.get(""+t).strategyweight.add(weight);
 
 				for(int u=0;u<K+1;u++){
-					population.get(""+t).strategyweight.add(((part/(a.length()-K))*CO[u])/part);
+					population.get(""+t).strategyweight.add(( (part/(a.length()-K)) *CO[u])/part); // 個別的 %
+					//=>> 個別的長度 / part
 				}
 			 
 			}
