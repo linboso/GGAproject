@@ -52,7 +52,7 @@ public class new_MODSTR {
 		Training=new String[]{"2012.txt", "2013.txt", "2014.txt", "2015.txt"};
 		Testing=new String[]{"2013.txt", "2014.txt", "2015.txt", "2016.txt"};
 		*/
-			for(int trte=0; trte<Testing.length;trte++){ // trte = traning & testing
+			for(int trte=0; trte<Testing.length;trte++){ // trte = traning & testing?
 				String fileTEC =  Training[trte];
 				String TestfileTEC = Testing[trte];
 
