@@ -717,14 +717,14 @@ public class new_MODSTR {
 				aa[0]=s;//編號
 				aa[1]=inputDataTEC[i][0];//日期
 				aa[2]=inputDataTEC[i][count];//buy or sell
-				aa[3]=inputDataTEC[i+1][1];//隔天的OPEN PRICE
+				aa[3]=inputDataTEC[i+1][1];//隔天的OPEN PRICEu
 				a.add(aa);
 			}
 		}
 		
 		for(int j=0;j<a.size();j++){//meet first 1
 			String st[]=a.get(j);
-			if(st[2].equals("1")){
+			if(st[2].equals("1")){//st[2]是signal array
 				b.add(st);
 				break;
 			}
