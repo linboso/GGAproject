@@ -1,20 +1,31 @@
 import numpy as np
 import pandas as pd
 import talib
-# 
-#arr = roi
+import package._Function as _pf
+
 #
-#
+# 股票代號 = ticker symbol
+# Date, open, high, low , close, volumn
+# ma5 > ma20 
+# ma5 < ma20 
+# rsi > 30 
+# wms%r < 80
+# MOM > 0
+# PSY > 25
+# CCI > -100
+# DIF > MACD(DEM) 
+# BIAS > -4.5% Talib沒有
+# +DI > -DI  => PLUS_DI & MINUS_DI 
+#  
 
-c = np.random.randn(100)
 
-k, d = talib.STOCHRSI(c)
+Stock_Id = "0050.TW"
 
-rsi = talib.RSI(c)
-k, d = talib.STOCHF(rsi, rsi, rsi)
+savepath = f"./stock/{Stock_Id}"
+readpath = f"./stock/{Stock_Id}"
 
-rsi = talib.RSI(c)
-k, d = talib.STOCH(rsi, rsi, rsi)
+start = "2008-06-01" #-1
+end = "2010-06-01"  #+1
 
-
-print(k, d)
+_pf.StockDataDownload(Stock_Id,start,end)
+_pf.getCalculateTIValue()
