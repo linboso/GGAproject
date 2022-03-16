@@ -13,7 +13,6 @@ _end = "2010-06-01"  #+1
 _ti_list = ["CCI","RSI"]
 
 
-
 try:
     with open("../setting.json") as f:
         setting = pd.DataFrame(json.load(f))
@@ -31,6 +30,6 @@ except:
     }
     df = pd.DataFrame(init_setting)
     df.to_json("../setting.json")
-    print("Created setting.json")
+    print("...Created setting.json")
 
 
