@@ -17,14 +17,18 @@ from pardata_package import _Function as _pk
 # DIF > MACD(DEM) 
 # BIAS > -4.5% Talib沒有
 # +DI > -DI  => PLUS_DI & MINUS_DI 
-#  
+#   
 _stock_id = "0050.TW"
 _start = "2008-06-01"
-_end = "2015-06-01"
-_ti_list = ["RSI", "CCI", "MA","CMO","ADX", "RF"]
+_end = "2010-06-01"
+_ti_list = ["MACD","ADX", "CCI", "MA"]
+# _ti_list = talib.get_functions()
+
 
 savepath = f"stock/{_stock_id}/{_start}~{_end}"
 readpath = f"stock/{_stock_id}/{_start}~{_end}"
 
+k = _pk.ReadSetting()
+print(">>> " , k)
 _pk.StockDataDownload(_stock_id, _start, _end, savepath)
 _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
