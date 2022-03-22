@@ -1,4 +1,3 @@
-from importlib.resources import Package
 import numpy as np
 import pandas as pd
 import talib
@@ -21,7 +20,7 @@ from pardata_package import _Function as _pk
 _stock_id = "0050.TW"
 _start = "2008-06-01"
 _end = "2010-06-01"
-_ti_list = ["MACD","ADX", "CCI", "MA"]
+_ti_list = ["MACD","ADX", "CCI", "MA5","MA20"]
 # _ti_list = talib.get_functions()
 
 

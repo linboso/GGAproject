@@ -1,4 +1,3 @@
-from asyncore import read
 import pandas as pd
 import json
 import yfinance as yf
@@ -77,16 +76,17 @@ def getCalculateTIValue(_start, _end, _ti_list, readpath, savepath):
         print(f"At {os.getcwd() + savepath} no file name \" {_start}~{_end}/stockdata.json\"\r\n")
 
     _Techical_Indicators_list = _ti_list #select n techical indicator
-
+    _ALL_TI_LIST = talib.get_functions()
     for _ti in _Techical_Indicators_list:
         try:
-            output = eval(f'abstract.{_ti}(df)') #Great Function!
-            #print(f" =========={_ti}========== ")
-            #print(output)
-            output = pd.DataFrame(output)
+            if not _ti in _ALL_TI_LIST:
+                output = eval(f'abstract.{_ti[:2]}(df, timeperiod = {_ti[2:]})')
+                #Talib not suport MA5, MA10, MAxx so need to use 'timeperiod' attr
+            else:
+                output = eval(f'abstract.{_ti}(df)') #Great Function!
+            output = pd.DataFrame(output) #turn "output" into DataFrame type
             output.columns = [_ti] if list(output.columns)[0]==0 else [str(i).upper() for i in list(output.columns)] #name it
             _df_with_ti = pd.concat([_df_with_ti, output], axis=1)
-            #print(_df_with_ti)
             #merge Techical indicator value into main.json file
         except:
             print(f"--> No such techical Inidicator like \"{_ti}\"\r\n")
