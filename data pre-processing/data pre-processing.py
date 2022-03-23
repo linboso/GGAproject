@@ -33,11 +33,12 @@ print(">>> " , k)
 #_pk.StockDataDownload(_stock_id, _start, _end, savepath)
 _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
 
-# _pk.StockDataDownload(_stock_id, _start, _end, savepath)
-new_pk = _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
-print(new_pk)
 
-new_pk = pd.concat([new_pk,convert_signal.RSI_signal(new_pk["RSI"].values)],axis=1)
-print(new_pk)
-new_pk.to_json(f"{savepath}/test.json" ,orient='records') #save file 
-# print(f"Saving techical_indicator.json file at {savepath}")
+
+TI_signal = _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
+print(TI_signal)
+
+TI_signal = pd.concat([TI_signal,convert_signal.RSI_signal(TI_signal["RSI"])],axis=1)
+print(TI_signal)
+TI_signal.to_json(f"{savepath}/test.json" ,orient='records') #save file 
+# save the test file

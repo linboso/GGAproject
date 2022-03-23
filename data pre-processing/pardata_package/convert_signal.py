@@ -16,21 +16,8 @@ def combine_signal(TI_Buy_series,TI_sell_series):
             judge_signal = None
         TS_signal.append(judge_signal)
     return TS_signal
-#input two series ,then gerenrating TS_signal
-
-
-# def judge_signal(TIbuy,TIsell):
-#     if TIbuy ==1 & TIsell ==0:
-#         return 10
-#     elif TIbuy == 1:
-#         return 1
-#     elif TIsell == 0:
-#         return 0
-#     else:
-#         return None
-
-#unit operand        
-        
+#input two series ,then gerenrating TS_signal      
+       
 def ma(MA_l,MA_b,MA_l_yesterday,MA_b_yesterday):
     if MA_l_yesterday < MA_b_yesterday & MA_l > MA_b:
         return 1
@@ -39,6 +26,7 @@ def ma(MA_l,MA_b,MA_l_yesterday,MA_b_yesterday):
     return -1
 
 def RSI_signal(rsi):
+    rsi = rsi.values
     RSI_singal = []
     for day in range(0,len(rsi)):
         if rsi[day] > 30 and rsi[day-1] < 30:
