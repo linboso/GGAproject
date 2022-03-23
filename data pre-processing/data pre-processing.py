@@ -1,9 +1,11 @@
-from bitarray import test
+
 import numpy as np
 import pandas as pd
 import talib
-from pardata_package import _Function as _pk
-from pardata_package import convert_signal
+# import perdata_package as pp
+from perdata_package.getStockData import StockDataDownload
+from perdata_package.CalculateTIvalue import *
+# from perdata_package import convert_signal
 
 #
 # 股票代號 = ticker symbol
@@ -21,29 +23,28 @@ from pardata_package import convert_signal
 #   
 _stock_id = "0050.TW"
 _start = "2008-06-01"
-_end = "2010-06-01"
+_end = "2009-06-01"
 _ti_list = ["MA5","MA20","RSI"]
 # _ti_list = talib.get_functions()
-
 
 savepath = f"stock/{_stock_id}/{_start}~{_end}"
 readpath = f"stock/{_stock_id}/{_start}~{_end}"
 
-k = _pk.ReadSetting()
-print(">>> " , k)
-#_pk.StockDataDownload(_stock_id, _start, _end, savepath)
-_pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
+TIv = TIValue()
+StockDataDownload(_stock_id, _start, _end, savepath)
+TIv.CalculateTIValue()
 
 
 #TI_signal table
-TI_signal = _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
-print(TI_signal)
-TI_signal = pd.concat([TI_signal,convert_signal.RSI_signal(TI_signal["RSI"])],axis=1)
-print(TI_signal)#after add RSI_signal
-TI_signal = pd.concat([TI_signal,convert_signal.MA_signal(TI_signal["MA5"],TI_signal["MA20"])],axis=1)
-print(TI_signal)#after add MA5&MA20 signal
-TI_signal = pd.concat([TI_signal,convert_signal.combine_signal(TI_signal["RSI_signal"],TI_signal["MA_signal"])],axis=1)
-print(TI_signal)#after add combine_signal (RSI be buy signal and MA be sell signal)
+# TI_signal = TIv.getTIValue()
+# print(TI_signal)
 
-TI_signal.to_json(f"{savepath}/test.json" ,orient='records') #save file 
+# TI_signal = pd.concat([TI_signal,convert_signal.RSI_signal(TI_signal["RSI"])],axis=1)
+# print(TI_signal)#after add RSI_signal
+# TI_signal = pd.concat([TI_signal,convert_signal.MA_signal(TI_signal["MA5"],TI_signal["MA20"])],axis=1)
+# print(TI_signal)#after add MA5&MA20 signal
+# TI_signal = pd.concat([TI_signal,convert_signal.combine_signal(TI_signal["RSI_signal"],TI_signal["MA_signal"])],axis=1)
+# print(TI_signal)#after add combine_signal (RSI be buy signal and MA be sell signal)
+
+# TI_signal.to_json(f"{savepath}/test.json" ,orient='records') #save file 
 # save the test file

@@ -1,8 +1,7 @@
 import pandas as pd
-from pardata_package import _Function
 import json
 import os
-
+from .BasicFunction import CheckPath
 #Subroutine建立表
 
 # def create_TI_signal_table:
@@ -114,7 +113,7 @@ def PSY_signal(PSY):
         else:
             PSY_signal.append(None)
     PSY_signal= pd.Series(PSY_signal)
-    PSY_signal = PSY_singal.rename('PSY_signal')
+    PSY_signal = PSY_signal.rename('PSY_signal')
     #print(PSY_signal)
     return PSY_signal
 
@@ -199,7 +198,7 @@ def DI_signal(DI_positive,DI_negative):
 def getTable(_start, _end, readpath, savepath):
     df = pd.DataFrame()
     try:
-        if _Function.CheckPath(readpath):
+        if CheckPath(readpath):
             with open(f"{readpath}/stockdata.json") as f:
                 df = pd.DataFrame(json.load(f))
             with open(f"{readpath}/origin_stockdata.json") as f:
