@@ -34,11 +34,15 @@ print(">>> " , k)
 _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
 
 
-
+#TI_signal table
 TI_signal = _pk.getCalculateTIValue(_start, _end, _ti_list, readpath, savepath)
 print(TI_signal)
-
 TI_signal = pd.concat([TI_signal,convert_signal.RSI_signal(TI_signal["RSI"])],axis=1)
-print(TI_signal)
+print(TI_signal)#after add RSI_signal
+TI_signal = pd.concat([TI_signal,convert_signal.MA_signal(TI_signal["MA5"],TI_signal["MA20"])],axis=1)
+print(TI_signal)#after add MA5&MA20 signal
+TI_signal = pd.concat([TI_signal,convert_signal.combine_signal(TI_signal["RSI_signal"],TI_signal["MA_signal"])],axis=1)
+print(TI_signal)#after add combine_signal
+
 TI_signal.to_json(f"{savepath}/test.json" ,orient='records') #save file 
 # save the test file
