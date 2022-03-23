@@ -1,7 +1,13 @@
 import pandas as pd
+from pardata_package import _Function
+import json
+import os
 
+#Subroutine建立表
 
-#還缺call 以下 Subroutine 建立表
+# def create_TI_signal_table:
+    
+# def create_TS_signal_table:
 
 def combine_signal(TI_buy,TI_sell):
     TI_buy = TI_buy.values
@@ -189,3 +195,19 @@ def DI_signal(DI_positive,DI_negative):
     DI_signal = DI_signal.rename('DI_signal')
     #print(DI_signal)
     return DI_signal
+
+def getTable(_start, _end, readpath, savepath):
+    df = pd.DataFrame()
+    try:
+        if _Function.CheckPath(readpath):
+            with open(f"{readpath}/stockdata.json") as f:
+                df = pd.DataFrame(json.load(f))
+            with open(f"{readpath}/origin_stockdata.json") as f:
+                _df_with_ti = pd.DataFrame(json.load(f))
+            #read stock.json file and convent to DataFrame Type
+    except:
+        print(f"At {os.getcwd() + savepath} no file name \" {_start}~{_end}/stockdata.json\"\r\n")
+    
+    return df #return new table
+#get orginal table,then return
+
