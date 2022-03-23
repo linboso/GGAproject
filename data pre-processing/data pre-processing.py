@@ -21,7 +21,7 @@ from pardata_package import convert_signal
 _stock_id = "0050.TW"
 _start = "2008-06-01"
 _end = "2010-06-01"
-_ti_list = ["MACD","ADX", "CCI", "MA5","MA20","RSI"]
+_ti_list = ["MA5","MA20","RSI"]
 # _ti_list = talib.get_functions()
 
 
@@ -42,7 +42,7 @@ print(TI_signal)#after add RSI_signal
 TI_signal = pd.concat([TI_signal,convert_signal.MA_signal(TI_signal["MA5"],TI_signal["MA20"])],axis=1)
 print(TI_signal)#after add MA5&MA20 signal
 TI_signal = pd.concat([TI_signal,convert_signal.combine_signal(TI_signal["RSI_signal"],TI_signal["MA_signal"])],axis=1)
-print(TI_signal)#after add combine_signal
+print(TI_signal)#after add combine_signal (RSI be buy signal and MA be sell signal)
 
 TI_signal.to_json(f"{savepath}/test.json" ,orient='records') #save file 
 # save the test file
