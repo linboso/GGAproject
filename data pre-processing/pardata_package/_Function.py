@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-import yfinance as yf
+#import yfinance as yf
 import talib
 from talib import abstract
 import os
@@ -94,4 +94,6 @@ def getCalculateTIValue(_start, _end, _ti_list, readpath, savepath):
     #print(_df_with_ti)
     _df_with_ti.to_json(f"{savepath}/techical_indicator.json" ,orient='records') #save file 
     print(f"Saving techical_indicator.json file at {savepath}\r\n")
+    
+    return _df_with_ti #return new table
 
