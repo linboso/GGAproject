@@ -3,32 +3,26 @@ import json
 from talib import abstract 
 import talib
 
-_stock_id = "0050.TW"
-_start = "2008-06-01"
-_end = "2010-06-01"
 
-savepath = f"\\stock\\{_stock_id}"
-readpath = f"/stock/{_stock_id}/{_start}~{_end}"
-
-
-print("Greeeeeeeeeeeee")
-with open(f"../{readpath}/stockdata.json") as f:
-    data = pd.DataFrame(json.load(f))
-
-_df_with_ti = pd.DataFrame()
-_ALL_TI_LIST = talib.get_functions()
-for _ti in ["MA5","MA20","MACD","RSI"]:
-    try:
-        if(not _ti in _ALL_TI_LIST):
-            print(_ti[2:])
-            output = eval(f'abstract.{_ti[:2]}(data, timeperiod = {_ti[2:]})')
+def MA_signal(MA_l,MA_b):
+    MA_l = MA_l.values
+    MA_b = MA_b.values
+    MA_signal = []
+    for day in range(0,len(MA_l)):
+        if MA_l[day] > MA_b[day] and MA_l[day-1] < MA_b[day-1]:
+            MA_signal.append(1)
+        elif MA_l[day] < MA_b[day] and MA_l[day-1] > MA_b[day-1]:
+            MA_signal.append(0)
         else:
-            output = eval(f'abstract.{_ti}(data)') #Great Function!
-        output = pd.DataFrame(output)
-        output.columns = [_ti] if list(output.columns)[0]==0 else [str(i).upper() for i in list(output.columns)]
-        _df_with_ti = pd.concat([_df_with_ti, output], axis=1)
-        print("----------------------------")
-    except:
-        print(f"--> No such techical Inidicator like \"{_ti}\"\r\n")
+            MA_signal.append(None)
+    MA_signal= pd.Series(MA_signal)
+    MA_signal = MA_signal.rename('MA_signal')
+    #print(MA_signal)
+    return MA_signal
 
-print(_df_with_ti)
+
+
+
+
+
+

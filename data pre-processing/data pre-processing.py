@@ -2,10 +2,10 @@
 import numpy as np
 import pandas as pd
 import talib
-# import perdata_package as pp
-from perdata_package.getStockData import StockDataDownload
-from perdata_package.CalculateTIvalue import *
-# from perdata_package import convert_signal
+
+from perdata_package.getStockData import DownloadStockData
+from perdata_package.CalculateTIvalue import TIValue
+
 
 #
 # 股票代號 = ticker symbol
@@ -21,17 +21,9 @@ from perdata_package.CalculateTIvalue import *
 # BIAS > -4.5% Talib沒有
 # +DI > -DI  => PLUS_DI & MINUS_DI 
 #   
-_stock_id = "0050.TW"
-_start = "2008-06-01"
-_end = "2009-06-01"
-_ti_list = ["MA5","MA20","RSI"]
-# _ti_list = talib.get_functions()
-
-savepath = f"stock/{_stock_id}/{_start}~{_end}"
-readpath = f"stock/{_stock_id}/{_start}~{_end}"
 
 TIv = TIValue()
-StockDataDownload(_stock_id, _start, _end, savepath)
+stockvalue = DownloadStockData().StockDataDownload()
 TIv.CalculateTIValue()
 
 

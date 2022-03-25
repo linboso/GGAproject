@@ -1,11 +1,1 @@
-{
-	"StockID": "0050.TW",
-	"StartDate": "2008-06-01",
-	"EndDate": "2009-06-01",
-	"TechicalIndicator": [
-		"MA5",
-		"RSI",
-		"MACD",
-		"MA20"
-	]
-}
+{"StockID": "0050.TW", "StartDate": "2009-08-30", "EndDate": "2010-12-30", "TechicalIndicator": ["MA5", "MA20", "RSI", "MACD"]}
