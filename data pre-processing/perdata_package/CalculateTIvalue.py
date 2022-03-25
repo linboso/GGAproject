@@ -7,6 +7,7 @@ from talib import abstract
 from .BasicFunction import CheckPath, ReadSetting
 
 
+
 class TIValue():
     def __init__(self) -> None:
         setting = ReadSetting()

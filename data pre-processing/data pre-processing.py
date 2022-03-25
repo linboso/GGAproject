@@ -12,7 +12,7 @@ from perdata_package.CalculateTIvalue import TIValue
 # Date, open, high, low , close, volumn
 # ma5 > ma20 
 # ma5 < ma20 
-# rsi > 30 
+# rsi > 30 S
 # wms%r < 80
 # MOM > 0
 # PSY > 25

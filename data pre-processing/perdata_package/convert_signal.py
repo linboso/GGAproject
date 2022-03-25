@@ -41,7 +41,7 @@ def combine_signal(TI_buy,TI_sell):
 # 9.BIAS
 # 10.+DI & -DI
 
-def MA_signal(MA_l,MA_b):
+def MA_signal(MA_l,MA_b): #case 1
     MA_l = MA_l.values
     MA_b = MA_b.values
     MA_signal = []
@@ -57,7 +57,7 @@ def MA_signal(MA_l,MA_b):
     #print(MA_signal)
     return MA_signal
 
-def RSI_signal(RSI):
+def RSI_signal(RSI): # case 2
     RSI = RSI.values
     RSI_signal = []
     for day in range(0,len(RSI)):
@@ -72,7 +72,7 @@ def RSI_signal(RSI):
     #print(RSI_signal)
     return RSI_signal
 
-def WMS_R_signal(WMS_R):
+def WMS_R_signal(WMS_R): # case 2
     WMS_R = WMS_R.values
     WMS_R_signal = []
     for day in range(0,len(WMS_R)):
@@ -87,7 +87,7 @@ def WMS_R_signal(WMS_R):
     #print(WMS_R_signal)
     return WMS_R_signal    
 
-def MOM_signal(MOM):
+def MOM_signal(MOM): # case 2
     MOM = MOM.values
     MOM_signal = []
     for day in range(0,len(MOM)):
@@ -102,7 +102,7 @@ def MOM_signal(MOM):
     #print(MOM_signal)
     return MOM_signal    
 
-def PSY_signal(PSY):
+def PSY_signal(PSY): # case 2
     PSY = PSY.values
     PSY_signal = []
     for day in range(0,len(PSY)):
@@ -117,7 +117,7 @@ def PSY_signal(PSY):
     #print(PSY_signal)
     return PSY_signal
 
-def CCI_signal(CCI):
+def CCI_signal(CCI): # case 2
     CCI = CCI.values
     CCI_signal = []
     for day in range(0,len(CCI)):
@@ -132,7 +132,7 @@ def CCI_signal(CCI):
     #print(CCI_signal)
     return CCI_signal    
 
-def KD_signal(K,D):
+def KD_signal(K,D): # case 1 & case 2?
     K = K.values
     D = D.values
     KD_signal = []
@@ -148,7 +148,7 @@ def KD_signal(K,D):
     #print(KD_signal)
     return KD_signal
 
-def MACD_signal(DIF,MACD_DEM):
+def MACD_signal(DIF,MACD_DEM): # case 1 || case 2
     DIF = DIF.values
     MACD_DEM = MACD_DEM.values
     MACD_signal = []
@@ -164,7 +164,7 @@ def MACD_signal(DIF,MACD_DEM):
     #print(MACD_signal)
     return MACD_signal    
 
-def BIAS_signal(BIAS):
+def BIAS_signal(BIAS): # case 2
     BIAS = BIAS.values
     BIAS_signal = []
     for day in range(0,len(BIAS)):
@@ -179,7 +179,7 @@ def BIAS_signal(BIAS):
     #print(BIAS_singal)
     return BIAS_signal    
 
-def DI_signal(DI_positive,DI_negative):
+def DI_signal(DI_positive,DI_negative): # case 1
     DI_positive = DI_positive.values
     DI_negative = DI_negative.values
     DI_signal = []
