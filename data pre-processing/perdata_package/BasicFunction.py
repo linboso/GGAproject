@@ -18,7 +18,7 @@ def ReadSetting():
             "StockID":"0050.TW",
             "StartDate":"2009-08-30",
             "EndDate":"2010-12-30",
-            "TechicalIndicator":["MA5", "MA20", "RSI", "MACD"] } #init setting format
+            "TechicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH"] } #init setting format
         with open("./setting.json", "w") as f:
             json.dump(init_setting, f) # save as .json file
         print("...Creating setting.json")
