@@ -19,7 +19,7 @@ if __name__ ==  '__main__':
     # case 3: others....
     #
     #
-    def case1_signal(ti_a, ti_b):
+    def case1_signal(ti_a: pd.Series(), ti_b: pd.Series()):
         ti_a = ti_a.values
         ti_b = ti_b.values
         r = []
@@ -35,7 +35,7 @@ if __name__ ==  '__main__':
         # r = signal_long.combine(signal_short, (lambda x1, x2: -x2.astype(int) if ( x2 != 0) else x1.astype(int)))
         return r
 
-    def case2_signal(ti: pd.Series, c1: float, c2: float):
+    def case2_signal(ti: pd.Series(), c1: float, c2: float):
         ti = ti.values
         r = []
         for i in range(len(ti)):
@@ -47,7 +47,7 @@ if __name__ ==  '__main__':
                 r.append(0)
         return r
 
-    def case3_signal(ti1: pd.Series, ti2: pd.Series, c1: float, c2: float): #eg. k/d
+    def case3_signal(ti1: pd.Series(), ti2: pd.Series(), c1: float, c2: float): #eg. k/d
         pre_signal:list = case1_signal(ti1, ti2)
         ti2 = ti2.values
         r = []
@@ -61,7 +61,7 @@ if __name__ ==  '__main__':
         return r        
 
 
-    def case4_signal(ti1:pd.Series, ti2:pd.Series, c1:float, c2:float): # eg. macd
+    def case4_signal(ti1:pd.Series(), ti2:pd.Series(), c1:float, c2:float): # eg. macd
         pre_signal1:list = case1_signal(ti1, ti2)
         pre_signal2:list = case2_signal(ti1, c1, c2)
         r = []
