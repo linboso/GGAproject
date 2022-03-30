@@ -1,0 +1,169 @@
+{
+  "Case1": [
+    {
+      "TechnicalIndicator": "MA5"
+    },
+    {
+      "TechnicalIndicator": "MA10"
+    },
+	{
+      "TechnicalIndicator": "WMA5"
+    },
+	{
+      "TechnicalIndicator": "WMA10"
+    },
+	{
+      "TechnicalIndicator": "TRIMA5"
+    },
+	{
+      "TechnicalIndicator": "TRIMA10"
+    },
+	{
+      "TechnicalIndicator": "TENA5"
+    },
+	{
+      "TechnicalIndicator": "TENA10"
+    },
+	{
+      "TechnicalIndicator": "SMA5"
+    },
+	{
+      "TechnicalIndicator": "SMA10"
+    },
+	{
+      "TechnicalIndicator": "MAMA5"
+    },
+	{
+      "TechnicalIndicator": "MAMA10"
+    },
+	{
+      "TechnicalIndicator": "KAMA5"
+    },
+	{
+      "TechnicalIndicator": "KAMA10"
+    },
+	{
+      "TechnicalIndicator": "EMA5"
+    },
+	{
+      "TechnicalIndicator": "EMA10"
+    },
+	{
+      "TechnicalIndicator": "DEMA5"
+    },
+	{
+      "TechnicalIndicator": "DEMA10"
+    }
+  ],
+  "Case2": [
+    {
+      "TechnicalIndicator": "RSI",
+      "C1": "30",
+      "C2": "70"
+    },
+	{
+      "TechnicalIndicator": "MOM",
+      "C1": "0",
+      "C2": "0"
+    },
+	{
+      "TechnicalIndicator": "BOP",
+      "C1": "0",
+      "C2": "0"
+    },
+	{
+      "TechnicalIndicator": "APO",
+      "C1": "0",
+      "C2": "0"
+    },
+	{
+      "TechnicalIndicator": "AROONOSC",
+      "C1": "50",
+      "C2": "-50"
+    },
+	{
+      "TechnicalIndicator": "CCI",
+      "C1": "-100%",
+      "C2": "100%"
+    },
+	{
+      "TechnicalIndicator": "PSY",
+      "C1": "25%",
+      "C2": "25%"
+    },
+	{
+      "TechnicalIndicator": "BIAS",
+      "C1": "-4.5%",
+      "C2": "-4.5%"
+    },
+	{
+      "TechnicalIndicator": "WMS%r",
+      "C1": "-80",
+      "C2": "-20"
+    },
+	{
+      "TechnicalIndicator": "ULTOSC",
+      "C1": "35",
+      "C2": "70"
+    },
+	{
+      "TechnicalIndicator": "MFI",
+      "C1": "20",
+      "C2": "80"
+    }
+  ],
+  "Case2.1": [
+    {
+      "TechnicalIndicator": "AROON",
+      "C1": "0",
+      "C2": "50",
+	  "C3": "70"
+    }
+  ],
+  "Case3": [
+    {
+      "TechnicalIndicator1": "K",
+      "TechnicalIndicator2": "D",
+      "C1": "20",
+      "C2": "80"
+    },
+	{
+      "TechnicalIndicator1": "MAROC",
+      "TechnicalIndicator2": "ROC",
+      "C1": "0",
+      "C2": "0"
+    },
+	{
+      "TechnicalIndicator1": "EMA",
+      "TechnicalIndicator2": "PPO",
+      "C1": "0",
+      "C2": "0"
+    }
+  ],
+  "Case3.1": [
+    {
+      "TechnicalIndicator1": "ADX",
+      "TechnicalIndicator2": "PLUS_DI",
+	  "TechnicalIndicator3": "MINUS_DI",
+      "C1": "25"
+    }
+  ],
+  "Case4": [
+    {
+      "TechnicalIndicator1": "DIF",
+      "TechnicalIndicator2": "D",
+      "C1": "0",
+      "C2": "0"
+    }
+  ],
+  "Case5": [
+    {
+      "TechnicalIndicator1": "PLUS_DM",
+      "TechnicalIndicator2": "MINUS_DM"
+    },
+	{
+      "TechnicalIndicator1": "PLUS_DI",
+      "TechnicalIndicator2": "MINUS_DI"
+    }
+  ]
+}
