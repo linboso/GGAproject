@@ -4,29 +4,35 @@ import pandas as pd
 import talib
 from talib import abstract
 
-from .BasicFunction import CheckPath, ReadSetting
+from .SettingFile import SettingFile
+
+
 
 
 
 class TIValue():
     def __init__(self) -> None:
-        setting = ReadSetting()
+        setting = SettingFile()
+        setting = setting.Read()
         self.stock_id = setting['StockID']
         self.start = setting['StartDate']
         self.end = setting['EndDate']
-        self.ti_list = setting['TechicalIndicator']
+        self.ti_list = setting['TechnicalIndicator']
         self.savepath = f"stock/{self.stock_id}/{self.start}~{self.end}"
         self.readpath = f"stock/{self.stock_id}/{self.start}~{self.end}"
 
     def CalculateTIValue(self):
         _df_with_ti = df = pd.DataFrame()
         try:
-            if CheckPath(self.readpath):
+            if not os.path.exists(self.readpath):
+                print(f"No such {self.stock_id} info & data")
+                print("要先下載資料再作運算")
+            else:
                 with open(f"{self.readpath}/stockdata.json") as f:
                     df = pd.DataFrame(json.load(f))
                 with open(f"{self.readpath}/origin_stockdata.json") as f:
                     _df_with_ti = pd.DataFrame(json.load(f))
-                #read stock.json file and convent to DataFrame Type
+            #read stock.json file and convent to DataFrame Type
         except:
             print(f"At {os.getcwd() + self.savepath} no file name \" {self.start}~{self.end}/stockdata.json\"\r\n")
 
@@ -45,15 +51,15 @@ class TIValue():
                 _df_with_ti = pd.concat([_df_with_ti, output], axis=1)
                 #merge Techical indicator value into main.json file
             except:
-                print(f"--> No such techical Inidicator like \"{_ti}\"\r\n")
+                print(f"--> No such technical Inidicator like \"{_ti}\"\r\n")
         #print(_df_with_ti)
-        _df_with_ti.to_json(f"{self.savepath}/techical_indicator.json" ,orient='records') #save file 
-        print(f"Saving techical_indicator.json file at {self.savepath}\r\n")
+        _df_with_ti.to_json(f"{self.savepath}/technical_indicator.json" ,orient='records') #save file 
+        print(f"Saving technical_indicator.json file at {self.savepath}\r\n")
 
 
     def getTIValue(self):
         table = pd.DataFrame()
-        with open(f"{self.savepath}/techical_indicator.json", 'r') as f:
+        with open(f"{self.savepath}/technical_indicator.json", 'r') as f:
             table = pd.DataFrame(json.load(f))
         return table
 
