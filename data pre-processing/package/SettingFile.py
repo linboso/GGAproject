@@ -36,7 +36,8 @@ class SettingFile():
                 "StockID":"0050.TW",
                 "StartDate":"2009-08-30",
                 "EndDate":"2010-12-30",
-                "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH"] } #init setting format
+                "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH"] } 
+            #init setting format
             self.__SavingFile(init_setting)
 
             print("...Creating Setting.json")
