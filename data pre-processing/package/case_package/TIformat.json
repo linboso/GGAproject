@@ -100,6 +100,7 @@
   "RSI": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "RSI",
       "C1": 30,
       "C2": 70
     }
@@ -107,6 +108,7 @@
   "PSY": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "PSY",
       "C1": 0.25,
       "C2": 0.25
     }
@@ -114,6 +116,7 @@
   "WMS%R": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "WMS%R",
       "C1": -80,
       "C2": -20
     }
@@ -121,6 +124,7 @@
   "ULTOSC": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "ULTOSC",
       "C1": 35,
       "C2": 70
     }
@@ -128,6 +132,7 @@
   "MOM": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "MOM",
       "C1": 0,
       "C2": 0
     }
@@ -135,6 +140,7 @@
   "BOP": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "BOP",
       "C1": 0,
       "C2": 0
     }
@@ -142,6 +148,7 @@
   "APO": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "APO",
       "C1": 0,
       "C2": 0
     }
@@ -149,13 +156,15 @@
   "MFI": {
     "Case": "2",
     "InputArray": {
-        "C1": 20,
-        "C2": 80
-      }
+	  "ti1": "MFI",
+      "C1": 20,
+      "C2": 80
+    }
   },
   "AROONOSC": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "AROONOSC",
       "C1": 50,
       "C2": -50
     }
@@ -163,17 +172,17 @@
   "CCI": {
     "Case": "2",
     "InputArray": {
+	  "ti1": "CCI",
       "C1": -1,
       "C2": 1
     }
   },
-  "ADX": {
-    "Case": "3",
+  "CMO": {
+    "Case": "2",
     "InputArray": {
-      "C1": 25,
-      "C2": 25,
-      "ti1": "PLUS_DI",
-      "ti2": "MINUS_DI"
+	    "ti1": "CMO",
+      "C1": 50,
+      "C2": -50
     }
   },
   "STOCH": {
@@ -183,15 +192,6 @@
         "C2": 80,
         "ti1": "SLOWK",
         "ti2": "SLOWD"
-    }
-  },
-  "AROON": {
-    "Case": "3",
-    "InputArray": {
-	  "ti1": "AROONUP",
-	  "ti2": "AROONDOWN",
-      "C1": 50,
-      "C2": 50
     }
   },
   "ROC": {
@@ -221,14 +221,13 @@
       "ti2": "MACDSIGNAL"
     }
   },
-  "CMO": {
+  "ADX": {
     "Case": "5",
     "InputArray": {
-	  "ti1": "CMO",
-      "C1": 0,
-      "C2": 0,
-      "C3": -50,
-      "C4": 50
+      "C1": 25,
+	  "ti1": "ADX",
+      "ti2": "PLUS_DI",
+      "ti3": "MINUS_DI"
     }
   },
   "ADXR": {
@@ -238,6 +237,17 @@
       "ti2": "ADXR",
       "ti3": "PLUS_DI",
       "ti4": "MINUS_DI"
+    }
+  },
+  "AROON": {
+    "Case": "AROON",
+    "InputArray": {
+	  "ti1": "AROONOSC",
+	  "ti2": "AROONUP",
+	  "ti3": "AROONDOWN",
+	  "C1": 0,
+      "C2": 50,
+      "C3": 50
     }
   }
 }

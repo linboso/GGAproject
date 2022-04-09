@@ -1,10 +1,5 @@
-from cProfile import label
 import pandas as pd
 import json
-import numpy as np
-
-
-
 
 
 def case1(ti1: pd.Series, ti2: pd.Series):
@@ -58,41 +53,48 @@ def case4(ti1:pd.Series, ti2:pd.Series, c1:float, c2:float): # eg. macd
             r.append(0)
     return r  
 
-def case5(ti:pd.Series, c1:float, c2:float, c3:float, c4:float): # eg. CMO
-    pre_signal1:list = case2(ti, c1, c2)
+
+
+def case5(ti1:pd.Series, ti2:pd.Series, ti3:pd.Series, c1:float): # eg. adx
+    pre_signal1:list = case1(ti1, c1, c1)
+    pre_signal2:list = case2(ti2, ti3)
     r = []
-    for i in range(len(ti)):
-        if pre_signal1[i] == 1 or ti[i] > c3:
-            r.append(1)
-        elif pre_signal1[i] == -1 or ti[i] < c4:
-            r.append(-1)
+    for i in range(len(ti1)):
+        if pre_signal1[i] > c1:
+            if pre_signal2[i] == 1:
+                r.append(1)
+            elif pre_signal2[i] == -1:
+                r.append(-1)
         else:
             r.append(0)
     return r
 
 
-def case6(ti1:pd.Series, ti2:pd.Series, c1:float, c2:float): # eg. aroon      not sure
-    pre_signal1:list = case1(ti1, ti2)
-
+def case6(ti1:pd.Series, ti2:pd.Series, ti3:pd.Series, ti4:pd.Series): # eg. adxr    
+    pre_signal1:list = case2(ti1, ti2)
+    pre_signal2:list = case2(ti3, ti4)
     r = []
     for i in range(len(ti1)):
-        if pre_signal1[i] == 1 and ti1[i] > c1:
-            r.append(50)
-        elif pre_signal1[i] == -1 or ti1[i] < c1:
-            r.append(-50)
+        if pre_signal1[i] == 1:
+            if pre_signal2[i] == 1:
+                r.append(1)
+            elif pre_signal2[i] == -1:
+                r.append(-1)
         else:
             r.append(0)
     return r
 
 
-def case7(ti1:pd.Series, ti2:pd.Series, c1:float, c2:float): # eg. CMO
-    # pre_signal1:list = case1(ti1, ti2)
+def caseAROON(ti1:pd.Series, ti2:pd.Series, ti3:pd.Series, c1:float, c2:float, c3:float): # eg. aroon
+    pre_signal1:list = case2(ti1, c1, c1)
+    pre_signal2:list = case2(ti2, c2, c3)
+    pre_signal3:list = case2(ti3, c2, c3)
 
     r = []
     for i in range(len(ti1)):
-        if (ti1[i] > ti2[i] and ti1[i] > c1) or (ti1[i] < ti2[i] and ti2[i] > c1):
+        if pre_signal1[i] == 1 and (pre_signal2[i] == 1 or pre_signal3[i] == -1):
             r.append(1)
-        elif (ti1[i] < ti2[i] or ti1[i] < c1) or (ti1[i] > ti2[i] or ti2[i] < c1):
+        elif pre_signal1[i] == -1 and (pre_signal2[i] == -1 or pre_signal3[i] == 1):
             r.append(-1)
         else:
             r.append(0)
@@ -103,24 +105,26 @@ def case7(ti1:pd.Series, ti2:pd.Series, c1:float, c2:float): # eg. CMO
 
 if __name__ ==  '__main__':
     import matplotlib.pyplot as plt
-    # case 1: ti & ti
-    # case 2: ti & constant
-    # case 3: ti & (ti & c1)
-    # case 4: ti || (ti & c1)
- 
+
 
     with open('../stock/0050.TW/2009-08-30~2010-12-30/technical_indicator.json') as f:
         data = pd.DataFrame(json.load(f))
 
-    # r = case4(data['MACD'], data['MACDSIGNAL'], 0 ,0)
-    r = case6(data['AROONUP'], data['AROONDOWN'], 50, 50)
-    plt.plot(data.index, r, color='green' ,linewidth = 1.5, label='signal 1')
+    #  r = case4(data['MACD'], data['MACDSIGNAL'], 0 ,0)
+    r = caseAROON(data['AROONOSC'], data['AROONUP'], data['AROONDOWN'], 0, 70, 50)
+    plt.plot(data.index, r, color='black' ,linewidth = 5, label='signal 1')
 
-    # r = case7(data['AROONUP'], data['AROONDOWN'], 50, 50)
-    # plt.plot(data.index, r, color='red' ,linewidth = 1, label='signal 2')
+    r = case2(data['AROONOSC'], 0, 0)
+    plt.plot(data.index, r, linewidth = 1, label='osc')
 
-    plt.plot(data['AROONUP'], label="AROONUP")
-    plt.plot(data['AROONDOWN'], label='AROONDOWN')
+    r = case2(data['AROONUP'], 70 , 50)
+    plt.plot(data.index, r, linewidth = 1, label='up')
+    
+    r = case2(data['AROONDOWN'], 70 , 50)
+    plt.plot(data.index, r, linewidth = 1, label='down')
+
+    # plt.plot(data['AROONUP'], label="AROONUP")
+    # plt.plot(data['AROONDOWN'], label='AROONDOWN')
 
     plt.legend()
     plt.show()

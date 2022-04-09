@@ -30,9 +30,10 @@ class DownloadStockData():
                 os.makedirs(self.savepath)
                 print("Create folder path")
 
-            data.to_json(f"{self.savepath}/stockdata.json", orient='records')
-            data = pd.concat([pd.DataFrame(data.index).reset_index(drop=True), data.reset_index(drop=True)], axis=1)
-            data.to_json(f"{self.savepath}/origin_stockdata.json", orient='records')
+            data.to_json(f"{self.savepath}/StockData.json", orient='records')
+            # data = pd.concat([pd.DataFrame(data.index).reset_index(drop=True), data.reset_index(drop=True)], axis=1)
+            data = pd.DataFrame(data.index)
+            data.to_json(f"{self.savepath}/History.json", orient='records')
             # Save another data but with "Date"
 
             # Save the data as .json Type
