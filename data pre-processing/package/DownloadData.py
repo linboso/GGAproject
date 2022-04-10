@@ -6,8 +6,7 @@ from .SettingFile import SettingFile
 
 class DownloadStockData():
     def __init__(self) -> None:
-        setting = SettingFile()
-        setting = setting.Read(show=True)
+        setting = SettingFile().Read()
 
         self.stock_id = setting['StockID']
         self.start = setting['StartDate']

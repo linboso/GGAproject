@@ -12,8 +12,8 @@ from .SettingFile import SettingFile
 
 class TIValue():
     def __init__(self) -> None:
-        setting = SettingFile()
-        setting = setting.Read()
+        setting = SettingFile().Read()
+        
         self.stock_id = setting['StockID']
         self.start = setting['StartDate']
         self.end = setting['EndDate']
@@ -43,7 +43,10 @@ class TIValue():
         for _ti in self.ti_list: #selected n techical indicator
             try:
                 if not _ti in _ALL_TI_LIST:
-                    output = eval(f'abstract.{_ti[:2]}(df, timeperiod = {_ti[2:]})')
+                    for k in range(len(_ti)):
+                        if _ti[k].isdigit() == True:
+                            break
+                    output = eval(f'abstract.{_ti[:k]}(df, timeperiod = {_ti[k:]})')
                     #Talib not suport MA5, MA10, MAxx so need to use 'timeperiod' attr
                 else:
                     output = eval(f'abstract.{_ti}(df)') #eval is great Function!
@@ -53,10 +56,12 @@ class TIValue():
                 #merge Techical indicator value into main.json file
             except:
                 print(f"--> No such technical Inidicator like \"{_ti}\"\r\n")
-        #print(_df_with_ti)
-        _df_with_ti.to_json(f"{self.savepath}/TIvalue.json" ,orient='records') #save file 
-        print(f"Saving TIvalue.json file at {self.savepath}\r\n")
-
+        print(_df_with_ti.columns)
+        try:
+            _df_with_ti.to_json(f"{self.savepath}/TIvalue.json" ,orient='records') #save file 
+            print(f"Saving TIvalue.json file at {self.savepath}\r\n")
+        except:
+            print(f"Saving File Faild")
 
     def getTIValue(self):
         table = pd.DataFrame()

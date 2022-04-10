@@ -3,34 +3,10 @@ import os
 
 class SettingFile():
     def __init__(self) -> None:
-        pass
-
-    def Set(self, **value):
-        try:
-            setting = self.ReadSetting()
-            for i in value:
-                setting[str(i)] = str(value[i])
-        except:
-            print("File not exist")
-        try:
-            self.__SavingFile(setting)
-            print("Set successfuly")
-        except:
-            print("Saving setting failed")
-
-    def Read(self, show:bool = False):
         try:
             with open("./Setting.json") as f:
-                data = json.load(f)
-            if show:
-                print("============= Setting Data =============")
-                print("Stock ID: ", data["StockID"])
-                print("Start Date: ", data["StartDate"])
-                print("End Date: ", data["EndDate"])
-                print("Technical Indicator: ", data["TechnicalIndicator"])
-                print("========================================")
-                # print(data)
-            return data
+                    data = json.load(f)
+            self.data = data
         except:
             init_setting = {
                 "StockID":"0050.TW",
@@ -39,10 +15,27 @@ class SettingFile():
                 "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH"] } 
             #init setting format
             self.__SavingFile(init_setting)
-
+            self.data = init_setting
             print("...Creating Setting.json")
-            print("Reloading...")
-            return self.Read() #Reload data
+        
+    
+
+    def Set(self, **value):
+        try:
+            setting = self.data
+            for i in value:
+                setting[str(i)] = str(value[i])
+        except:
+            print("File not exist")
+        try:
+            self.__SavingFile(setting)
+            print("Change setting  successfully")
+        except:
+            print("Change setting failed")
+
+    def Read(self):
+        return self.data
+        
 
     def CheckPath(savepath):
         if not os.path.exists(savepath):
@@ -57,7 +50,18 @@ class SettingFile():
         else:
             return True
 
-    def __SavingFile(self, data:dict, path:str="./setting.json"):
+    def print(self):
+        data = self.data
+        print("============= Setting Data =============")
+        print("Stock ID: ", data["StockID"])
+        print("Start Date: ", data["StartDate"])
+        print("End Date: ", data["EndDate"])
+        print("Technical Indicator: ", data["TechnicalIndicator"])
+        print("========================================")
+
+
+    # __ 是 prvate 的用法 無法從外部使用
+    def __SavingFile(self, data:dict, path:str="./setting.json"): 
         try:
             with open(path, "w") as f:
                 json.dump(data, f) # save as .json file
@@ -67,8 +71,7 @@ class SettingFile():
 
 if __name__ == '__main__':
 # test function
-    baseEnv = SettingFile()
+    baseEnv = SettingFile().Read()
     # baseEnv.ReadSetting()
-    baseEnv.Set(StockID = "0050.TW")
-    baseEnv.Read(show=True)
-    # os.remove('./setting.json')# delete
+    # baseEnv.Set(StockID = "0050.TW")
+    print(baseEnv)

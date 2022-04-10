@@ -5,6 +5,9 @@
 	"TechnicalIndicator": [
 		"MA5",
 		"MA20",
+		"MA30",
+		"MAMA5",
+		"MAMA20",
 		"RSI",
 		"MACD",
 		"STOCH",

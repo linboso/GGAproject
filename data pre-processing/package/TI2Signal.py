@@ -1,4 +1,4 @@
-from turtle import delay
+from subprocess import list2cmdline
 import pandas as pd
 import json
 import os
@@ -18,22 +18,47 @@ class TI2Signal():
         self.readpath = f"stock/{self.stock_id}/{self.start}~{self.end}"
 
     def ProduceSignal(self):
-        with open('./package/case_package/TIformat.json', 'r', encoding="utf-8") as f:
-            ti_format = pd.DataFrame(json.load(f))
+        try:
+            with open('./package/case_package/TIformat.json', 'r', encoding="utf-8") as f:
+                ti_format = pd.DataFrame(json.load(f))
+        except:
+            print("Missing TIformat.json \tlocation: ./package/case_package/TIformat.json")
 
-        with open(f"{self.readpath}/TIvalue.json") as f:
-            TIvale = pd.DataFrame(json.load(f))
+        try:
+            with open(f"{self.readpath}/TIvalue.json") as f:
+                TIvale = pd.DataFrame(json.load(f))
+        except:
+            print(f"Missing TIvalue.json \tlocation: {self.readpath}/TIvalue.json")
 
-        with open(f"{self.readpath}/History.json") as f:
-            data = pd.DataFrame(json.load(f))
-
-        signal = tmp = []
+        try:
+            with open(f"{self.readpath}/History.json") as f:
+                data = pd.DataFrame(json.load(f))
+        except:
+            print(f"Missing History.json \tlocation: {self.readpath}/History.json")
         
-        for i in self.ti_list:
-            if i[:2] in ti_format and i not in ti_format:
-                tmp.append(i)
-            elif i in ti_format:
+        # above all are just make sure to get Essential Data Value
+        signal = []
+        tmp = {}
+        for i in self.ti_list: # 有被選擇的 TI list 
+            #e.g  假設 i = MA5 
+            # i[:2] == MA 確實 in ti format 裡面
+            # 但像是 MACD 的 [:2] 也是 MA 
+            # 所以 必須加上 i=MA5 not in ti format 裡面  
+            for k in range(len(i)):
+                if i[k].isdigit() == True:
+                    break
+
+            if i not in ti_format:
+                if i[:k] not in tmp:
+                    tmp[i[:k]] = []
+                tmp[i[:k]].append(i)
+                print(tmp)
+
+
+            else:
                 case = ti_format[i]['Case']
+                print(f"TI: {i} is belong to \t Case : {case}")
+                
                 if case == "2":
                     signal = Case.case2(
                         TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
@@ -77,11 +102,57 @@ class TI2Signal():
                         ti_format[i]["InputArray"]['C2'],           # C2
                         ti_format[i]["InputArray"]['C3']            # C3
                     )
-            signal = pd.DataFrame(signal)
-            signal.columns = [i] # name col
-            data = pd.concat([data, signal], axis=1)
-            data.to_json(f"{self.savepath}/Signal.json", orient='records')
-        os.remove(f"{self.savepath}/History.json")
+
+                signal = pd.DataFrame(signal)
+                signal.columns = [i] # name col
+                data = pd.concat([data, signal], axis=1)
+                data.to_json(f"{self.savepath}/Signal.json", orient='records')
+
+       # 等全部的 ma, sma ... 之類的指標都 append 到 tmp 裡面後再處理
+        for i in tmp:
+            combinaion = self.__combine(tmp[i])
+            print(f"{tmp[i]} \t {combinaion}")
+            for c in combinaion:
+                try:
+                    signal = Case.case1(
+                        TIvale[c[0]],
+                        TIvale[c[1]]
+                    ) 
+                    signal = pd.DataFrame(signal)
+                    signal.columns = [f"{c[0]}&{c[1]}"]
+                    data = pd.concat([data, signal], axis=1)
+                    data.to_json(f"{self.savepath}/Signal.json", orient='records')
+                except:
+                    print(f"TIValue has no {c[0]} or {c[1]} value")
+
+
+        os.remove(f"{self.savepath}/History.json") #用不到就刪掉  也可以不要刪
+    ##
+
+
+
+    def __combine(self, ti_list:list): 
+        # 利用 backtracking 做組合 
+        # 但是 要先確保 list 裡面的指標 要是 由小 --> 大 的排列方式
+        n = len(ti_list)
+        res = []
+
+        def backtrack(tmp, start):
+            
+            if len(tmp) == 2:
+                res.append(tmp[:])
+                return
+
+            for i in range(start, n):
+                tmp.append(ti_list[i])
+                backtrack(tmp,  i + 1)
+                tmp.pop()
+        
+        backtrack([], 0)
+        return res
+        
+
+
 
 
 
