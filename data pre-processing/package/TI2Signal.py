@@ -18,6 +18,7 @@ class TI2Signal():
         self.readpath = f"stock/{self.stock_id}/{self.start}~{self.end}"
 
     def ProduceSignal(self):
+        ti_format = TIvale = data = pd.DataFrame()
         try:
             with open('./package/case_package/TIformat.json', 'r', encoding="utf-8") as f:
                 ti_format = pd.DataFrame(json.load(f))
@@ -44,22 +45,26 @@ class TI2Signal():
             # i[:2] == MA 確實 in ti format 裡面
             # 但像是 MACD 的 [:2] 也是 MA 
             # 所以 必須加上 i=MA5 not in ti format 裡面  
-            for k in range(len(i)):
-                if i[k].isdigit() == True:
-                    break
 
             if i not in ti_format:
+                for k in range(len(i)):
+                    if i[k].isdigit() == True:
+                        break
                 if i[:k] not in tmp:
                     tmp[i[:k]] = []
                 tmp[i[:k]].append(i)
-                print(tmp)
-
+                # print(tmp)
 
             else:
                 case = ti_format[i]['Case']
                 print(f"TI: {i} is belong to \t Case : {case}")
-                
-                if case == "2":
+                if case == "1":
+                    signal = Case.case1(
+                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[i]["InputArray"]['ti2']], 
+                    )
+
+                elif case == "2":
                     signal = Case.case2(
                         TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
                         ti_format[i]["InputArray"]['C1'],           # C1
@@ -108,10 +113,10 @@ class TI2Signal():
                 data = pd.concat([data, signal], axis=1)
                 data.to_json(f"{self.savepath}/Signal.json", orient='records')
 
-       # 等全部的 ma, sma ... 之類的指標都 append 到 tmp 裡面後再處理
+       # 等全部的 ma, sma... 之類的指標都 一次append 到 tmp 裡面後再處理
         for i in tmp:
             combinaion = self.__combine(tmp[i])
-            print(f"{tmp[i]} \t {combinaion}")
+            print(f"{tmp[i]} >> before combination >> {combinaion}")
             for c in combinaion:
                 try:
                     signal = Case.case1(
@@ -124,9 +129,10 @@ class TI2Signal():
                     data.to_json(f"{self.savepath}/Signal.json", orient='records')
                 except:
                     print(f"TIValue has no {c[0]} or {c[1]} value")
-
-
-        os.remove(f"{self.savepath}/History.json") #用不到就刪掉  也可以不要刪
+            print(f"Finished all producing signal")
+            print(f"")
+        if os.path.exists(f"{self.savepath}/History.json"):
+            os.remove(f"{self.savepath}/History.json") #用不到就刪掉  也可以不要刪
     ##
 
 

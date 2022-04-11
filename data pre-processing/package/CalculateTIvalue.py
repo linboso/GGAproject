@@ -44,7 +44,7 @@ class TIValue():
             try:
                 if not _ti in _ALL_TI_LIST:
                     for k in range(len(_ti)):
-                        if _ti[k].isdigit() == True:
+                        if _ti[k].isdigit() == True: # 這邊需要改
                             break
                     output = eval(f'abstract.{_ti[:k]}(df, timeperiod = {_ti[k:]})')
                     #Talib not suport MA5, MA10, MAxx so need to use 'timeperiod' attr
@@ -56,7 +56,7 @@ class TIValue():
                 #merge Techical indicator value into main.json file
             except:
                 print(f"--> No such technical Inidicator like \"{_ti}\"\r\n")
-        print(_df_with_ti.columns)
+        print(f"計算出來的 數值有: {list(_df_with_ti.columns)}")
         try:
             _df_with_ti.to_json(f"{self.savepath}/TIvalue.json" ,orient='records') #save file 
             print(f"Saving TIvalue.json file at {self.savepath}\r\n")

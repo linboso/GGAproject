@@ -16,7 +16,7 @@ Setting.print()
 
 
 
-# DownloadStockData().StockDataDownload()
+DownloadStockData().StockDataDownload()
 # 下載 股票資料
 
 TIv = TIValue()
