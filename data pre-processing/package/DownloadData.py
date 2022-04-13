@@ -17,29 +17,30 @@ class DownloadStockData():
 
     def StockDataDownload(self):
         try:       
-            data = yf.download(self.stock_id, start = self.start, end = self.end)
+            data:pd.DataFrame = yf.download(self.stock_id, start = self.start, end = self.end)
             data.drop(['Adj Close'], axis=1, inplace=True)
             data.columns = ["open","high","low","close","volume"]
             # download Stock-data from yahoo
             # and drop 1 column, "Adj Close" which are no needs to use 
         except:
-            print("yfinance error")
+            print("Download Stock Data Failed")
+
         try:
             if not os.path.exists(self.savepath):
                 os.makedirs(self.savepath)
                 print("Create folder path")
-
+            
             data.to_json(f"{self.savepath}/StockData.json", orient='records')
             # data = pd.concat([pd.DataFrame(data.index).reset_index(drop=True), data.reset_index(drop=True)], axis=1)
             data = pd.DataFrame(data.index)
-            data.to_json(f"{self.savepath}/History.json", orient='records')
+            data.to_json(f"{self.savepath}/Date.json", orient='records')
             # Save another data but with "Date"
 
             # Save the data as .json Type
             # data name save as {Stock_Id}+{Star_day}+{End_day}.json
             print(f"Saving {self.stock_id} stock data file at {self.savepath} \r\n")
         except:
-            print("Dowload Stock Data Failed \r\n")
+            print("Fail to saving file \r\n")
         
 
 

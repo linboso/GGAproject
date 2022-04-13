@@ -32,10 +32,10 @@ class TI2Signal():
             print(f"Missing TIvalue.json \tlocation: {self.readpath}/TIvalue.json")
 
         try:
-            with open(f"{self.readpath}/History.json") as f:
+            with open(f"{self.readpath}/Date.json") as f:
                 data = pd.DataFrame(json.load(f))
         except:
-            print(f"Missing History.json \tlocation: {self.readpath}/History.json")
+            print(f"Missing Date.json \tlocation: {self.readpath}/Date.json")
         
         # above all are just make sure to get Essential Data Value
         signal = []
@@ -131,8 +131,7 @@ class TI2Signal():
                     print(f"TIValue has no {c[0]} or {c[1]} value")
             print(f"Finished all producing signal")
             print(f"")
-        if os.path.exists(f"{self.savepath}/History.json"):
-            os.remove(f"{self.savepath}/History.json") #用不到就刪掉  也可以不要刪
+       
     ##
 
 

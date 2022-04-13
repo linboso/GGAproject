@@ -8,6 +8,7 @@ from package.DownloadData import DownloadStockData
 from package.CalculateTIvalue import TIValue
 from package.TI2Signal import TI2Signal
 from package.SettingFile import SettingFile
+from package.Cov2Image import Simage
 
 
 
@@ -26,6 +27,8 @@ TIv.CalculateTIValue()
 
 TI2Signal().ProduceSignal()
 # 把value 轉換成 signal 
+
+Simage().StockImage()
 
 
 
