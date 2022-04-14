@@ -26,9 +26,10 @@ TIv.CalculateTIValue()
 # 都在 setting.json 檔案裡
 
 TI2Signal().ProduceSignal()
+TI2Signal().ProduceTalbe()
 # 把value 轉換成 signal 
 
-Simage().StockImage()
+# Simage().StockImage()
 
 
 

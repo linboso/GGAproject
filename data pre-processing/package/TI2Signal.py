@@ -1,4 +1,4 @@
-from subprocess import list2cmdline
+
 import pandas as pd
 import json
 import os
@@ -61,7 +61,7 @@ class TI2Signal():
                 if case == "1":
                     signal = Case.case1(
                         TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']], 
+                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
                     )
 
                 elif case == "2":
@@ -98,7 +98,7 @@ class TI2Signal():
                         TIvale[ti_format[i]["InputArray"]['ti3']],    # Get ti 3 Value
                         TIvale[ti_format[i]["InputArray"]['ti4']]     # Get ti 4 Value
                     )
-                elif case == "AROON":
+                elif case == "AROON": # Special
                     signal = Case.caseAROON(
                         TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
                         TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
@@ -129,14 +129,11 @@ class TI2Signal():
                     data.to_json(f"{self.savepath}/Signal.json", orient='records')
                 except:
                     print(f"TIValue has no {c[0]} or {c[1]} value")
-            print(f"Finished all producing signal")
-            print(f"")
-       
+            print(f"Finished all producing signal")   
     ##
 
 
-
-    def __combine(self, ti_list:list): 
+    def __combine(self, ti_list:list) -> list: 
         # 利用 backtracking 做組合 
         # 但是 要先確保 list 裡面的指標 要是 由小 --> 大 的排列方式
         n = len(ti_list)
@@ -157,6 +154,42 @@ class TI2Signal():
         return res
         
 
+    def ProduceTalbe(self):
+        with open(f"{self.readpath}/Signal.json") as f:
+            Signal = pd.DataFrame(json.load(f))
+
+        Signal_list = Signal.columns
+        Table = Signal["Date"]
+
+        for buy in Signal_list[1:]:
+            for sell in Signal_list[1:]: 
+                Buy_Signal = Signal[buy].values   # pd.Series to list
+                Sell_Signal = Signal[sell].values # List 計算上 速度比較快
+                
+                New_Signal = []
+                Flag:bool = False
+                for i in range(len(Buy_Signal)):
+                    if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
+                        if not Flag:
+                            New_Signal.append(-1)
+                            Flag = True
+                        else:
+                            New_Signal.append(1)
+                    elif Buy_Signal[i] == 1 and not Flag:
+                        New_Signal.append(1)
+                        Flag = True
+                    elif Sell_Signal[i] == -1 and Flag:
+                        New_Signal.append(-1)
+                        Flag = True
+                    else:
+                        New_Signal.append(0)
+
+                New_Signal = pd.DataFrame(New_Signal)
+                New_Signal.columns = [f"{buy}^{sell}"]
+                Table = pd.concat([Table, New_Signal], axis=1)
+                Table.to_json(f"{self.readpath}/Table.json", orient='records')
+            
+      
 
 
 

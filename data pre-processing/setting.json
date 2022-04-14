@@ -5,13 +5,8 @@
 	"TechnicalIndicator": [
 		"MA5",
 		"MA20",
-		"MA30",
-		"MAMA",
 		"RSI",
 		"MACD",
-		"STOCH",
-		"CMO",
-		"AROON",
-		"AROONOSC"
+		"STOCH"
 	]
 }
