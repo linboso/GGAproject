@@ -1,4 +1,5 @@
 
+from sqlite3 import Date
 import pandas as pd
 import json
 import os
@@ -154,12 +155,16 @@ class TI2Signal():
         return res
         
 
-    def ProduceTalbe(self):
+    def ProduceTable(self):
         with open(f"{self.readpath}/Signal.json") as f:
             Signal = pd.DataFrame(json.load(f))
 
+        with open(f"{self.readpath}/StockData.json") as f:
+            Data = pd.DataFrame(json.load(f))
+
         Signal_list = Signal.columns
-        Table = Signal["Date"]
+        Table = pd.concat([Signal['Date'], Data['close']], axis=1)
+        
 
         for buy in Signal_list[1:]:
             for sell in Signal_list[1:]: 

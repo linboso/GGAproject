@@ -1,14 +1,10 @@
 
-import numpy as np
-import pandas as pd
-import talib
-
-
 from package.DownloadData import DownloadStockData
 from package.CalculateTIvalue import TIValue
 from package.TI2Signal import TI2Signal
 from package.SettingFile import SettingFile
 from package.Cov2Image import Simage
+# from package.Ranking import
 
 
 
@@ -26,7 +22,7 @@ TIv.CalculateTIValue()
 # 都在 setting.json 檔案裡
 
 TI2Signal().ProduceSignal()
-TI2Signal().ProduceTalbe()
+TI2Signal().ProduceTable()
 # 把value 轉換成 signal 
 
 # Simage().StockImage()
