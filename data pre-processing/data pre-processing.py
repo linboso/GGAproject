@@ -4,7 +4,7 @@ from package.CalculateTIvalue import TIValue
 from package.TI2Signal import TI2Signal
 from package.SettingFile import SettingFile
 from package.Cov2Image import Simage
-# from package.Ranking import
+from package.Ranking import Ranking
 
 
 
@@ -27,6 +27,8 @@ TI2Signal().ProduceTable()
 
 # Simage().StockImage()
 
+Ranking().Top555() 
+# 執行 ranking 策略為 Top555 
 
 
 
