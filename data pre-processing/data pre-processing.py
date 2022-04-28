@@ -25,7 +25,9 @@ TI2Signal().ProduceSignal()
 TI2Signal().ProduceTable()
 # 把value 轉換成 signal 
 
-# Simage().StockImage()
+Simage().StockImage()
+Simage().SignalImage()
+
 
 Ranking().Top555() 
 # 執行 ranking 策略為 Top555 

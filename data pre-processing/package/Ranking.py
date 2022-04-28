@@ -3,7 +3,7 @@ import numpy as np
 import json
 import sys
 
-from SettingFile import SettingFile
+from .SettingFile import SettingFile
 
 class Ranking():
     def __init__(self) -> None:
@@ -15,7 +15,7 @@ class Ranking():
         self.savepath = f"stock/{self.stock_id}/{self.start}~{self.end}"
         self.readpath = f"stock/{self.stock_id}/{self.start}~{self.end}"
         
-        with open(f'../{self.readpath}/Table.json') as f:
+        with open(f'{self.readpath}/Table.json') as f:
             self.table = pd.DataFrame(json.load(f))
 
         
@@ -43,7 +43,6 @@ class Ranking():
                 elif Signal[i] == -1 and Flag:
                     retunrRate = (ClosePrice[i] - BuyPrice) / BuyPrice
                     MDD = min(MDD, retunrRate)
-                    # print(f"{TS} : ({ClosePrice[i]} - {BuyPrice}) / BuyPrice ==> {retunrRate} => MDD:{MDD}")
                     ARR += retunrRate
                     TF += 1
                     Flag = False
@@ -53,6 +52,7 @@ class Ranking():
             else:
                 MDD = 0
             Top555.append([ARR, MDD, TF])
+        
             
         # print(Top555)
         Top555 = pd.DataFrame(Top555, columns=["ARR", "MDD", "TF"])
@@ -72,14 +72,15 @@ class Ranking():
                     count += 1
 
         for i in Top555.index:
-            #全部有策略 拿出來確認
+            #全部的策略 拿出來確認
             if i not in Keep:
                 # 不在Keep裡面就 Drop
                 Top555.drop(i)
         
         # print(Top555)
 
-        Top555.to_json(f"../{self.savepath}/Top555.json", orient = 'index')
+        Top555.to_json(f"{self.savepath}/Top555.json", orient = 'index')
+        print("Finished TOP555 Ranking")
     
     def __minmax_norm(self, df:pd.DataFrame): # Min-Max normalize 標準化的一種 把數字 mapping 到 0 ~ 1
         return (df - df.min()) / (df.max() - df.min())

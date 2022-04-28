@@ -167,6 +167,7 @@ class TI2Signal():
         
 
         for buy in Signal_list[1:]:
+            print(f"========= {buy} =========")
             for sell in Signal_list[1:]: 
                 Buy_Signal = Signal[buy].values   # pd.Series to list
                 Sell_Signal = Signal[sell].values # List 計算上 速度比較快
@@ -193,6 +194,10 @@ class TI2Signal():
                 New_Signal.columns = [f"{buy}^{sell}"]
                 Table = pd.concat([Table, New_Signal], axis=1)
                 Table.to_json(f"{self.readpath}/Table.json", orient='records')
+                print(f"==> {sell}")
+            print()
+
+        print("Finished Producing TradingRule Table")
             
       
 

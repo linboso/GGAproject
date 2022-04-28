@@ -17,12 +17,12 @@ public class new_MODSTR {
 		int chooseReturnRate=15;
 		int chooseMDD=0;
 		int choosecount=0;
-		int part=100;//´X­Ó1
+		int part=100;//ï¿½Xï¿½ï¿½1
 		
-		int K = 3; //±NªÑ²¼¤À¬°K¸s, ¥Ø«e¥i¥H¶]ªº¦³K= 3, 4, 5, 6³£¥i¥H¥¿±`¹B§@
+		int K = 3; //ï¿½Nï¿½Ñ²ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½s, ï¿½Ø«eï¿½iï¿½Hï¿½]ï¿½ï¿½ï¿½ï¿½K= 3, 4, 5, 6ï¿½ï¿½ï¿½iï¿½Hï¿½ï¿½ï¿½`ï¿½Bï¿½@
 		int maxCaptial = 100000;
 		int pSize = 10; // popuation size
-		int numberofST= chooseReturnRate+chooseMDD+choosecount;
+		int numberofST= chooseReturnRate + chooseMDD + choosecount;
 		int generation = 100; 
 		double crossoverRate = 0.8;
 		double mutationRate = 0.03;
@@ -56,25 +56,25 @@ public class new_MODSTR {
 				String fileTEC =  Training[trte];
 				String TestfileTEC = Testing[trte];
 
-				int num=readTECInputData(fileTEC);//Åªtrainingªº¦³´X¤Ñ
-				int num1=readTECInputData(TestfileTEC);//ÅªTESTING¦³´X¤Ñ
-				String[][] inputDataTEC = readTECInputData1(fileTEC, num);//Åªtraining´X¦~ªº©Ò¦³¸ê®Æ
-				String[][] inputTestfileTEC = readTECInputData1(TestfileTEC, num1);//Åªtesting´X¦~ªº©Ò¦³¸ê®Æ
-				long startTime = System.currentTimeMillis(); // ¨ú±o²{¦bªº®É¶¡ (²@¬í) 
+				int num=readTECInputData(fileTEC);//Åªtrainingï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½
+				int num1=readTECInputData(TestfileTEC);//ÅªTESTINGï¿½ï¿½ï¿½Xï¿½ï¿½
+				String[][] inputDataTEC = readTECInputData1(fileTEC, num);//Åªtrainingï¿½Xï¿½~ï¿½ï¿½ï¿½Ò¦ï¿½ï¿½ï¿½ï¿½
+				String[][] inputTestfileTEC = readTECInputData1(TestfileTEC, num1);//Åªtestingï¿½Xï¿½~ï¿½ï¿½ï¿½Ò¦ï¿½ï¿½ï¿½ï¿½
+				long startTime = System.currentTimeMillis(); // ï¿½ï¿½ï¿½oï¿½{ï¿½bï¿½ï¿½ï¿½É¶ï¿½ (ï¿½@ï¿½ï¿½) 
 
 				double[] a=new double[20];
 				double[] b=new double[20];
 				double[] c=new double[20];
 				double[] d=new double[20];
 				
-				double STOPPP[]={0.0, 0.05, 0.10, 0.15, 0.05, 0.05, 0.10, 0.15, 0.15}; // °±§QÂI
-				double STOPLOSE[]={0.0, -0.05, -0.10, -0.15, -0.10, -0.15, -0.05, -0.05, -0.10}; // °±·lÂI
+				double STOPPP[]={0.0, 0.05, 0.10, 0.15, 0.05, 0.05, 0.10, 0.15, 0.15}; // ï¿½ï¿½ï¿½Qï¿½I
+				double STOPLOSE[]={0.0, -0.05, -0.10, -0.15, -0.10, -0.15, -0.05, -0.05, -0.10}; // ï¿½ï¿½ï¿½lï¿½I
 				Hashtable<String,Hashtable> input = new Hashtable<String,Hashtable>();
 				Hashtable<String,Hashtable> input1= new Hashtable<String,Hashtable>();
 				
 				for(int C=0;C<=8;C++){
 					input=pop(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input);
-					input1=pop1(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input1);//¥[¥æ©öµ|ªº
+					input1=pop1(STOPPP[C],STOPLOSE[C],inputDataTEC, inputTestfileTEC, num,chooseReturnRate,chooseMDD,choosecount,num1,input1);//ï¿½[ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½
 				}
 				for(int C=0;C<=8;C++){
 				
@@ -109,9 +109,9 @@ public class new_MODSTR {
 									a[r]=first;
 									double secound[]=printAChromosome1(population, findbestChromosome(population),input, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
 
-									b[r]=secound[0];//¥­§¡
-									c[r]=secound[1];//³Ì¤j
-									d[r]=secound[2];//³Ì¤p
+									b[r]=secound[0];//ï¿½ï¿½ï¿½ï¿½
+									c[r]=secound[1];//ï¿½Ì¤j
+									d[r]=secound[2];//ï¿½Ì¤p
 									writeExperimentValuetoFile(population, br, i, System.currentTimeMillis() - startTime);
 									br.close();
 								}
@@ -139,7 +139,7 @@ public class new_MODSTR {
 						}
 						population.clear();
 					}
-					//¥[¥æ©öµ|
+					//ï¿½[ï¿½ï¿½ï¿½ï¿½|
 						for(int r=10;r<20;r++){
 				//			String s = Integer.toString(r);
 							BufferedWriter br = new BufferedWriter(new FileWriter("FinalResult"+"["+ STOPPP[C]+","+STOPLOSE[C]+"]"+Testing[trte]+"("+Training[trte]+")"+r+".txt"));
@@ -168,9 +168,9 @@ public class new_MODSTR {
 										a[r]=first;
 										double secound[]=printAChromosome1(population, findbestChromosome(population),input1, Finalr,maxCaptial, STOPPP[C],STOPLOSE[C]);
 										
-										b[r]=secound[0];//¥­§¡
-										c[r]=secound[1];//³Ì¤j
-										d[r]=secound[2];//³Ì¤p
+										b[r]=secound[0];//ï¿½ï¿½ï¿½ï¿½
+										c[r]=secound[1];//ï¿½Ì¤j
+										d[r]=secound[2];//ï¿½Ì¤p
 										writeExperimentValuetoFile(population, br, i, System.currentTimeMillis() - startTime);
 										br.close();
 									}
@@ -222,9 +222,9 @@ public class new_MODSTR {
 						Finalr.write("first="+a[i]+"AVG="+b[i]+"  MAX= "+c[i]+"  min="+d[i]);
 						Finalr.newLine();
 						avg1=avg1+a[i];
-						avg2=avg2+b[i];//¥­§¡
-						avg3=avg3+c[i];//³Ì¤j
-						avg4=avg4+d[i];//³Ì¤p
+						avg2=avg2+b[i];//ï¿½ï¿½ï¿½ï¿½
+						avg3=avg3+c[i];//ï¿½Ì¤j
+						avg4=avg4+d[i];//ï¿½Ì¤p
 					
 						Maxnum[i] =c[i];
 						Minnum[i]=d[i];
@@ -285,9 +285,9 @@ public class new_MODSTR {
 						Finalr.newLine();
 						
 						avg1=avg1+a[i];//Final best traning
-						avg2=avg2+b[i];//¥­§¡
-						avg3=avg3+c[i];//³Ì¤j
-						avg4=avg4+d[i];//³Ì¤p
+						avg2=avg2+b[i];//ï¿½ï¿½ï¿½ï¿½
+						avg3=avg3+c[i];//ï¿½Ì¤j
+						avg4=avg4+d[i];//ï¿½Ì¤p
 						
 						Maxnum[i-10] =c[i];
 						Minnum[i-10]=d[i];
@@ -353,7 +353,7 @@ public class new_MODSTR {
 		double Rank1count[]=new double[100];
 		int co = 7;
 
-		String stopp=stopPP+","+stoplose; // ¨S¥Î
+		String stopp=stopPP+","+stoplose; // ï¿½Sï¿½ï¿½
 		System.out.println( "*&**"+stopPP+","+stoplose);
 
 		ArrayList<Integer> alre =new ArrayList<>(); //
@@ -390,8 +390,8 @@ public class new_MODSTR {
 				int Count =count(str);
 				double ReturnRate=mareturnrate(str);
 				double ReturnRate1=mareturnrate1(str);
-				double MDD=MDD(str,Count);//»ù®t¨ú³Ì¤j«È²¤Á«·l
-				double MDD1=MDD1(str,Count);//¥H«eªº
+				double MDD=MDD(str,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½È²ï¿½ï¿½ï¿½ï¿½l
+				double MDD1=MDD1(str,Count);//ï¿½Hï¿½eï¿½ï¿½
 			 
 			//System.out.println(num+","+Count+","+Return+","+Return1+","+ReturnRate+","+ReturnRate1+","+PPT+","+PPT1+","+count1+","+count2+","+WinRate+","+WinRate1+","+WinAve+","+WinAve1+","+LosAve+","+LosAve1+","+MDD+","+tax+","+onceReturnRate);
 			//System.out.println("OOO"+PF);
@@ -403,7 +403,7 @@ public class new_MODSTR {
 				Rank1count[co-7]=co-6;
 				
 				//Rank1[co-46][1]=ReturnRate;
-				Rank1[co-7][0]=co-6;//²Ä´X­Óµ¦²¤
+				Rank1[co-7][0]=co-6;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 				Rank1[co-7][1]=ReturnRate;
 				Rank1[co-7][2]=MDD;
 				Rank1[co-7][3]=Count;
@@ -465,13 +465,13 @@ public class new_MODSTR {
 					Hashtable<String,double[][]> store = new Hashtable<String,double[][]>();
 
 					for(int i=0;i<alre.size();i++){
-						co=alre.get(i);//²Ä´X­Óµ¦²¤(±q15­Óµ¦²¤¿ï¥X)
-						storea[i][0]=co;//²Ä´X­Óµ¦²¤
+						co=alre.get(i);//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½(ï¿½q15ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½X)
+						storea[i][0]=co;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 						storea[i][1]=Rank1[co-1][3];
 						storea[i][2]=Rank1[co-1][1];
 						storea[i][3]=Rank1[co-1][2];
 						if(storea[i][1]==999999||storea[i][2]==-999999||storea[i][3]==-999999){
-							storea[i][0]=co;//²Ä´X­Óµ¦²¤
+							storea[i][0]=co;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 							storea[i][1]=0;
 							storea[i][2]=0;
 							storea[i][3]=0;
@@ -483,7 +483,7 @@ public class new_MODSTR {
 							str1= STR(inputTestfileTEC, num1,co);
 						}
 						if(str1.size()==0){
-							storeb[i][0]=co-6;//²Ä´X­Óµ¦²¤(1-15)
+							storeb[i][0]=co-6;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½(1-15)
 							storeb[i][1]=0;
 							storeb[i][2]=0;
 							storeb[i][3]=0;
@@ -492,8 +492,8 @@ public class new_MODSTR {
 							int Count =count(str1);
 							double ReturnRate=mareturnrate(str1);
 							double ReturnRate1=mareturnrate1(str1);
-							double MDD=MDD(str1,Count);//»ù®t¨ú³Ì¤jµ¦²¤Á«·l
-							double MDD1=MDD1(str1,Count);//»ù®t¨ú³Ì¤jµ¦²¤Á«·l-tax
+							double MDD=MDD(str1,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½l
+							double MDD1=MDD1(str1,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½l-tax
 							storeb[i][0]=co-6;
 							storeb[i][1]=Count;
 							storeb[i][2]=ReturnRate;
@@ -520,7 +520,7 @@ public class new_MODSTR {
 		rank[indexB] = tmp;
 	}
 
-	public static int readTECInputData(String fileName) {//Åª¥X¦³´X¤Ñ
+	public static int readTECInputData(String fileName) {//Åªï¿½Xï¿½ï¿½ï¿½Xï¿½ï¿½
 		int i=0;
 		try{
 			BufferedReader br =  new BufferedReader(new FileReader(fileName));
@@ -533,7 +533,7 @@ public class new_MODSTR {
 		return i;
 	}
 
-	public static String[][] readTECInputData1(String fileTEC, int num) {//©Ò¦³¸ê®Æ¦s°_¨Ó
+	public static String[][] readTECInputData1(String fileTEC, int num) {//ï¿½Ò¦ï¿½ï¿½ï¿½Æ¦sï¿½_ï¿½ï¿½
 		//System.out.println(num);
 		String[][] inputData = new String[num][107];
 		
@@ -582,7 +582,7 @@ public class new_MODSTR {
 				int[] R = new int [K];
 				int i=0;
 				int value=0;
-				while(i<K){//ÀH¾÷K­Ó¤£¦Pªº¶Ã¼Æ
+				while(i<K){//ï¿½Hï¿½ï¿½Kï¿½Ó¤ï¿½ï¿½Pï¿½ï¿½ï¿½Ã¼ï¿½
 					if(i==0){
 						R[i] = (int) (Math.random()*(K+part));
 					}else{
@@ -592,7 +592,7 @@ public class new_MODSTR {
 								j=-1;
 								value = (int) (Math.random()*(K+part));
 							}
-						} //ÅçÃÒvalue ¬O§_¤w¦s¦b
+						} //ï¿½ï¿½ï¿½ï¿½value ï¿½Oï¿½_ï¿½wï¿½sï¿½b
 						R[i]=value; 
 					}
 					i++;
@@ -611,10 +611,10 @@ public class new_MODSTR {
 					else
 						weight=weight+"1";
 					count=0;
-				}// ¥Î0 °Ï¤À k ¸sªºÅv­«
+				}// ï¿½ï¿½0 ï¿½Ï¤ï¿½ k ï¿½sï¿½ï¿½ï¿½vï¿½ï¿½
 		//	AL.add(weight);
 				int count1=0;
-				double[] CO=new double[K+1]; //­Ó§Oweight ªºªø«×
+				double[] CO=new double[K+1]; //ï¿½Ó§Oweight ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				String a=weight;
 					
 				String[] aa=a.split("0");
@@ -625,8 +625,8 @@ public class new_MODSTR {
 				population.get(""+t).strategyweight.add(weight);
 
 				for(int u=0;u<K+1;u++){
-					population.get(""+t).strategyweight.add(( (part/(a.length()-K)) *CO[u])/part); // ­Ó§Oªº %
-					//=>> ­Ó§Oªºªø«× / part
+					population.get(""+t).strategyweight.add(( (part/(a.length()-K)) *CO[u])/part); // ï¿½Ó§Oï¿½ï¿½ %
+					//=>> ï¿½Ó§Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / part
 				}
 			 
 			}
@@ -637,7 +637,7 @@ public class new_MODSTR {
 		
 	static boolean check_K_NonEmptyGroup(chromosome chro, int K) {
 		boolean flag = false;
-		if(chro.groupPart.size()!=K) flag = true ; //µ¥©óªº¸Ü·|¦^¶Çfalse,¤£µ¥©ó¦^¶Çtrue (me)
+		if(chro.groupPart.size()!=K) flag = true ; //ï¿½ï¿½ï¿½óªº¸Ü·|ï¿½^ï¿½ï¿½false,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½true (me)
 		return flag;
 	}
 	private static void outPutInitialChromosome(Hashtable<String, chromosome> population, File f, int K) {
@@ -714,17 +714,17 @@ public class new_MODSTR {
 			String aa[]=new String[4];
 			String s = String.valueOf(i);
 			if(!inputDataTEC[i][count].equals("")){
-				aa[0]=s;//½s¸¹
-				aa[1]=inputDataTEC[i][0];//¤é´Á
+				aa[0]=s;//ï¿½sï¿½ï¿½
+				aa[1]=inputDataTEC[i][0];//ï¿½ï¿½ï¿½
 				aa[2]=inputDataTEC[i][count];//buy or sell
-				aa[3]=inputDataTEC[i+1][1];//¹j¤ÑªºOPEN PRICEu
+				aa[3]=inputDataTEC[i+1][1];//ï¿½jï¿½Ñªï¿½OPEN PRICEu
 				a.add(aa);
 			}
 		}
 		
 		for(int j=0;j<a.size();j++){//meet first 1
 			String st[]=a.get(j);
-			if(st[2].equals("1")){//st[2]¬Osignal array
+			if(st[2].equals("1")){//st[2]ï¿½Osignal array
 				b.add(st);
 				break;
 			}
@@ -746,7 +746,7 @@ public class new_MODSTR {
 				int n1=Integer.parseInt(st1[0]);
 				double P=Double.parseDouble(st[3]);
 				double P1=Double.parseDouble(st1[3]);
-				if(n>n1){//²Ä¤@­Ó1¥H«eªº0¤£ºÞ
+				if(n>n1){//ï¿½Ä¤@ï¿½ï¿½1ï¿½Hï¿½eï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½
 					if(!st1[2].equals(st[2])){
 						if(st[2].equals("10")){
 							if(st1[2].equals("1")&&(((P-P1)/P1)>stopPP||((P-P1)/P1)<stoplose)){
@@ -776,7 +776,7 @@ public class new_MODSTR {
 		}
 
 		String ss[]=b.get(b.size()-1);
-		if(ss[2].equals("1")){//³Ì«á¤@­Ó¬O¶Rªº¸Ü
+		if(ss[2].equals("1")){//ï¿½Ì«ï¿½@ï¿½Ó¬Oï¿½Rï¿½ï¿½ï¿½ï¿½
 			for(int i=0;i<b.size()-1;i++){
 				String st[]=b.get(i);
 				c.add(st);
@@ -784,7 +784,7 @@ public class new_MODSTR {
 			for(int i=0;i<c.size();i++){
 				String st[]=c.get(i);
 				for(int u=0;u<st.length;u++){
-					//System.out.print(st[u]+"¡@");
+					//System.out.print(st[u]+"ï¿½@");
 				}//System.out.println();
 			}
 			return c;
@@ -793,7 +793,7 @@ public class new_MODSTR {
 			for(int i=0;i<b.size();i++){
 				String st[]=b.get(i);
 				for(int u=0;u<st.length;u++){
-					//System.out.print(st[u]+"¡@");
+					//System.out.print(st[u]+"ï¿½@");
 				}//System.out.println();
 			}
 			return b;
@@ -813,7 +813,7 @@ public class new_MODSTR {
 				aa[0]=s;
 				aa[1]=inputDataTEC[i][0];
 				aa[2]=inputDataTEC[i][count];
-				aa[3]=inputDataTEC[i+1][1];//¹j¤ÑªºOPEN PRICE
+				aa[3]=inputDataTEC[i+1][1];//ï¿½jï¿½Ñªï¿½OPEN PRICE
 				a.add(aa);
 			}
 		}
@@ -833,7 +833,7 @@ public class new_MODSTR {
 	/*	for(int i=0;i<b.size();i++){
 			String st[]=b.get(i);
 			for(int u=0;u<st.length;u++){
-				System.out.print(st[u]+"¡@");
+				System.out.print(st[u]+"ï¿½@");
 			}System.out.println();
 		}*/
 		if(b.size()==0){
@@ -1019,7 +1019,7 @@ public class new_MODSTR {
 			while(al.size()<chooseReturnRate-coo1){
 				int j=(int) ((Math.random()*x)+coo1);
 				if(al.contains(j)) 
-						continue;     //­«½Æªº¤£¥[¤J
+						continue;     //ï¿½ï¿½ï¿½Æªï¿½ï¿½ï¿½ï¿½[ï¿½J
 				else
 					al.add(j);
 					
@@ -1061,7 +1061,7 @@ public class new_MODSTR {
 			while(al.size()<choosecount-coo1){
 				int j=(int) ((Math.random()*x)+coo1);
 				if(al.contains(j))
-					continue;     //­«½Æªº¤£¥[¤J
+					continue;     //ï¿½ï¿½ï¿½Æªï¿½ï¿½ï¿½ï¿½[ï¿½J
 				else
 					al.add(j);
 			}
@@ -1112,7 +1112,7 @@ public class new_MODSTR {
 		
 			//1. Find all stock portfolio combinations
 			ArrayList<String> possibleStockCombination = new ArrayList<String>();
-			possibleStockCombination = getCombination(st, ht.size());//¥Ø«e¥u¦³K=3,4,5,6 µ²ªG·|¥¿½T
+			possibleStockCombination = getCombination(st, ht.size());//ï¿½Ø«eï¿½uï¿½ï¿½K=3,4,5,6 ï¿½ï¿½ï¿½Gï¿½|ï¿½ï¿½ï¿½T
 			double roi=0;
 			double risk=0;
 			double suitability=0;
@@ -1156,7 +1156,7 @@ public class new_MODSTR {
 	}
 	private static ArrayList<String> getCombination(String[][] st, int size) {
 		ArrayList<String> combineString = new ArrayList<String>();
-		//¦¹ªk¥u¯à­­¨îK=6ªº®É­Ô¨Ï¥Î
+		//ï¿½ï¿½ï¿½kï¿½uï¿½à­­ï¿½ï¿½K=6ï¿½ï¿½ï¿½É­Ô¨Ï¥ï¿½
 		if(size==6){
 			for(int j=0; j<st[0].length; j++){
 				String st1 = st[0][j];
@@ -1189,7 +1189,7 @@ public class new_MODSTR {
 				
 			}
 		}
-		//¦¹ªk¥u¯à­­¨îK=5ªº®É­Ô¨Ï¥Î
+		//ï¿½ï¿½ï¿½kï¿½uï¿½à­­ï¿½ï¿½K=5ï¿½ï¿½ï¿½É­Ô¨Ï¥ï¿½
 		if(size==5){
 			for(int j=0; j<st[0].length; j++){
 				String st1 = st[0][j];
@@ -1217,7 +1217,7 @@ public class new_MODSTR {
 			}
 		}
 
-		//¦¹ªk¥u¯à­­¨îK=4ªº®É­Ô¨Ï¥Î
+		//ï¿½ï¿½ï¿½kï¿½uï¿½à­­ï¿½ï¿½K=4ï¿½ï¿½ï¿½É­Ô¨Ï¥ï¿½
 		if(size==4){
 			for(int j=0; j<st[0].length; j++){
 				String st1 = st[0][j];
@@ -1241,7 +1241,7 @@ public class new_MODSTR {
 			}
 		}
 				
-				//¦¹ªk¥u¯à­­¨îK=3ªº®É­Ô¨Ï¥Î
+				//ï¿½ï¿½ï¿½kï¿½uï¿½à­­ï¿½ï¿½K=3ï¿½ï¿½ï¿½É­Ô¨Ï¥ï¿½
 		if(size==3){
 			for(int j=0; j<st[0].length; j++){
 				String st1 = st[0][j];
@@ -1271,8 +1271,8 @@ public class new_MODSTR {
 			//	System.out.print("stockNum"+stockNum);
 				double a = inputData[stockNum][2];//Return rate
 				
-				double c = Double.parseDouble(strategyweight.get(j).toString());//Åv­«
-				double d = a*c*maxCaptial;//Return*Åv­«
+				double c = Double.parseDouble(strategyweight.get(j).toString());//ï¿½vï¿½ï¿½
+				double d = a*c*maxCaptial;//Return*ï¿½vï¿½ï¿½
 				roi =roi+d;
 		//	System.out.print(" a ="+ a +" b ="+ b +" c ="+ c +" d ="+ d+" ROI="+((b-a)*(c)+d*(c)));
 		//		System.out.print("stockNum"+stockNum+" a ="+ a +" c ="+ c +" d ="+ d +" ROI="+roi);
@@ -1321,7 +1321,7 @@ public class new_MODSTR {
 	}
 
 	private static void writeExperimentValuetoFile(Hashtable<String, chromosome> population, BufferedWriter br, int GeneNum, long Time)throws IOException {
-		   //­pºâ¥­§¡­È
+		   //ï¿½pï¿½â¥­ï¿½ï¿½ï¿½ï¿½
 		   double sumFitness = 0, sumreturn= 0, sumBallance = 0,  sumrisk = 0, sumWB = 0;
 		   int pSize = population.size();
 		   for(int i=0; i<population.size(); i++){
@@ -1333,17 +1333,17 @@ public class new_MODSTR {
 			   /*sumDiss += population.get(""+i).fitness[5];*/
 		   } 
 		   
-		   //¿é¥X¦ÜÀÉ®×
-		   //1.¥[·s°Ñ¼Æ
+		   //ï¿½ï¿½Xï¿½ï¿½ï¿½É®ï¿½
+		   //1.ï¿½[ï¿½sï¿½Ñ¼ï¿½
 		   br.write(GeneNum + " "+ sumFitness + " "+ sumreturn + " "+ sumBallance+" "+sumrisk+" "+sumWB+" "+Time);
-		   //2.¨S¥[¥ô¦ó°Ñ¼Æ (³Ì­ì©lªº)
+		   //2.ï¿½Sï¿½[ï¿½ï¿½ï¿½ï¿½Ñ¼ï¿½ (ï¿½Ì­ï¿½lï¿½ï¿½)
 //			   br.write(GeneNum + " "+ (sumFitness/pSize) + " "+ (sumPortfolioSatisfy/pSize) + " "+ (sumBallance/pSize)+" "+Time);
 		   br.newLine();
 			
 		}
 		
 	static Hashtable<String, chromosome> executeSelectionOperator(Hashtable<String, chromosome> chro, int pSize){
-		//¶}©l¥Hµ×­^¿ï¾Üªk½Æ»schromosome
+		//ï¿½}ï¿½lï¿½Hï¿½×­^ï¿½ï¿½Üªkï¿½Æ»schromosome
 		Hashtable<String, chromosome> afterSelection = new Hashtable<String, chromosome>();
 		for(int i=0; i<pSize; i++){
 			afterSelection.put(""+i, findMaxFitness(chro));
@@ -1376,13 +1376,13 @@ public class new_MODSTR {
 	static Hashtable<String, chromosome> executeCrossoverOperator(Hashtable<String, chromosome> population, double cRate,int K) {
 		
 		int pupSize = population.size();
-		//­pºâÀ³°µ¥æ°tªº¬V¦âÅé­Ó¼Æ
+		//ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Vï¿½ï¿½ï¿½ï¿½Ó¼ï¿½
 		int CrossoverQuantity=(int)(pupSize*cRate);
 		if(CrossoverQuantity%2!=0) CrossoverQuantity=CrossoverQuantity-1;
 		//System.out.println("totalCrossoverQuantity="+totalCrossoverQuantity);
 
 
-		//§ä¥X¤£­«½Æªº¥æ°t¬V¦âÅé
+		//ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Æªï¿½ï¿½ï¿½tï¿½Vï¿½ï¿½ï¿½ï¿½
 		int crossoverCNumber[]=new int[CrossoverQuantity];
 		for(int i=0; i<CrossoverQuantity; i++)	{
 			crossoverCNumber[i]=(int)(Math.random()*pupSize);
@@ -1394,7 +1394,7 @@ public class new_MODSTR {
 		int currentNum = pupSize;
 		for(int i=0; i<CrossoverQuantity; i+=2){
 //				//for write example
-//				if(i==0){//Print°µcrossoverªº²Ä¤@²Õ¨â­Ó¬V¦âÅé
+//				if(i==0){//Printï¿½ï¿½crossoverï¿½ï¿½ï¿½Ä¤@ï¿½Õ¨ï¿½Ó¬Vï¿½ï¿½ï¿½ï¿½
 //					System.out.println("\ncrossover:");
 //					for(int k=i; k<=i+1; k++){
 //						for(int j=0; j<population.get(""+i).groupPart.size(); j++)
@@ -1405,11 +1405,11 @@ public class new_MODSTR {
 //					}
 //				}
 			
-			//°w¹ïstock portfolio part§@¥æ°t
+			//ï¿½wï¿½ï¿½stock portfolio partï¿½@ï¿½ï¿½t
 			chromosome[] temp;
 			temp = onePointCO_strategyweight(population.get(""+crossoverCNumber[i]), population.get(""+crossoverCNumber[i+1]),K);
 			//for write example
-			//if(i==0){//Print°µcrossoverªº²Ä¤@²Õ¨â­Ó¬V¦âÅé
+			//if(i==0){//Printï¿½ï¿½crossoverï¿½ï¿½ï¿½Ä¤@ï¿½Õ¨ï¿½Ó¬Vï¿½ï¿½ï¿½ï¿½
 //					System.out.println("After portfolio part crossover:");
 //				for(int k=0; k<=1; k++){
 //						for(int j=0; j<population.get(""+i).groupPart.size(); j++)
@@ -1420,10 +1420,10 @@ public class new_MODSTR {
 //					}
 //				}
 			
-			//°w¹ïgrouping part§@¥æ°t
+			//ï¿½wï¿½ï¿½grouping partï¿½@ï¿½ï¿½t
 			temp = crossover_GroupingPart(temp);
 			//for write example
-//				if(i==0){//Print°µcrossoverªº²Ä¤@²Õ¨â­Ó¬V¦âÅé
+//				if(i==0){//Printï¿½ï¿½crossoverï¿½ï¿½ï¿½Ä¤@ï¿½Õ¨ï¿½Ó¬Vï¿½ï¿½ï¿½ï¿½
 //					System.out.println("new chromosome:"+(i/2+1));
 //					System.out.println("After group part crossover:");
 //					for(int k=0; k<=1; k++){
@@ -1436,7 +1436,7 @@ public class new_MODSTR {
 //					System.out.println();
 //				}
 			
-			//System.out.println("grouping part§@¥æ°t");
+			//System.out.println("grouping partï¿½@ï¿½ï¿½t");
 			for(int j=0; j<temp.length; j++)
 				population.put(""+(currentNum++), temp[j]);
 		
@@ -1449,11 +1449,11 @@ public class new_MODSTR {
 //			for(int i=0;i<chro[1].groupPart.size();i++)
 //				System.out.println("chro[1]_Group"+i+": "+chro[1].groupPart.get(""+i).toString());
 
-		//½Æ»sbase chromosome
+		//ï¿½Æ»sbase chromosome
 		chromosome chroBase = copyOneChromosome(chro[0]);
-		//Base chromosome, ¿ï¥X´¡¤J°_ÂI
+		//Base chromosome, ï¿½ï¿½Xï¿½ï¿½ï¿½Jï¿½_ï¿½I
 		int indexBase = (int)(chro[0].groupPart.size()*Math.random());
-		//inserted chromosome, ¿ï¥X¤Á³Î°_ÂI»P²×ÂI
+		//inserted chromosome, ï¿½ï¿½Xï¿½ï¿½ï¿½Î°_ï¿½Iï¿½Pï¿½ï¿½ï¿½I
 		int indexCutSequenceStart;
 		int indexSequenceEnd;
 		
@@ -1463,7 +1463,7 @@ public class new_MODSTR {
 				
 		}while(indexCutSequenceStart>=indexSequenceEnd);
 		//System.out.println("PP");
-		//±qinserted chromosome¨ú¥X¥²»Ý´¡¤Jbase chromosomeªº¸s²Õ
+		//ï¿½qinserted chromosomeï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Ý´ï¿½ï¿½Jbase chromosomeï¿½ï¿½ï¿½sï¿½ï¿½
 		Hashtable ht = new Hashtable();
 		int a = 0;
 		for(int i=indexCutSequenceStart; i<indexSequenceEnd; i++){
@@ -1489,7 +1489,7 @@ public class new_MODSTR {
 		}*/
 		
 	//bug-------------------------------------------------------------------
-		//®Ú¾Ú±ý¥[¤JªºgroupªºªÑ²¼, ±Nbase chromosome¦³¥]§tªºªÑ²¼±q§R°£
+		//ï¿½Ú¾Ú±ï¿½ï¿½[ï¿½Jï¿½ï¿½groupï¿½ï¿½ï¿½Ñ²ï¿½, ï¿½Nbase chromosomeï¿½ï¿½ï¿½]ï¿½tï¿½ï¿½ï¿½Ñ²ï¿½ï¿½qï¿½Rï¿½ï¿½
 //		    for(Enumeration e = ht.keys();e.hasMoreElements();){
 //		    	String st = e.nextElement().toString();
 //		    	String[] stArray=ht.get(st).toString().split(",");
@@ -1505,7 +1505,7 @@ public class new_MODSTR {
 //		    	}
 //		    }
 		
-		//Debug  °²¦pstArray[j]=0 ;¹w´Á 0,10,=>10,¦Ó¤£¬O 1, 
+		//Debug  ï¿½ï¿½ï¿½pstArray[j]=0 ;ï¿½wï¿½ï¿½ 0,10,=>10,ï¿½Ó¤ï¿½ï¿½O 1, 
 		for(Enumeration e = ht.keys();e.hasMoreElements();){
 			String st = e.nextElement().toString();
 			String[] stArray=ht.get(st).toString().split(",");
@@ -1556,16 +1556,16 @@ public class new_MODSTR {
 		if(aList.size()>chro[0].groupPart.size()){
 			int removalNumGroup = aList.size() - chro[0].groupPart.size();
 			for(int i=0; i<removalNumGroup;i++){
-				aList = adjustNumberofGroup(aList, -1);//-1ªí¥Ü­n´î¤Ögroup¼Æ¥Ø
-				//System.out.println("´î¤Ögroup¼Æ¥Ø");
+				aList = adjustNumberofGroup(aList, -1);//-1ï¿½ï¿½ï¿½Ü­nï¿½ï¿½ï¿½groupï¿½Æ¥ï¿½
+				//System.out.println("ï¿½ï¿½ï¿½groupï¿½Æ¥ï¿½");
 			}
 		}
 		
 		if(aList.size()<chro[0].groupPart.size()){
 			int addNumGroup =  chro[0].groupPart.size() - aList.size();
 			for(int i=0; i<addNumGroup;i++){
-				aList = adjustNumberofGroup(aList, 1);//1ªí¥Ü­n¼W¥[group¼Æ¥Ø
-				//System.out.println("¼W¥[group¼Æ¥Ø");
+				aList = adjustNumberofGroup(aList, 1);//1ï¿½ï¿½ï¿½Ü­nï¿½Wï¿½[groupï¿½Æ¥ï¿½
+				//System.out.println("ï¿½Wï¿½[groupï¿½Æ¥ï¿½");
 			}     
 		
 		}
@@ -1582,17 +1582,17 @@ public class new_MODSTR {
 	static chromosome copyOneChromosome(chromosome chro) {
 		chromosome copiedChro= new chromosome(); 
 		
-		//½Æ»sgroup part
+		//ï¿½Æ»sgroup part
 		Hashtable ht = new Hashtable();
 		for(int i=0; i<chro.groupPart.size(); i++)
 			ht.put(""+i, chro.groupPart.get(""+i));
 		
-		//½Æ»sftiness value
+		//ï¿½Æ»sftiness value
 		double[] fit = new double[chro.fitness.length];
 		for(int i=0; i<fit.length; i++)
 			fit[i] = chro.fitness[i];
 				
-		//½Æ»sstock portfolio
+		//ï¿½Æ»sstock portfolio
 		ArrayList strategyweight = new ArrayList();
 		for(int i=0; i<chro.strategyweight.size(); i++)
 			strategyweight.add(i, chro.strategyweight.get(i));
@@ -1702,7 +1702,7 @@ public class new_MODSTR {
 //			}
 		
 		
-		//¨M©wstockPortfolio partªº¤Á³ÎÂI
+		//ï¿½Mï¿½wstockPortfolio partï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½I
 		int cutPoint=0;
 		int cutPoint1=0;
 		int excutpoint=0;
@@ -1720,7 +1720,7 @@ public class new_MODSTR {
 			cutPoint1=excutpoint;
 		}	
 	 //   System.out.println("crossoverChro[0].stockPortfolioSize="+cutPoint+" "+cutPoint1);
-	   //®Ú¾Úcutpoint¥æ´«c1»Pc2ªºstrategyweight part
+	   //ï¿½Ú¾ï¿½cutpointï¿½æ´«c1ï¿½Pc2ï¿½ï¿½strategyweight part
 		String first= crossoverChro[0].strategyweight.get(0).toString();
 		String second= crossoverChro[1].strategyweight.get(0).toString();
 		String fir[]=first.split("");
@@ -1889,7 +1889,7 @@ public class new_MODSTR {
 					aL.add((((100/(oo.length()-K))*CO[u])/100+""));	 
 				}
 
-				chro.strategyweight = aL; //§âaL­È¦s¦^chro
+				chro.strategyweight = aL; //ï¿½ï¿½aLï¿½È¦sï¿½^chro
 				population.put(""+currentPupulationSize, chro);
 				currentPupulationSize++;
 			}
@@ -1947,7 +1947,7 @@ public class new_MODSTR {
 		int inversionCount = (int)(pSize*inverstionRate);
 		
 		int currentPupulationSize = population.size(); 
-		//§ä¥X¤£­«½Æªº¥æ°t¬V¦âÅé
+		//ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Æªï¿½ï¿½ï¿½tï¿½Vï¿½ï¿½ï¿½ï¿½
 		int inversionNumber[]=new int[inversionCount];
 		for(int i=0; i<inversionCount; i++)	{
 			inversionNumber[i]=(int)(Math.random()*pSize);
@@ -2000,7 +2000,7 @@ public class new_MODSTR {
 		}
 		ArrayList<String> possibleStockCombination = new ArrayList<String>();
 		possibleStockCombination = getCombination(sst, htt.size());
-		ArrayList<String[]> listnum = new ArrayList<String[]>();//©ñ¨C­Ó¸êª÷,ROI©M­þ¨Çµ¦²¤
+		ArrayList<String[]> listnum = new ArrayList<String[]>();//ï¿½ï¿½Cï¿½Ó¸ï¿½ï¿½,ROIï¿½Mï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½
 		for(int l=0; l<possibleStockCombination.size(); l++){
 			// System.out.println("=--="+possibleStockCombination.get(l));
 			String[] stockCombi =  possibleStockCombination.get(l).split(",");
@@ -2059,7 +2059,7 @@ public class new_MODSTR {
 		finalr.newLine();
 		finalr.write(" Min="+min+ " TS="+witchname+" Cap="+ mon);
 	//	System.out.println("ROI "+ROI);
-	//	System.out.println("´ú¸Õ"+possibleStockCombination.size()); 
+	//	System.out.println("ï¿½ï¿½ï¿½ï¿½"+possibleStockCombination.size()); 
 		System.out.println("++,"+sumROI/possibleStockCombination.size());
 //						double variance=va(listnum,(sumROI/possibleStockCombination.size()));
 		finalr.newLine();
@@ -2100,11 +2100,11 @@ public class new_MODSTR {
 		System.out.println(" Weight Balance="+ population.get(""+i).fitness[4]);
 		finalr.write(" Weight Balance="+ population.get(""+i).fitness[4]);
 		finalr.newLine();
-		System.out.printf("¥­§¡¤@²Õµ¦²¤³ø¹S1: "+ population.get(""+i).fitness[1]);
-		finalr.write("¥­§¡¤@²Õµ¦²¤³ø¹S1: "+ population.get(""+i).fitness[1]);
+		System.out.printf("ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½S1: "+ population.get(""+i).fitness[1]);
+		finalr.write("ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½S1: "+ population.get(""+i).fitness[1]);
 		return population.get(""+i).fitness[1];
 	}
-	private static boolean C(Hashtable<String, chromosome> population, int i) {//¦pªGgroup¦³¤@­Ó¤@²Õªº¸Ü¦^¶ÇFALSE
+	private static boolean C(Hashtable<String, chromosome> population, int i) {//ï¿½pï¿½Ggroupï¿½ï¿½ï¿½@ï¿½Ó¤@ï¿½Õªï¿½ï¿½Ü¦^ï¿½ï¿½FALSE
 		// TODO Auto-generated method stub
 		int a=0;
 		Hashtable htt = (Hashtable) population.get(""+i).groupPart;
@@ -2154,7 +2154,7 @@ public class new_MODSTR {
 
 		ArrayList<String> possibleStockCombination = new ArrayList<String>();
 		possibleStockCombination = getCombination(sst, htt.size());
-		ArrayList<String[]> listnum = new ArrayList<String[]>();//©ñ¨C­Ó¸êª÷,ROI©M­þ¨Çµ¦²¤
+		ArrayList<String[]> listnum = new ArrayList<String[]>();//ï¿½ï¿½Cï¿½Ó¸ï¿½ï¿½,ROIï¿½Mï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½
 				
 		for(int l=0; l<possibleStockCombination.size(); l++){
 			String TSname="" ;
@@ -2202,7 +2202,7 @@ public class new_MODSTR {
 		String mon="";
 		String mon1="";
 		double ss=0;
-//ºâ³Ì¤j³Ì¤p­È
+//ï¿½ï¿½Ì¤jï¿½Ì¤pï¿½ï¿½
 		for(int w=0;w<listnum.size();w++){
 			String[] a1 =listnum.get(w);
 			ss+=Double.valueOf(a1[3]);
@@ -2228,11 +2228,11 @@ public class new_MODSTR {
 		finalr.newLine();
 		finalr.write(" Min="+min+" MinROI="+ro+ "  MinTS="+witchname+" MinCap="+ mon);
 		finalr.newLine();
-//					System.out.println("´ú¸Õ"+possibleStockCombination.size()+"  "+ss/listnum.size()+"R"+sumROI/possibleStockCombination.size()+" C  "+sumcap/possibleStockCombination.size());
+//					System.out.println("ï¿½ï¿½ï¿½ï¿½"+possibleStockCombination.size()+"  "+ss/listnum.size()+"R"+sumROI/possibleStockCombination.size()+" C  "+sumcap/possibleStockCombination.size());
 		 
 //					c=Double.parseDouble((population.get(""+i).strategyweight.get(1).toString()))*maxCaptial;
-		System.out.println("¥­§¡:"+ss/listnum.size()); 
-		finalr.write("¥­§¡:"+ss/listnum.size()); 
+		System.out.println("ï¿½ï¿½ï¿½ï¿½:"+ss/listnum.size()); 
+		finalr.write("ï¿½ï¿½ï¿½ï¿½:"+ss/listnum.size()); 
 		double variance=va(listnum,ss/listnum.size());
 		finalr.newLine();
 		 finalr.write(" VAR="+variance);
@@ -2240,13 +2240,13 @@ public class new_MODSTR {
 		finalr.newLine();
 		finalr.newLine();
 
-		aa[0]=ss/listnum.size();//¥­§¡
+		aa[0]=ss/listnum.size();//ï¿½ï¿½ï¿½ï¿½
 		
 		if(Double.valueOf(mon1)==0){
 			aa[1]=0.00;
 		}
 		if(Double.valueOf(mon1)!=0){
-			aa[1]=Double.valueOf(ro1)/Double.valueOf(mon1);//³Ì¤j
+			aa[1]=Double.valueOf(ro1)/Double.valueOf(mon1);//ï¿½Ì¤j
 		}
 		if(Double.valueOf(mon)==0){
 			aa[2]=0.00;
@@ -2323,8 +2323,8 @@ public class new_MODSTR {
 				int Count =count(str);
 				double ReturnRate=mareturnrate(str);
 				double ReturnRate1=mareturnrate1(str);
-				double MDD=MDD(str,Count);//»ù®t¨ú³Ì¤j«È²¤Á«·l
-				double MDD1=MDD1(str,Count);//¥H«eªº
+				double MDD=MDD(str,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½È²ï¿½ï¿½ï¿½ï¿½l
+				double MDD1=MDD1(str,Count);//ï¿½Hï¿½eï¿½ï¿½
 			//System.out.println(num+","+Count+","+Return+","+Return1+","+ReturnRate+","+ReturnRate1+","+PPT+","+PPT1+","+count1+","+count2+","+WinRate+","+WinRate1+","+WinAve+","+WinAve1+","+LosAve+","+LosAve1+","+MDD+","+tax+","+onceReturnRate);
 			//System.out.println("OOO"+PF);
 				RankReturnRate[co-7]=ReturnRate1;
@@ -2334,7 +2334,7 @@ public class new_MODSTR {
 				Rank1MDD[co-7]=co-6;
 				Rank1count[co-7]=co-6;
 				//Rank1[co-46][1]=ReturnRate;
-				Rank1[co-7][0]=co-6;//²Ä´X­Óµ¦²¤
+				Rank1[co-7][0]=co-6;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 				Rank1[co-7][1]=ReturnRate;
 				Rank1[co-7][2]=MDD;
 				Rank1[co-7][3]=Count;
@@ -2402,13 +2402,13 @@ public class new_MODSTR {
 			
 		 Hashtable<String,double[][]> store = new Hashtable<String,double[][]>();
 		for(int i=0;i<alre.size();i++){
-			co=alre.get(i);//²Ä´X­Óµ¦²¤(±q15­Óµ¦²¤¿ï¥X)
-			storea[i][0]=co;//²Ä´X­Óµ¦²¤
+			co=alre.get(i);//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½(ï¿½q15ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½X)
+			storea[i][0]=co;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 			storea[i][1]=Rank1[co-1][3];
 			storea[i][2]=Rank1[co-1][4];
 			storea[i][3]=Rank1[co-1][5];
 			if(storea[i][1]==999999||storea[i][2]==-999999||storea[i][3]==-999999){
-				storea[i][0]=co;//²Ä´X­Óµ¦²¤
+				storea[i][0]=co;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½
 				storea[i][1]=0;
 				storea[i][2]=0;
 				storea[i][3]=0;
@@ -2420,7 +2420,7 @@ public class new_MODSTR {
 				str1= STR(inputTestfileTEC, num1,co);
 			}
 			if(str1.size()==0){
-				storeb[i][0]=co-6;//²Ä´X­Óµ¦²¤(1-15)
+				storeb[i][0]=co-6;//ï¿½Ä´Xï¿½Óµï¿½ï¿½ï¿½(1-15)
 				storeb[i][1]=0;
 				storeb[i][2]=0;
 				storeb[i][3]=0;
@@ -2429,8 +2429,8 @@ public class new_MODSTR {
 				int Count =count(str1);
 				double ReturnRate=mareturnrate(str1);
 				double ReturnRate1=mareturnrate1(str1);
-				double MDD=MDD(str1,Count);//»ù®t¨ú³Ì¤jµ¦²¤Á«·l
-				double MDD1=MDD1(str1,Count);//»ù®t¨ú³Ì¤jµ¦²¤Á«·l-tax
+				double MDD=MDD(str1,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½l
+				double MDD1=MDD1(str1,Count);//ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Ì¤jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½l-tax
 				storeb[i][0]=co-6;
 				storeb[i][1]=Count;
 				storeb[i][2]=ReturnRate1;
