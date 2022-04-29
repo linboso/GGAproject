@@ -1,3 +1,4 @@
+
 import numpy as np
 import json 
 import pandas as pd 
@@ -6,24 +7,22 @@ import pandas as pd
 class Population():
     def __init__(self, pSize=3, CrossoverRate=0.03, MutationRate=0.03, InversionRate=0.05) -> None:
         self.pSize = pSize
-        self.population = []
+        self.population:list[Chromosome] = []
         self.CrossoverRate = CrossoverRate
         self.MutationRate = MutationRate
         self.InversionRate = InversionRate
+        self.Initiate()
         
     def Initiate(self):
-
         for i in range(self.pSize):
             self.population.append(Chromosome())
+            # chrom = self.population[i].getChrom()
+            # print(f"{i} := {chrom} ")
+            # print(f"GTSP   > {chrom[:12]} \t {self.population[i].getGTSP()}")
+            # print(f"Weight > {chrom[12:]} \t {self.population[i].getWeight()}")
+            # print()
 
-            chrom = self.population[i].getChrom()
-            print(chrom)
-            print(f"GTSP   > {chrom[:12]} \t {self.population[i].getGTSP()}")
-            print(f"Weight > {chrom[12:]} \t {self.population[i].getWeight()}")
-            
-            print()
 
-        # self.Fitness()
 
         return self.population
 
@@ -32,14 +31,21 @@ class Population():
             data = pd.DataFrame(json.load(f))
 
         print(data)
-
+        Popula = self.population
+        for Chrom in Popula:
+            for TSP in Chrom.getGTSP():
+                print(f"{TSP}", end='\t')
+                for TS in TSP:
+                    print(f"TS{TS}", end=', ')
+                print()
+            print()
         
 
 
 
 
 class Chromosome():
-    def __init__(self, kGroup=3, WeightPart=10, mTS = 9) -> None:
+    def __init__(self, kGroup=3, WeightPart=10, mTS = 15) -> None:
         self.kGroup = kGroup                                            #分幾群
         self.WeightPart = WeightPart                                    #要幾個 1
         self.mTS = mTS                                                  #有幾個 TS (根據Ranking策略)
@@ -124,7 +130,8 @@ class Chromosome():
 
 if __name__ == "__main__":
     
-    p = Population().Initiate()
+    p = Population()
+    p.Fitness()
     
 
 
