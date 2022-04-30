@@ -1,7 +1,11 @@
 
+from itertools import count
+import sys
 import numpy as np
-import json 
 import pandas as pd 
+import json 
+import math
+
 # dask? for future
 
 class Population():
@@ -13,48 +17,28 @@ class Population():
         self.InversionRate = InversionRate
         self.Initiate()
         
-    def Initiate(self):
+    def Initiate(self) -> list:
         for i in range(self.pSize):
             self.population.append(Chromosome())
-            chrom = self.population[i].getChrom()
-            # print(f"{i} := {chrom} ")
-            # print(f"GTSP   > {chrom[:12]} \t {self.population[i].getGTSP()}")
-            # print(f"Weight > {chrom[18:]} \t {self.population[i].getWeight()}")
-            # print()
-
-
 
         return self.population
 
-    def Fitness(self):
-        with open(f"../data pre-processing/stock/0050.TW/2012-08-30~2013-12-30/Top555.json") as f:
-            data = pd.DataFrame(json.load(f))
-
-        print(data)
-
-        # print(data)
-
-        Popula = self.population
-        # for Chrom in Popula:
-        #     for TSP in Chrom.getGTSP():
-        #         print(f"{TSP}", end='\t')
-        #         for TS in TSP:
-        #             print(f"TS{TS}", end=', ')
-        #         print()
-        #     print()
         
 
 
 
 
 class Chromosome():
-    def __init__(self, kGroup=3, WeightPart=10, mTS = 15) -> None:
+    def __init__(self, kGroup=3, WeightPart=10, mTS = 15, Capital = 10000) -> None:
         self.kGroup = kGroup                                            #分幾群
         self.WeightPart = WeightPart                                    #要幾個 1
         self.mTS = mTS                                                  #有幾個 TS (根據Ranking策略)
         self.length = self.mTS + self.kGroup * 2 + self.WeightPart + 1  #全長是多少
+        self.Capital = Capital
         self.chromosome:np.array
+        self.fitness:float = 0
         self.Initiate()
+        self.Fitness()
 
     def Initiate(self):
 
@@ -80,7 +64,6 @@ class Chromosome():
                     Flag = False
 
         # shuffle 前半
-            # print(self.chromosome[:Groupinglen])
 
         np.random.shuffle(self.chromosome[Groupinglen+1:-1])
         # shuffle 後半
@@ -120,7 +103,99 @@ class Chromosome():
 
         return Weight
 
+
+    def Fitness(self):
+        with open(f"../data pre-processing/stock/0050.TW/2012-08-30~2013-12-30/Top555.json") as f:
+            data = pd.DataFrame(json.load(f))
+
+        def __ADVcombine() -> list:
+            GTSP = self.getGTSP()
+            n = len(GTSP)
+            res = []
+            #TSP 為 每一個不同的 TSG 中 各取一個 TS 組合成的 
+            def backtrack(TSP, start):
+                if len(TSP) == self.kGroup:
+                    return res.append(TSP[:])
+
+                for Kth_Group in range(start, n):
+                    for TS in range(len(GTSP[Kth_Group])):
+                        # 每一個 TSG 的 長度都不一樣
+                        TSP.append(GTSP[Kth_Group][TS])
+                        backtrack(TSP,  Kth_Group + 1)
+                        TSP.pop()
+            
+            backtrack([], 0)
+            return res
+        
+        ALLtsp = __ADVcombine()
+        TSPlen = len(ALLtsp)
     
+        def PR() -> float:
+            ReturnTSP = []
+            def returnTSP():
+                Allwight = self.getWeight()
+                for TSP in ALLtsp:
+                    # print(f" === {TSP} === ")
+                    for TS in range(len(TSP)):
+                        # print(f"{data['ARR'][TSP[TS]-1]} <> {Allwight[TS+1]} <> {self.Capital}")
+                        ReturnTSP.append(data['ARR'][TSP[TS]-1] * Allwight[TS+1] * self.Capital)
+                    # print()
+            returnTSP()
+            return sum(ReturnTSP)/TSPlen
+
+        # ======================= PR =======================
+
+        def RISK() -> float:
+            RiskTSP = []
+            def riskTSP():
+                for TSP in ALLtsp:
+                    minRiskTsp = sys.maxsize
+                    for TS in range(len(TSP)):
+                        # print(f"{data['ARR'][TSP[TS]-1]} <> {Allwight[TS+1]} <> {self.Capital}")
+                        minRiskTsp = min(minRiskTsp, data['MDD'][TSP[TS]-1])
+                    RiskTSP.append(minRiskTsp)
+            riskTSP()
+            return sum(RiskTSP)/TSPlen
+
+        # ====================== RISK =======================
+
+        def GB():
+            sum = 0
+            for TSG in self.getGTSP():
+                tmp = len(TSG)/self.mTS
+                sum += -tmp*math.log(tmp, 10)
+            return sum
+
+        # ======================= GB =======================
+
+        def WB():
+            sum = 0
+            for C in self.getWeight():
+                if C == 0:
+                    continue
+                sum += -C*math.log(C, 10)
+            return sum
+            
+        # print(f"{PR()} <> {RISK()} <> {GB()} <> {WB()}")
+        self.fitness = PR()*RISK()*GB()*WB()
+
+
+            
+
+
+
+
+
+
+        
+            
+
+
+
+
+
+
+
 
 
 
@@ -134,7 +209,39 @@ class Chromosome():
 if __name__ == "__main__":
     
     p = Population()
-    p.Fitness()
+    for c in p.population:
+        c.Fitness()
+        print(c.fitness)
+
+    
+
+
+    # test = [[3,4,5,10],[0,1,6,8,9,11,12,14],[2,7,3]]
+
+
+    # def combine(ti_list:list) -> list: 
+
+    #     n = len(ti_list)
+    #     res = []
+
+    #     def backtrack(tmp, start):
+            
+    #         if len(tmp) == 3:
+    #             res.append(tmp[:])
+    #             return
+
+    #         for g in range(start, n):
+    #             for i in range(len(ti_list[g])):
+    #                 tmp.append(ti_list[g][i])
+    #                 backtrack(tmp,  g + 1)
+    #                 tmp.pop()
+        
+    #     backtrack([], 0)
+    #     return res
+                    
+    # ans = combine(test)
+    # print(ans)
+    # print(len(ans))
     
 
 
