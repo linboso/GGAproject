@@ -1,3 +1,4 @@
+from tokenize import Triple
 import pandas as pd
 import numpy as np
 import json
@@ -51,16 +52,17 @@ class Ranking():
                 ARR = ARR / TF
             else:
                 MDD = 0
-            Top555.append([ARR, MDD, TF])
+            Top555.append([TS, ARR, MDD, TF])
         
             
         # print(Top555)
-        Top555 = pd.DataFrame(Top555, columns=["ARR", "MDD", "TF"])
-        Top555.set_index(TS_list[2:], inplace=True)
+        Top555 = pd.DataFrame(Top555, columns=["Trading Strategy","ARR", "MDD", "TF"])
+        # Top555.set_index(TS_list[2:], inplace=True)
         Top555['MDD'] = self.__minmax_norm(Top555['MDD']) #執行 normalize
 
         Keep = []
-        for i in Top555.columns:
+        for i in Top555.columns[1:]:
+            # print(Top555[i].sort_values(ascending=False))
             count = 0
             for top5 in Top555[i].sort_values(ascending=False).index:
                 # 先由大->小排 再取 index
@@ -71,15 +73,15 @@ class Ranking():
                     Keep.append(top5)
                     count += 1
 
-        for i in Top555.index:
-            #全部的策略 拿出來確認
-            if i not in Keep:
-                # 不在Keep裡面就 Drop
-                Top555.drop(i)
+        # print(Keep)
+        Keep = [dontkeep for dontkeep in Top555.index if dontkeep not in Keep]
+        # 原本 Keep 裡面是 要保留的 現在變成 沒有要保留的
         
-        # print(Top555)
-
-        Top555.to_json(f"{self.savepath}/Top555.json", orient = 'index')
+        Top555 = Top555.drop(Keep).reset_index(drop=True)
+        # 一次 drop 所有不要的部位
+        
+        Top555.T.to_json(f"{self.savepath}/Top555.json", orient = 'index')
+        # 先 轉置
         print("Finished TOP555 Ranking")
     
     def __minmax_norm(self, df:pd.DataFrame): # Min-Max normalize 標準化的一種 把數字 mapping 到 0 ~ 1

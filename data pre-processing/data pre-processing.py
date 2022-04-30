@@ -13,20 +13,20 @@ Setting.print()
 
 
 
-DownloadStockData().StockDataDownload()
+# DownloadStockData().StockDataDownload()
 # 下載 股票資料
 
-TIv = TIValue()
-TIv.CalculateTIValue()
+# TIv = TIValue()
+# TIv.CalculateTIValue()
 # 計算各種 我們指定的 指標的 value
 # 都在 setting.json 檔案裡
 
-TI2Signal().ProduceSignal()
-TI2Signal().ProduceTable()
-# 把value 轉換成 signal 
+# TI2Signal().ProduceSignal()
+# TI2Signal().ProduceTable()
+# # 把value 轉換成 signal 
 
-Simage().StockImage()
-Simage().SignalImage()
+# Simage().StockImage()
+# Simage().SignalImage()
 
 
 Ranking().Top555() 

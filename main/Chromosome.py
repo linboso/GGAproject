@@ -16,10 +16,10 @@ class Population():
     def Initiate(self):
         for i in range(self.pSize):
             self.population.append(Chromosome())
-            # chrom = self.population[i].getChrom()
+            chrom = self.population[i].getChrom()
             # print(f"{i} := {chrom} ")
             # print(f"GTSP   > {chrom[:12]} \t {self.population[i].getGTSP()}")
-            # print(f"Weight > {chrom[12:]} \t {self.population[i].getWeight()}")
+            # print(f"Weight > {chrom[18:]} \t {self.population[i].getWeight()}")
             # print()
 
 
@@ -31,14 +31,17 @@ class Population():
             data = pd.DataFrame(json.load(f))
 
         print(data)
+
+        # print(data)
+
         Popula = self.population
-        for Chrom in Popula:
-            for TSP in Chrom.getGTSP():
-                print(f"{TSP}", end='\t')
-                for TS in TSP:
-                    print(f"TS{TS}", end=', ')
-                print()
-            print()
+        # for Chrom in Popula:
+        #     for TSP in Chrom.getGTSP():
+        #         print(f"{TSP}", end='\t')
+        #         for TS in TSP:
+        #             print(f"TS{TS}", end=', ')
+        #         print()
+        #     print()
         
 
 
