@@ -1,5 +1,4 @@
-
-from itertools import count
+import time 
 import sys
 import numpy as np
 import pandas as pd 
@@ -9,7 +8,7 @@ import math
 # dask? for future
 
 class Population():
-    def __init__(self, pSize=3, CrossoverRate=0.03, MutationRate=0.03, InversionRate=0.05) -> None:
+    def __init__(self, pSize=100, CrossoverRate=0.03, MutationRate=0.03, InversionRate=0.05) -> None:
         self.pSize = pSize
         self.population:list[Chromosome] = []
         self.CrossoverRate = CrossoverRate
@@ -18,10 +17,8 @@ class Population():
         self.Initiate()
         
     def Initiate(self) -> list:
-        for i in range(self.pSize):
-            self.population.append(Chromosome())
+        self.population = [Chromosome() for i in range(self.pSize)]
 
-        return self.population
 
         
 
@@ -29,7 +26,7 @@ class Population():
 
 
 class Chromosome():
-    def __init__(self, kGroup=6, WeightPart=20, mTS = 15, Capital = 10000) -> None:
+    def __init__(self, kGroup=10, WeightPart=200, mTS = 21, Capital = 10000) -> None:
         self.kGroup = kGroup                                            #分幾群
         self.WeightPart = WeightPart                                    #要幾個 1
         self.mTS = mTS                                                  #有幾個 TS (根據Ranking策略)
@@ -123,10 +120,10 @@ class Chromosome():
         return res
 
     def Fitness(self):
-        with open(f"../data pre-processing/stock/0050.TW/2012-08-30~2013-12-30/Top555.json") as f:
+        with open(f"../data pre-processing/stock/0050.TW/2012-08-30~2013-12-30/Top777.json") as f:
             data = pd.DataFrame(json.load(f))
 
-        
+
         ALLtsp = self.__ADVcombine()
         TSPlen = len(ALLtsp)
     
@@ -180,41 +177,19 @@ class Chromosome():
         self.fitness = PR()*RISK()*GB()*WB()
 
 
-            
-
-
-
-
-
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
 
 
 if __name__ == "__main__":
     
-    import time 
-    p = Population()
+    
     start = time.time()
-    for c in p.population:
-        c.Fitness()
-        print(f"{c.chromosome} >> {c.fitness}")
+
+    p = Population()
+    # for c in p.population:
+    #     print(f"  >> {c.fitness}")
+
     end = time.time()
+
     print(f"Total Time: {end - start}")
     
 
