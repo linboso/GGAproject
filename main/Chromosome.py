@@ -17,7 +17,22 @@ class Population():
         self.Initiate()
         
     def Initiate(self) -> list:
-        self.chrom = [Chromosome() for i in range(self.pSize)]
+        self.chrom = [Chromosome() for _ in range(self.pSize)]
+        return self.chrom
+
+    def Selection(self):
+        FitList = np.sort([chrom.fitness for chrom in self.chrom])
+        print(FitList)
+        keep = []
+        for chrom in self.chrom:
+            if chrom.fitness in FitList[self.pSize//2:]: # 保留一半 順便 append 缺失的
+                keep.append(chrom)
+                keep.append(Chromosome())
+                
+        self.chrom = keep
+        
+        return self.chrom
+
 
 
 
@@ -66,6 +81,9 @@ class Chromosome():
         # 前半部為 mTS個 策略用 1 ~ mTS 表示 一樣用 0 區隔  k 群 需要 k-1 個 0     尾 0 + 1 => mTS + k -1 + 1 = mTS + k
         # 後半部為 C(0) + C(1) ~ C(k) 共 1 + k 個 C  需要 1+k-1 個 0             尾 0 + 1 => WeightPart + k + 1
         return self.gene
+
+
+
 
     def getGTSP(self):
         GTSP = []
@@ -175,18 +193,13 @@ class Chromosome():
 
 if __name__ == "__main__":
     np.set_printoptions(linewidth=200)
-    
-    start = time.time()
 
     p = Population(pSize=10)
-
-    end = time.time()
 
     for c in p.chrom:
         print(f"{c.gene} >> {c.fitness}")
 
-
-    print(f"Total Time: {end - start}")
+    p.Selection()    
     
 
 
