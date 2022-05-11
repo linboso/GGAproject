@@ -8,12 +8,13 @@ import math
 # dask? for future
 
 class Population():
-    def __init__(self, pSize=10, CrossoverRate=0.03, MutationRate=0.03, InversionRate=0.05) -> None:
+    def __init__(self, pSize=10, CrossoverRate=0.80, MutationRate=0.03, InversionRate=0.6, Generation = 10) -> None:
         self.pSize = pSize
         self.chrom:list[Chromosome] = []
         self.CrossoverRate = CrossoverRate
         self.MutationRate = MutationRate
         self.InversionRate = InversionRate
+        self.Generation = Generation
         self.Initiate()
         
     def Initiate(self) -> list:
@@ -23,15 +24,19 @@ class Population():
     def Selection(self):
         FitList = np.sort([chrom.fitness for chrom in self.chrom])
         print(FitList)
-        keep = []
+        
         for chrom in self.chrom:
-            if chrom.fitness in FitList[self.pSize//2:]: # 保留一半 順便 append 缺失的
-                keep.append(chrom)
-                keep.append(Chromosome())
-                
-        self.chrom = keep
+            if chrom.fitness in FitList[self.pSize:]: # 只保留 前 self.pSize 個 染色體
+                del chrom 
         
         return self.chrom
+
+    def Crossover(self):
+        parents = np.random.choice(self.chrom, int(self.pSize * self.CrossoverRate))
+        #選出 父母   父母數量為 Psize * Crossover Rate
+
+        for chrom in parents:
+            print(chrom.fitness)
 
 
 
@@ -199,7 +204,7 @@ if __name__ == "__main__":
     for c in p.chrom:
         print(f"{c.gene} >> {c.fitness}")
 
-    p.Selection()    
+    p.Crossover()    
     
 
 
