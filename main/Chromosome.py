@@ -9,8 +9,6 @@ import math
         
 
 
-
-
 class Chromosome():
     def __init__(self, kGroup=6, WeightPart=21, mTS = 21, Capital = 10000) -> None:
         self.kGroup:int = kGroup                                            #分幾群

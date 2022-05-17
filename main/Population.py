@@ -1,5 +1,6 @@
 
 import copy
+from turtle import delay, end_fill
 
 import numpy as np
 import pandas as pd 
@@ -11,7 +12,7 @@ from Chromosome import Chromosome
 
 
 class Population():
-    def __init__(self, pSize=10, CrossoverRate=0.80, MutationRate=0.3, InversionRate=0.60, Generation=10, kGroup=5, mTS=15, WeightPart=10, Capital=100000) -> None:
+    def __init__(self, pSize=10, CrossoverRate=0.80, MutationRate=0.3, InversionRate=0.30, Generation=10, kGroup=5, mTS=15, WeightPart=10, Capital=100000) -> None:
         self.pSize:int = pSize
         self.Size:int = pSize
         self.Chrom:list[Chromosome] = []
@@ -108,22 +109,54 @@ class Population():
             # print(f"  New  Weigth >> {VarChrom.gene[-self.WeightPart_len:]}")
 
             self.Size += 1
-            VarChrom.Fitness() # 不急 ?
+            # VarChrom.Fitness()
             # print(f"  New   Chromosome: {VarChrom.gene} >> {VarChrom.fitness}")
 
             self.Chrom.append(VarChrom)
             # print(f"===================================== \t\n")
 
 
+    def inversion(self):
+        numbers:int = int(self.pSize*self.InversionRate)
+        Variants:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
+
+        for VarChrom in Variants:
+            invertgroup = np.random.choice([x for x in range(self.kGroup)], 2, replace=False)
+            GTSP = VarChrom.getGTSP()
+            GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]]
+            VarChrom.gene[:self.GroupingPart_len] = np.concatenate([list(NewGroup) + [0] for NewGroup in GTSP])
+            
+            self.Size += 1
+            self.Chrom.append(VarChrom)
+
+
 
 
 if __name__ == "__main__":
+    import time
     np.set_printoptions(linewidth=200)
 
-    p = Population(pSize=10)
 
-    # for c in p.chrom:
-    #     print(f"{c.gene} >> {c.fitness}")
+    p = Population(pSize=20, InversionRate=0.8)
 
-    # p.Crossover()    
-    p.mutation()
+    # start = time.process_time()
+    # for i in range(500):
+    #     p.inversion2()
+    # end = time.process_time()
+    # print(f"Time 2: {end - start}")
+
+
+
+    # start = time.process_time()
+    # for i in range(500):
+    #     p.inversion()
+    # end = time.process_time()
+    # print(f"Time 1: {end - start}")
+
+
+    start = time.process_time()
+    for i in range(500):
+        p.inversion3()
+    end = time.process_time()
+    print(f"Time 3: {end - start}")
+    
