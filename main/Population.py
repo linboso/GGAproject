@@ -1,12 +1,9 @@
 
 import copy
-from turtle import delay, end_fill
-
+from turtle import width
 import numpy as np
-import pandas as pd 
 
 from Chromosome import Chromosome
-
 
 
 
@@ -31,7 +28,11 @@ class Population():
 
 
         self.Initiate()
-        
+
+    def Genealogy(self):
+        for i in range(self.Size):
+            print(f"{i+1:3d}-th: {self.Chrom[i].fitness:10.4f} >> {self.Chrom[i].gene}")
+
     def Initiate(self) -> list:
  
         self.Chrom = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital) for _ in range(self.pSize)]
@@ -39,15 +40,14 @@ class Population():
 
     def Selection(self):
         FitList = np.sort([chrom.fitness for chrom in self.Chrom])
-        print(FitList)
         
         for chrom in self.Chrom:
             if chrom.fitness in FitList[self.pSize:]: # 只保留 前 self.pSize 個 染色體
                 del chrom 
-        
-        return self.Chrom
 
-   
+        self.Size = self.pSize
+  
+
 
     def mutation(self):
         # 隨機選 2 群 A, B  從 A 中 隨機抽一個 TS 移到 B
@@ -95,14 +95,14 @@ class Population():
             #============== 處理 Weigth Part ==============
             # print(f"Origin Weigth >> {VarChrom.gene[-self.WeightPart_len:]}")
             Ones_index = []
-            Zores_index = []
+            Zeros_index = []
             for i in range(len(VarChrom.gene[-self.WeightPart_len:-1])):
                 if VarChrom.gene[-self.WeightPart_len:][i] == 0:
-                    Zores_index.append(i)
+                    Zeros_index.append(i)
                 else:
                     Ones_index.append(i)
 
-            Pick0 = np.random.choice(Zores_index, 1)
+            Pick0 = np.random.choice(Zeros_index, 1)
             Pick1 = np.random.choice(Ones_index, 1)
 
             VarChrom.gene[-self.WeightPart_len:-1][Pick1], VarChrom.gene[-self.WeightPart_len:-1][Pick0] = VarChrom.gene[-self.WeightPart_len:-1][Pick0], VarChrom.gene[-self.WeightPart_len:-1][Pick1].copy()
@@ -111,7 +111,7 @@ class Population():
             self.Size += 1
             # VarChrom.Fitness()
             # print(f"  New   Chromosome: {VarChrom.gene} >> {VarChrom.fitness}")
-
+            VarChrom.Fitness()
             self.Chrom.append(VarChrom)
             # print(f"===================================== \t\n")
 
@@ -125,8 +125,9 @@ class Population():
             GTSP = VarChrom.getGTSP()
             GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]]
             VarChrom.gene[:self.GroupingPart_len] = np.concatenate([list(NewGroup) + [0] for NewGroup in GTSP])
-            
+
             self.Size += 1
+            VarChrom.Fitness()
             self.Chrom.append(VarChrom)
 
 
@@ -139,24 +140,12 @@ if __name__ == "__main__":
 
     p = Population(pSize=20, InversionRate=0.8)
 
-    # start = time.process_time()
-    # for i in range(500):
-    #     p.inversion2()
-    # end = time.process_time()
-    # print(f"Time 2: {end - start}")
-
-
-
-    # start = time.process_time()
-    # for i in range(500):
-    #     p.inversion()
-    # end = time.process_time()
-    # print(f"Time 1: {end - start}")
 
 
     start = time.process_time()
-    for i in range(500):
-        p.inversion3()
+    p.inversion()
     end = time.process_time()
-    print(f"Time 3: {end - start}")
+    print(f"Time: {end - start}")
+    p.Genealogy()
+    
     

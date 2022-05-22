@@ -6,8 +6,6 @@ import json
 import math
 
 
-        
-
 
 class Chromosome():
     def __init__(self, kGroup=6, WeightPart=21, mTS = 21, Capital = 10000) -> None:
@@ -102,7 +100,7 @@ class Chromosome():
         backtrack([], 0)
         return res
 
-    def Fitness(self):
+    def Fitness(self) -> float:
         with open(f"../data pre-processing/stock/0050.TW/2012-08-30~2013-12-30/Top777.json") as f:
             data = pd.DataFrame(json.load(f))
 
@@ -115,11 +113,8 @@ class Chromosome():
             def returnTSP():
                 Allwight = self.getWeight()
                 for TSP in ALLtsp:
-                    # print(f" === {TSP} === ")
                     for TS in range(len(TSP)):
-                        # print(f"{data['ARR'][TSP[TS]-1]} <> {Allwight[TS+1]} <> {self.Capital}")
                         ReturnTSP.append(data['ARR'][TSP[TS]-1] * Allwight[TS+1] * self.Capital)
-                    # print()
             returnTSP()
             return sum(ReturnTSP)/TSPlen
 
@@ -139,7 +134,7 @@ class Chromosome():
 
         # ====================== RISK =======================
 
-        def GB():
+        def GB() -> float:
             sum = 0
             for TSG in self.getGTSP():
                 tmp = len(TSG)/self.mTS
@@ -148,15 +143,14 @@ class Chromosome():
 
         # ======================= GB =======================
 
-        def WB():
+        def WB() -> float:
             sum = 0
             for C in self.getWeight():
                 if C == 0:
                     continue
                 sum += -C*math.log(C, 10)
             return sum
-            
-        # print(f"{PR()} <> {RISK()} <> {GB()} <> {WB()}")
+
         self.fitness = PR()*RISK()*GB()*WB()
 
 
