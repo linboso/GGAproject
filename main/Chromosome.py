@@ -126,7 +126,6 @@ class Chromosome():
                 for TSP in ALLtsp:
                     minRiskTsp = sys.maxsize
                     for TS in range(len(TSP)):
-                        # print(f"{data['ARR'][TSP[TS]-1]} <> {Allwight[TS+1]} <> {self.Capital}")
                         minRiskTsp = min(minRiskTsp, data['MDD'][TSP[TS]-1])
                     RiskTSP.append(minRiskTsp)
             riskTSP()
