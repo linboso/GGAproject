@@ -33,12 +33,58 @@ class Population():
         for i in range(self.Size):
             print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
 
-    def logFile(self, Generation, Operation, stime, etime, len):
+    def GenerateGeneration_With_logFile(self):
+        import time
+        np.set_printoptions(edgeitems=3)
+        np.core.arrayprint._line_width = (self.WeightPart_len + self.kGroup * 2 + self.mTS) * 2
         with open('./Genealogy.txt', 'a') as f:
-            f.writelines(f"================  Generation: {Generation+1:3d} \tOperation: {Operation:>10}\t Time: {etime - stime}  ================\n")
-            for i in range(self.Size-int(len), self.Size):
-                f.writelines(f"\t {i+1:3d}-th | Fitness Value : {self.Chrom[i].fitness:10.4f} >> Gene{self.Chrom[i].gene}\n")
-            f.write("\r\n")
+            start = time.time()
+            for i in range(self.Generation):
+                f.writelines(f"  ================  Generation: {i+1:3d}  ================  ")
+
+                f.writelines(f"==  ==  Operation: Selection\t")
+                s = time.time()
+                self.Selection()
+                e = time.time()
+                f.writelines(f"Time: {e-s}  =-=-=-=-=-=-=-=\n")
+
+                for c in range(self.Size):
+                    f.writelines(f"\t {c+1:3d}-th | Fitness Value : {self.Chrom[c].fitness:10.4f} >> Gene{self.Chrom[c].gene}\n")
+
+                
+                f.writelines(f"==  ==  Operation: Crossover\t")
+                s = time.time()
+                self.Crossover()
+                e = time.time()
+                f.writelines(f"Time: {e-s}  =-=-=-=-=-=-=-=\n")
+                for c in range(self.Size- int(self.pSize*self.CrossoverRate*1.2), self.Size):
+                    f.writelines(f"\t {c+1:3d}-th | Fitness Value : {self.Chrom[c].fitness:10.4f} >> Gene{self.Chrom[c].gene}\n")
+
+
+                f.writelines(f"==  ==  Operation: Mutation \t")
+                s = time.time()
+                self.Mutation()
+                e = time.time()
+                f.writelines(f"Time: {e-s}  =-=-=-=-=-=-=-=\n")
+                for c in range(self.Size- int(self.pSize*self.MutationRate), self.Size):
+                    f.writelines(f"\t {c+1:3d}-th | Fitness Value : {self.Chrom[c].fitness:10.4f} >> Gene{self.Chrom[c].gene}\n")
+
+
+                f.writelines(f"==  ==  Operation: Inversion\t")
+                s = time.time()
+                self.Inversion()
+                e = time.time()
+                f.writelines(f"Time: {e-s}  =-=-=-=-=-=-=-=\n")
+                for c in range(self.Size- int(self.pSize*self.InversionRate), self.Size):
+                    f.writelines(f"\t {c+1:3d}-th | Fitness Value : {self.Chrom[c].fitness:10.4f} >> Gene{self.Chrom[c].gene}\n")
+                f.write("\r\n")
+            end = time.time()
+            f.write(f"Total Time: {end - start}")
+
+
+
+
+
 
 
     def Initiate(self) -> list:
@@ -282,14 +328,10 @@ if __name__ == "__main__":
     np.set_printoptions(linewidth=200)
 
 
-    p = Population(pSize=50, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=5)
+    p = Population(pSize=50, WeightPart=100, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=5)
 
-    p.GenerateGeneration()
+    p.GenerateGeneration_With_logFile()
 
-    # for i in range(p.Size):
-    #     print(f"{i} >> {p.Chrom[i]}")
-
-    # p.mutation()
 
 
 
