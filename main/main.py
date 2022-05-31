@@ -36,7 +36,7 @@ Setting.print()
 # 執行 ranking 策略為 Top555 
 
 
-population = Population(pSize=50, WeightPart=100, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=10)
+population = Population(pSize=100, kGroup=4, WeightPart=200, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=30)
 population.GenerateGeneration_With_logFile()
 
 

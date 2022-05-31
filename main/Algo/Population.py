@@ -44,6 +44,7 @@ class Population():
         if not os.path.exists(f'../data/{Setting["Path"]}/history/'):
             os.makedirs(f'../data/{Setting["Path"]}/history')
 
+        STime = time.time()
         for i in range(self.Generation):
             s = time.time()
             self.Selection()
@@ -53,8 +54,10 @@ class Population():
             e = time.time()
             print(f"Time: {e-s}")
             with open(f'../data/{Setting["Path"]}/history/{i+1}-th.txt', 'w') as f:
-                f.writelines(f"Fitness: {chrom.fitness:10.5f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
+                f.writelines(f"Fitness: {chrom.fitness:10f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
                 f.write(f"Time: {e-s:3.5f}")
+        ETime = time.time()
+        print(f"Total Time: {ETime - STime}")
 
 
 
@@ -97,13 +100,31 @@ class Population():
 
         [chrom.Fitness() for chrom in self.Chrom]
         FitList = sorted([chrom.fitness for chrom in self.Chrom], reverse=True)
+
+
+        # NextGeneration = []
+        print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
+
+        # count = 0
+        # while count < self.pSize:
+        #     for chrom in self.Chrom:
+        #         if chrom.fitness in FitList:
+        #             NextGeneration.append(chrom)
+        #             count += 1
+        #             FitList.remove(chrom.fitness)
+        ## Non-Repeat Method
+
+
         
         NextGeneration = [chrom for chrom in self.Chrom if chrom.fitness in FitList[:self.pSize]]
 
+ 
         
-        self.Chrom = NextGeneration
+
+        print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
         self.Size = self.pSize
         
+        self.Chrom = NextGeneration[:self.pSize]
   
     # END of Selection
   
