@@ -1,3 +1,4 @@
+
 import json
 import os
 
@@ -7,13 +8,32 @@ class SettingFile():
             with open("./Setting.json") as f:
                     data = json.load(f)
             self.data = data
+
+            if not os.path.exists(data['Path']):
+                os.makedirs(data['path'])
         except:
             init_setting = {
                 "StockID":"0050.TW",
-                "StartDate":"2009-08-30",
-                "EndDate":"2010-12-30",
-                "Path":"../data/stock/0050.TW/2009-08-30~2010-12-30",
-                "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH"]}
+                "TrainingPeriod": {
+                        "StartDate":"2009-08-30",
+                        "EndDate":"2010-12-30"
+                    },
+                "ValidationPeriod": {
+                        "StartDate":"2010-08-30",
+                        "EndDate":"2012-12-30"
+                    },
+                "Path":"../data/stock/0050.TW/",
+                "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI"],
+                "pSize": 100,
+                "CrossoverRate": 0.8,
+                "MutationRate": 0.03,
+                "InverstionRate": 0.3,
+                "Generation": 10,
+                "kroup": 5,
+                "mTS": 15,
+                "WeightPart":10,
+                "Capital": 100000          
+            }
             #init setting format
             self.__SavingFile(init_setting)
             self.data = init_setting
@@ -22,13 +42,12 @@ class SettingFile():
     
 
     def Set(self, **value):
+ 
+        setting = self.data
         try:
-            setting = self.data
             for i in value:
-                setting[str(i)] = str(value[i])
-        except:
-            print("File not exist")
-        try:
+                setting[str(i)] = value[i]
+
             self.__SavingFile(setting)
             print("Change setting  successfully")
         except:
@@ -55,8 +74,8 @@ class SettingFile():
         data = self.data
         print("============= Setting Data =============")
         print(f"Stock ID: {data['StockID']}")
-        print(f"Start Date: {data['StartDate']}")
-        print(f"End Date: {data['EndDate']}")
+        print(f">   Traning  Period\tStratDate: {data['TrainingPeriod']['StartDate']} ~ {data['TrainingPeriod']['EndDate']}")
+        print(f"> Validation Period\tStratDate: {data['ValidationPeriod']['StartDate']} ~ {data['ValidationPeriod']['EndDate']}")
         print(f"Path: {data['Path']}")
         print(f"Technical Indicator: {data['TechnicalIndicator']}")
         print("========================================")
@@ -72,8 +91,22 @@ class SettingFile():
 
 
 if __name__ == '__main__':
-# test function
-    baseEnv = SettingFile().Read()
-    # baseEnv.ReadSetting()
-    # baseEnv.Set(StockID = "0050.TW")
-    print(baseEnv)
+    baseEnv = SettingFile()
+    print(baseEnv.data['TrainingPeriod'])
+    baseEnv.print() 
+    # baseEnv.Set(TechnicalIndicator = ['CCI'])
+
+    # NewDate = {
+    #         "StartDate":"2010-08-30",
+    #         "EndDate":"2012-12-30"
+    #     }
+
+    # baseEnv.Set(ValidationPeriod = NewDate)
+    # baseEnv.Set(TrainingPeriod = {
+    #     "StartDate": "2009-10-01",
+	# 	"EndDate": "2010-12-30"
+    #     })
+
+    #  Way to set new date / Values
+   
+

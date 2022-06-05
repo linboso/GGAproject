@@ -32,11 +32,11 @@ Setting.print()
 # Simage().SignalImage()
 
 
-# Ranking().Top555() 
-# 執行 ranking 策略為 Top555 
+# Ranking().Top777() 
+# 執行 ranking 策略為 Top555 / Top777
 
 
-population = Population(pSize=100, kGroup=4, WeightPart=200, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=30)
+population = Population(pSize=20, kGroup=5, WeightPart=200, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=10, mTS=21)
 population.GenerateGeneration_With_logFile()
 
 

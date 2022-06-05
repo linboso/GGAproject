@@ -58,9 +58,9 @@ class Population():
                 f.write(f"Time: {e-s:3.5f}")
         ETime = time.time()
         print(f"Total Time: {ETime - STime}")
-
-
-
+        #
+        # Next Step Process Final GTSP
+        # and Vail thw GTSP
 
 
 
@@ -105,6 +105,7 @@ class Population():
         # NextGeneration = []
         print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
 
+        # NextGeneration = []
         # count = 0
         # while count < self.pSize:
         #     for chrom in self.Chrom:
@@ -112,19 +113,14 @@ class Population():
         #             NextGeneration.append(chrom)
         #             count += 1
         #             FitList.remove(chrom.fitness)
-        ## Non-Repeat Method
-
-
+        # Non-Repeat Method
         
         NextGeneration = [chrom for chrom in self.Chrom if chrom.fitness in FitList[:self.pSize]]
 
- 
-        
-
-        print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
         self.Size = self.pSize
-        
         self.Chrom = NextGeneration[:self.pSize]
+        
+        print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
   
     # END of Selection
   

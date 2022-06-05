@@ -1,15 +1,1 @@
-{
-	"StockID": "0050.TW",
-	"StartDate": "2009-08-30",
-	"EndDate": "2010-12-30",
-	"Path": "../data/stock/0050.TW/2009-08-30~2010-12-30",
-	"TechnicalIndicator": [
-		"MA5",
-		"MA20",
-		"MA30",
-		"RSI",
-		"MACD",
-		"STOCH",
-		"CCI"
-	]
-}
+{"StockID": "0050.TW", "TrainingPeriod": {"StartDate": "2009-08-30", "EndDate": "2010-12-30"}, "ValidationPeriod": {"StartDate": "2010-08-30", "EndDate": "2012-12-30"}, "Path": "../data/stock/0050.TW/", "TechnicalIndicator": ["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI"], "pSize": 100, "CrossoverRate": 0.8, "MutationRate": 0.03, "InverstionRate": 0.3, "Generation": 10, "kroup": 5, "mTS": 15, "WeightPart": 10, "Capital": 100000}

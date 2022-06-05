@@ -104,7 +104,7 @@ class Chromosome():
 
     def Fitness(self) -> float:
         Setting = SettingFile().Read()
-        with open(f"{Setting['Path']}/Top555.json") as f:
+        with open(f"{Setting['Path']}/Top777.json") as f:
             data = pd.DataFrame(json.load(f))
 
 

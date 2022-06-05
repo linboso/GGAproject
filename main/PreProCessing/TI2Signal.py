@@ -11,8 +11,8 @@ class TI2Signal():
     def __init__(self) -> None:
         setting = SettingFile().Read()
         self.stock_id = setting['StockID']
-        self.start = setting['StartDate']
-        self.end = setting['EndDate']
+        self.start = setting['TrainingPeriod']['StartDate']
+        self.end = setting['TrainingPeriod']['EndDate']
         self.ti_list = setting['TechnicalIndicator']
         self.path = setting['Path']
 
