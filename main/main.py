@@ -37,6 +37,7 @@ Setting = Setting.Read()
 
 
 population = Population(Setting=Setting)
-population.GenerateGeneration_With_logFile()
+# population.GenerateGeneration_With_logFile()
+population.GenerateGeneration()
 
 

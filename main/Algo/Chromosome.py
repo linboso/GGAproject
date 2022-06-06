@@ -6,7 +6,7 @@ import math
 
 
 class Chromosome():
-    def __init__(self, kGroup=3, WeightPart=21, mTS = 21, Capital = 10000, StrategyData = pd.DataFrame()) -> None:
+    def __init__(self, kGroup, WeightPart, mTS, Capital, StrategyData) -> None:
         self.kGroup:int = kGroup                                            #分幾群
         self.WeightPart:int = WeightPart                                    #要幾個 1
         self.mTS:int = mTS                                                  #有幾個 TS (根據Ranking策略)

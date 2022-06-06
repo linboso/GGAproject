@@ -67,27 +67,18 @@ class Population():
 
     def GenerateGeneration(self):
         import time
+        s = time.time()
         for i in range(self.Generation):
-            s = time.time()
+
             self.Selection()
-            e = time.time()
-            self.logFile(Generation=i, Operation="Selection", stime=s, etime=e, len=self.pSize)
-
-            s = time.time()
             self.Crossover()
-            e = time.time()
-            self.logFile(Generation=i, Operation="Crossover", stime=s, etime=e, len=self.pSize*self.CrossoverRate*1.5)
-
-            s = time.time()
             self.Mutation()
-            e = time.time()
-            self.logFile(Generation=i, Operation="Mutation", stime=s, etime=e, len=self.pSize*self.MutationRate)
-
-
-            s = time.time()
             self.Inversion()
-            e = time.time()
-            self.logFile(Generation=i, Operation="Inversion", stime=s, etime=e, len=self.pSize*self.InversionRate)
+
+        e = time.time()
+        print(f"Total Time: {e-s}")
+        return self.Chrom
+        
 
             
             
@@ -99,7 +90,7 @@ class Population():
 
 
         # NextGeneration = []
-        print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
+        # print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
 
         # NextGeneration = []
         # count = 0
@@ -116,7 +107,7 @@ class Population():
         self.Size = self.pSize
         self.Chrom = NextGeneration[:self.pSize]
         
-        print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
+        # print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
   
     # END of Selection
   
