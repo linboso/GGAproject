@@ -3,11 +3,11 @@ import numpy as np
 import json
 import sys
 
-from .SettingFile import SettingFile
+
 
 class Ranking():
-    def __init__(self) -> None:
-        setting = SettingFile().Read()
+    def __init__(self, Setting) -> None:
+        setting = Setting
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']

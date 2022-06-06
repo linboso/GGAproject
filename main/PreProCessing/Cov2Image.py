@@ -8,14 +8,10 @@ import json
 import pandas as pd
 
 
-from .SettingFile import SettingFile
-
-
-
 class Simage():
-    def __init__(self) -> None:
+    def __init__(self, Setting) -> None:
         # self.data = pd.DataFrame()
-        setting = SettingFile().Read()
+        setting = Setting
         self.stock_id = setting['StockID']
         self.start = setting['StartDate']
         self.end = setting['EndDate']

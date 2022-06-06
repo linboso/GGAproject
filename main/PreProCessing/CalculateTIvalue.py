@@ -4,13 +4,11 @@ import pandas as pd
 import talib
 from talib import abstract
 
-from .SettingFile import SettingFile
-
 
 
 class TIValue():
-    def __init__(self) -> None:
-        setting = SettingFile().Read()
+    def __init__(self, Setting) -> None:
+        setting = Setting
         
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']

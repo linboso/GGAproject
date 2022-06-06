@@ -1,12 +1,11 @@
 import pandas as pd
 import os
 import yfinance as yf
-from .SettingFile import SettingFile
 
 
 class DownloadStockData():
-    def __init__(self) -> None:
-        setting = SettingFile().Read()
+    def __init__(self, Setting) -> None:
+        setting = Setting
 
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']

@@ -24,14 +24,15 @@ class SettingFile():
                     },
                 "Path":"../data/stock/0050.TW/",
                 "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI"],
+                "Strategy": "Top777",
                 "pSize": 100,
                 "CrossoverRate": 0.8,
                 "MutationRate": 0.03,
                 "InverstionRate": 0.3,
                 "Generation": 10,
                 "kroup": 5,
-                "mTS": 15,
-                "WeightPart":10,
+                "mTS": 21,
+                "WeightPart":100,
                 "Capital": 100000          
             }
             #init setting format
@@ -78,6 +79,15 @@ class SettingFile():
         print(f"> Validation Period\tStratDate: {data['ValidationPeriod']['StartDate']} ~ {data['ValidationPeriod']['EndDate']}")
         print(f"Path: {data['Path']}")
         print(f"Technical Indicator: {data['TechnicalIndicator']}")
+        print(f"Strategy: {data['Strategy']}")
+        print(f"CrossoverRate:  {data['CrossoverRate']}")
+        print(f" MutationRate:  {data['MutationRate']}")
+        print(f"InversionRate: {data['InversionRate']}")
+        print(f"Generation: {data['Generation']}")
+        print(f"kGroup: {data['kGroup']}")
+        print(f"mTS: {data['mTS']}")
+        print(f"WeightPart: {data['WeightPart']}")
+        print(f"Capital: {data['Capital']}")
         print("========================================")
 
 

@@ -3,13 +3,12 @@ import json
 import os
 
 
-from .SettingFile import SettingFile
 from .Case import Case
 
 
 class TI2Signal():
-    def __init__(self) -> None:
-        setting = SettingFile().Read()
+    def __init__(self, Setting) -> None:
+        setting = Setting
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']

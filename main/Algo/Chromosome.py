@@ -4,16 +4,14 @@ import pandas as pd
 import json 
 import math
 
-sys.path.append("..")
-from PreProCessing.SettingFile import SettingFile
-# from ..PreProCessing import SettingFile 
-
 
 class Chromosome():
-    def __init__(self, kGroup=3, WeightPart=21, mTS = 21, Capital = 10000) -> None:
+    def __init__(self, kGroup=3, WeightPart=21, mTS = 21, Capital = 10000, StrategyData = pd.DataFrame()) -> None:
         self.kGroup:int = kGroup                                            #分幾群
         self.WeightPart:int = WeightPart                                    #要幾個 1
         self.mTS:int = mTS                                                  #有幾個 TS (根據Ranking策略)
+
+        self.Data:pd.DataFrame = StrategyData
 
         self.Capital:float = Capital
         self.gene:np.array
@@ -103,10 +101,7 @@ class Chromosome():
         return res
 
     def Fitness(self) -> float:
-        Setting = SettingFile().Read()
-        with open(f"{Setting['Path']}/Top777.json") as f:
-            data = pd.DataFrame(json.load(f))
-
+ 
 
         ALLtsp = self.__ADVcombine()
         TSPlen = len(ALLtsp)
@@ -117,7 +112,7 @@ class Chromosome():
                 Allwight = self.getWeight()
                 for TSP in ALLtsp:
                     for TS in range(len(TSP)):
-                        ReturnTSP.append(data['ARR'][TSP[TS]-1] * Allwight[TS+1] * self.Capital)
+                        ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allwight[TS+1] * self.Capital)
             returnTSP()
             return sum(ReturnTSP)/TSPlen
 
@@ -129,7 +124,7 @@ class Chromosome():
                 for TSP in ALLtsp:
                     minRiskTsp = sys.maxsize
                     for TS in range(len(TSP)):
-                        minRiskTsp = min(minRiskTsp, data['MDD'][TSP[TS]-1])
+                        minRiskTsp = min(minRiskTsp, self.Data['MDD'][TSP[TS]-1])
                     RiskTSP.append(minRiskTsp)
             riskTSP()
             return sum(RiskTSP)/TSPlen

@@ -1,35 +1,36 @@
 
 import copy
-import sys
+import json
+import pandas as pd
 import numpy as np
 
 from .Chromosome import Chromosome
 
-sys.path.append("..")
-from PreProCessing.SettingFile import SettingFile
-
-
 
 class Population():
-    def __init__(self, pSize=10, CrossoverRate=0.80, MutationRate=0.3, InversionRate=0.30, Generation=10, kGroup=5, mTS=15, WeightPart=10, Capital=100000) -> None:
-        self.pSize:int = pSize
-        self.Size:int = pSize
+    def __init__(self, Setting) -> None:
+        self.Setting = Setting
+        self.pSize:int = Setting['pSize']
+        self.Size:int = Setting['pSize']
         self.Chrom:list[Chromosome] = []
-        self.CrossoverRate:float = CrossoverRate
-        self.MutationRate:float = MutationRate
-        self.InversionRate:float = InversionRate
-        self.Generation:int = Generation
+        self.CrossoverRate:float = Setting['CrossoverRate']
+        self.MutationRate:float = Setting['MutationRate']
+        self.InversionRate:float = Setting['InversionRate']
+        self.Generation:int = Setting['Generation']
 
-        self.mTS:int = mTS
-        self.kGroup:int = kGroup
-        self.WeightPart:int = WeightPart
-        self.Capital:float = Capital
+        self.mTS:int = Setting['mTS']
+        self.kGroup:int = Setting['kGroup']
+        self.WeightPart:int = Setting['WeightPart']
+        self.Capital:float = Setting['Capital']
 
-        self.GroupingPart_len:int = mTS + kGroup 
-        self.WeightPart_len:int = WeightPart + kGroup + 1
+        self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
+        self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
-
-        self.Initiate()
+        with open(f"{Setting['Path']}/{Setting['Strategy']}.json") as f:
+            StrategyData = pd.DataFrame(json.load(f))
+            
+        self.Chrom:list = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
+        
 
     def Genealogy(self):
         for i in range(self.Size):
@@ -39,35 +40,30 @@ class Population():
     def GenerateGeneration_With_logFile(self):
         import time
         import os
-        
-        Setting = SettingFile().Read()
-        if not os.path.exists(f'../data/{Setting["Path"]}/history/'):
-            os.makedirs(f'../data/{Setting["Path"]}/history')
+
+        if not os.path.exists(f'../data/{self.Setting["Path"]}/history/'):
+            os.makedirs(f'../data/{self.Setting["Path"]}/history')
 
         STime = time.time()
         for i in range(self.Generation):
+            print(f"{i+1:3d}-th Generation")
             s = time.time()
             self.Selection()
             self.Crossover()
             self.Mutation()
             self.Inversion()
             e = time.time()
-            print(f"Time: {e-s}")
-            with open(f'../data/{Setting["Path"]}/history/{i+1}-th.txt', 'w') as f:
+            print(f"Time: {e-s}\r\n")
+            with open(f'../data/{self.Setting["Path"]}/history/{i+1}-th.txt', 'w') as f:
                 f.writelines(f"Fitness: {chrom.fitness:10f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
                 f.write(f"Time: {e-s:3.5f}")
+
         ETime = time.time()
         print(f"Total Time: {ETime - STime}")
         #
         # Next Step Process Final GTSP
         # and Vail thw GTSP
 
-
-
-    def Initiate(self) -> list:
- 
-        self.Chrom = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital) for _ in range(self.pSize)]
-        return self.Chrom
 
     def GenerateGeneration(self):
         import time
