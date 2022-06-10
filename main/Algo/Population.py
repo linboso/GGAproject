@@ -37,7 +37,7 @@ class Population():
             print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
 
 
-    def GenerateGeneration_With_logFile(self):
+    def GenerateOffspring_With_logFile(self):
         import time
         import os
 
@@ -65,10 +65,10 @@ class Population():
         # and Vail thw GTSP
 
 
-    def GenerateGeneration(self):
+    def GenerateOffspring(self):
         import time
         s = time.time()
-        for i in range(self.Generation):
+        for _ in range(self.Generation):
 
             self.Selection()
             self.Crossover()
@@ -87,21 +87,8 @@ class Population():
 
         [chrom.Fitness() for chrom in self.Chrom]
         FitList = sorted([chrom.fitness for chrom in self.Chrom], reverse=True)
-
-
-        # NextGeneration = []
         # print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
 
-        # NextGeneration = []
-        # count = 0
-        # while count < self.pSize:
-        #     for chrom in self.Chrom:
-        #         if chrom.fitness in FitList:
-        #             NextGeneration.append(chrom)
-        #             count += 1
-        #             FitList.remove(chrom.fitness)
-        # Non-Repeat Method
-        
         NextGeneration = [chrom for chrom in self.Chrom if chrom.fitness in FitList[:self.pSize]]
 
         self.Size = self.pSize

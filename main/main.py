@@ -4,7 +4,7 @@ from PreProCessing.CalculateTIvalue import TIValue
 from PreProCessing.TI2Signal import TI2Signal
 from PreProCessing.Ranking import Ranking
 
-from PreProCessing.Cov2Image import Simage
+# from PreProCessing.Cov2Image import Simage
 
 from SettingFile import SettingFile
 
@@ -16,7 +16,7 @@ Setting = SettingFile()
 Setting.print() 
 Setting = Setting.Read()
 
-# DownloadStockData(Setting=Setting).StockDataDownload()
+DownloadStockData(Setting=Setting).DownloadStockData()
 # 下載 股票資料
 
 # TIv = TIValue(Setting = Setting)
@@ -28,16 +28,12 @@ Setting = Setting.Read()
 # TI2Signal(Setting = Setting).ProduceTable()
 # # 把value 轉換成 signal 
 
-# Simage().StockImage()
-# Simage().SignalImage()
-
-
 # Ranking(Setting = Setting).Top777() 
 # 執行 ranking 策略為 Top555 / Top777
 
 
-population = Population(Setting=Setting)
-# population.GenerateGeneration_With_logFile()
-population.GenerateGeneration()
+# population = Population(Setting=Setting)
+# population.GenerateGenerateOffspring()
+# population.GenerateOffspring()
 
 

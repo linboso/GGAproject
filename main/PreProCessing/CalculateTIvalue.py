@@ -14,7 +14,7 @@ class TIValue():
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']
         self.ti_list = setting['TechnicalIndicator']
-        self.path = setting['Path']
+        self.path = f"{setting['Path']}/{setting['StockID']}/TraningData"
 
     def CalculateTIValue(self):
         _df_with_ti = df = pd.DataFrame()
@@ -29,13 +29,14 @@ class TIValue():
 
             #read stock.json file and convent to DataFrame Type
         except:
-            print(f"At {os.getcwd() + self.path} no file name \" {self.start}~{self.end}/StockData.json\"\r\n")
+            print(f"At {os.getcwd() + self.path} no file name \" {self.path}/StockData.json\"\r\n")
 
         
         _ALL_TI_LIST = talib.get_functions()
  
         for _ti in self.ti_list: #selected n techical indicator
             try:
+                # ========================= need improve
                 if not _ti in _ALL_TI_LIST:
                     for k in range(len(_ti)):
                         if _ti[k].isdigit() == True: # 這邊需要改

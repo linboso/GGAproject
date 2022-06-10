@@ -8,42 +8,62 @@ class DownloadStockData():
         setting = Setting
 
         self.stock_id = setting['StockID']
-        self.start = setting['TrainingPeriod']['StartDate']
-        self.end = setting['TrainingPeriod']['EndDate']
-        self.path = setting['Path']
+        self.Tstart = setting['TrainingPeriod']['StartDate']
+        self.Tend = setting['TrainingPeriod']['EndDate']
+        
+        self.Vstart = setting['ValidationPeriod']['StartDate']
+        self.Vend = setting['ValidationPeriod']['EndDate']
+        
+        self.path = f"{setting['Path']}/{setting['StockID']}"
         print(f"Store at {self.path}")
 
 
-    def StockDataDownload(self):
+    def DownloadStockData(self):
         try:       
-            data:pd.DataFrame = yf.download(self.stock_id, start = self.start, end = self.end)
+            data:pd.DataFrame = yf.download(self.stock_id, start = self.Tstart, end = self.Tend)
             data.drop(['Adj Close'], axis=1, inplace=True)
             data.columns = ["open","high","low","close","volume"]
             # download Stock-data from yahoo
-            # and drop 1 column, "Adj Close" which are no needs to use 
+            # and drop 1 column, "Adj Close" which is not need to be used
         except:
-            print("Download Stock Data Failed")
+            print("Fail to download Traning Data ")
 
         try:
-            if not os.path.exists(self.path):
-                os.makedirs(self.path)
-                print("Create folder path")
+            if not os.path.exists(f"{self.path}/TraningData/"):
+                os.makedirs(f"{self.path}/TraningData/")
+                print("Create TraningData folder")
             
-            data.to_json(f"{self.path}/StockData.json", orient='records')
-            # data = pd.concat([pd.DataFrame(data.index).reset_index(drop=True), data.reset_index(drop=True)], axis=1)
-            data = pd.DataFrame(data.index)
-            data.to_json(f"{self.path}/Date.json", orient='records')
-            # Save another data but with "Date"
+            data.to_json(f"{self.path}/TraningData/StockData.json", orient='records')
 
-            # Save the data as .json Type
-            # data name save as {Stock_Id}+{Star_day}+{End_day}.json
-            print(f"Saving {self.stock_id} stock data file at {self.path} \r\n")
+            data = pd.DataFrame(data.index)
+            data.to_json(f"{self.path}/TraningData/Date.json", orient='records')
+            # Separate Date & StockDate
+            # Save as Json Type
+            print(f"Saving TraningData data at {self.path}/TraningData \r\n")
+        except:
+            print("Fail to saving file \r\n")
+        #
+        # ValidationData
+        #
+        try:       
+            data:pd.DataFrame = yf.download(self.stock_id, start = self.Vstart, end = self.Vend)
+            data.drop(['Adj Close'], axis=1, inplace=True)
+            data.columns = ["open","high","low","close","volume"]
+        except:
+            print("Fail to download Traning Data ")
+
+        try:
+            if not os.path.exists(f"{self.path}/ValidationData/"):
+                os.makedirs(f"{self.path}/ValidationData/")
+                print("Create ValidationData folder")
+            
+            data.to_json(f"{self.path}/ValidationData/StockData.json", orient='records')
+            data = pd.DataFrame(data.index)
+            data.to_json(f"{self.path}/ValidationData/Date.json", orient='records')
+
+            print(f"Saving ValidationData data at {self.path}/ValidationData \r\n")
         except:
             print("Fail to saving file \r\n")
         
 
 
-if __name__ == "__main__":
-    ds = DownloadStockData()
-    ds.StockDataDownload()
-    print(ds)

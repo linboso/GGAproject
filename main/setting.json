@@ -8,7 +8,7 @@
 		"StartDate": "2010-08-30",
 		"EndDate": "2012-12-30"
 	},
-	"Path": "../data/stock/0050.TW/",
+	"Path": "../data/stock",
 	"TechnicalIndicator": [
 		"MA5",
 		"MA20",

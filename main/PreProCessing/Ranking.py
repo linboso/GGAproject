@@ -13,7 +13,7 @@ class Ranking():
         self.end = setting['TrainingPeriod']['EndDate']
         self.path = setting['Path']
         
-        with open(f'{self.path}/Table.json') as f:
+        with open(f'{self.path}/TraningData/Table.json') as f:
             self.table = pd.DataFrame(json.load(f))
 
         
@@ -77,7 +77,7 @@ class Ranking():
         Top555 = Top555.drop(Keep).reset_index(drop=True)
         # 一次 drop 所有不要的部位
         
-        Top555.T.to_json(f"{self.path}/Top555.json", orient = 'index')
+        Top555.T.to_json(f"{self.path}/TraningData/Top555.json", orient = 'index')
         # 先 轉置
         print("Finished TOP555 Ranking")
     
@@ -131,7 +131,7 @@ class Ranking():
         Keep = [dontkeep for dontkeep in Top777.index if dontkeep not in Keep]
         
         Top777 = Top777.drop(Keep).reset_index(drop=True)
-        Top777.T.to_json(f"{self.path}/Top777.json", orient = 'index')
+        Top777.T.to_json(f"{self.path}/TraningData/Top777.json", orient = 'index')
         print("Finished Top777 Ranking")
 
 

@@ -1,7 +1,5 @@
 import pandas as pd
 import json
-import os
-
 
 from .Case import Case
 
@@ -13,7 +11,7 @@ class TI2Signal():
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']
         self.ti_list = setting['TechnicalIndicator']
-        self.path = setting['Path']
+        self.path = f"{setting['Path']}/{setting['StockID']}/TraningData"
 
     def ProduceSignal(self):
         ti_format = TIvale = data = pd.DataFrame()
@@ -21,7 +19,6 @@ class TI2Signal():
             with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
                 ti_format = pd.DataFrame(json.load(f))
         except:
-
             print("Missing TIformat.json \tlocation: ./PreProCessing/Case/TIformat.json")
 
         try:
@@ -39,84 +36,86 @@ class TI2Signal():
         # above all are just make sure to get Essential Data Value
         signal = []
         tmp = {}
-        for i in self.ti_list: # 有被選擇的 TI list 
-            #e.g  假設 i = MA5 
-            # i[:2] == MA 確實 in ti format 裡面
-            # 但像是 MACD 的 [:2] 也是 MA 
-            # 所以 必須加上 i=MA5 not in ti format 裡面  
+        for TS in self.ti_list: # 有被選擇的 TI list 
 
-            if i not in ti_format:
-                for k in range(len(i)):
-                    if i[k].isdigit() == True:
+            if TS not in ti_format:
+                for k in range(len(TS)):
+                    if TS[k].isdigit() == True:
                         break
-                if i[:k] not in tmp:
-                    tmp[i[:k]] = []
-                tmp[i[:k]].append(i)
-                # print(tmp)
+                print(f" >>> {TS[:k]}  <>  {TS} \t{tmp}")
+                if TS[:k] not in tmp:
+                    tmp[TS[:k]] = []
+                tmp[TS[:k]].append(TS)
+            #e.g  
+            # 假設 TS == MA5 
+            # TS[:2] == MA 確實 in TS-format 裡面
+            # 但像是 MACD 的 [:2] 也是 MA 
+            # 所以 必須加上 (TS == MA5) not in TI-format 裡面  
+                
 
             else:
-                case = ti_format[i]['Case']
-                print(f"TI: {i} is belong to \t Case : {case}")
+                case = ti_format[TS]['Case']
+                print(f"TI: {TS} is belong to \t Case : {case}")
                 if case == "1":
                     signal = Case.case1(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
                     )
 
                 elif case == "2":
                     signal = Case.case2(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        ti_format[i]["InputArray"]['C1'],           # C1
-                        ti_format[i]["InputArray"]['C2']            # C2
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "3":
                     signal = Case.case3(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[i]["InputArray"]['C1'],           # C1
-                        ti_format[i]["InputArray"]['C2']            # C2
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "4":
                     signal = Case.case4(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[i]["InputArray"]['C1'],           # C1
-                        ti_format[i]["InputArray"]['C2']            # C2
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "5":
                     signal = Case.case5(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[i]["InputArray"]['ti3']],    # Get ti 3 Value
-                        ti_format[i]["InputArray"]['C1']            # C1
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        ti_format[TS]["InputArray"]['C1']            # C1
                     )
                 elif case == "6":
                     signal = Case.case6(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[i]["InputArray"]['ti3']],    # Get ti 3 Value
-                        TIvale[ti_format[i]["InputArray"]['ti4']]     # Get ti 4 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
                     )
                 elif case == "AROON": # Special
                     signal = Case.caseAROON(
-                        TIvale[ti_format[i]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[i]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[i]["InputArray"]['ti3']],    # Get ti 3 Value
-                        ti_format[i]["InputArray"]['C1'],           # C1
-                        ti_format[i]["InputArray"]['C2'],           # C2
-                        ti_format[i]["InputArray"]['C3']            # C3
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2'],           # C2
+                        ti_format[TS]["InputArray"]['C3']            # C3
                     )
 
                 signal = pd.DataFrame(signal)
-                signal.columns = [i] # name col
+                signal.columns = [TS]       # 命名 Column
                 data = pd.concat([data, signal], axis=1)
                 data.to_json(f"{self.path}/Signal.json", orient='records')
 
-       # 等全部的 ma, sma... 之類的指標都 一次append 到 tmp 裡面後再處理
+       # 把 ma, sma... 之類的指標都 append 到 tmp 裡面後再一次處理
         for i in tmp:
-            combinaion = self.__combine(tmp[i])
-            print(f"{tmp[i]} >> before combination >> {combinaion}")
-            for c in combinaion:
+            Combinaion = self.__combine(tmp[i])
+            print(f"{tmp[i]} Do Combination  \r\n{Combinaion}")
+            for c in Combinaion:
                 try:
                     signal = Case.case1(
                         TIvale[c[0]],
@@ -134,7 +133,7 @@ class TI2Signal():
 
     def __combine(self, ti_list:list) -> list: 
         # 利用 backtracking 做組合 
-        # 但是 要先確保 list 裡面的指標 要是 由小 --> 大 的排列方式
+        # 但要 先確保 list 裡面的指標 要是 由小 --> 大 的排列方式
         n = len(ti_list)
         res = []
 
@@ -154,11 +153,10 @@ class TI2Signal():
         
 
     def ProduceTable(self):
-        with open(f"{self.path}/Signal.json") as f:
-            Signal = pd.DataFrame(json.load(f))
+        with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
+            Signal = pd.DataFrame(json.load(f1))
+            Data = pd.DataFrame(json.load(f2))
 
-        with open(f"{self.path}/StockData.json") as f:
-            Data = pd.DataFrame(json.load(f))
 
         Signal_list = Signal.columns
         Table = pd.concat([Signal['Date'], Data['close']], axis=1)
@@ -168,7 +166,7 @@ class TI2Signal():
             print(f"========= {buy} =========")
             for sell in Signal_list[1:]: 
                 Buy_Signal = Signal[buy].values   # pd.Series to list
-                Sell_Signal = Signal[sell].values # List 計算上 速度比較快
+                Sell_Signal = Signal[sell].values # 在小資料的情況下 List 的計算速度比 numpy.array 快
                 
                 New_Signal = []
                 Flag:bool = False
@@ -195,7 +193,7 @@ class TI2Signal():
                 print(f"==> {sell}")
             print()
 
-        print("Finished Producing TradingRule Table")
+        print("Finished Producing TradingRule Table\r\n")
             
       
 
