@@ -1,5 +1,5 @@
 import os
-import json
+
 import pandas as pd
 import talib
 from talib import abstract
@@ -17,21 +17,21 @@ class TIValue():
         self.path = f"{setting['Path']}/{setting['StockID']}/TraningData"
 
     def CalculateTIValue(self):
-        _df_with_ti = df = pd.DataFrame()
+        df = pd.DataFrame()
         try:
             if not os.path.exists(self.path):
                 print(f"No such {self.stock_id} info & data")
                 print("要先下載資料再作運算")
             else:
                 with open(f"{self.path}/StockData.json") as f:
-                    df = pd.DataFrame(json.load(f))
+                    df = pd.read_json(f)
  
 
             #read stock.json file and convent to DataFrame Type
         except:
             print(f"At {os.getcwd() + self.path} no file name \" {self.path}/StockData.json\"\r\n")
 
-        
+        _df_with_ti = pd.DataFrame()
         _ALL_TI_LIST = talib.get_functions()
  
         for _ti in self.ti_list: #selected n techical indicator
@@ -61,6 +61,6 @@ class TIValue():
     def getTIValue(self):
         table = pd.DataFrame()
         with open(f"{self.path}/TIvalue.json", 'r') as f:
-            table = pd.DataFrame(json.load(f))
+            table = pd.read_json(f)
         return table
 

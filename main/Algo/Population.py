@@ -1,8 +1,11 @@
 
 import copy
-import json
+# import json
 import pandas as pd
 import numpy as np
+import gc
+
+
 
 from .Chromosome import Chromosome
 
@@ -26,8 +29,8 @@ class Population():
         self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
-        with open(f"{Setting['Path']}/{Setting['Strategy']}.json") as f:
-            StrategyData = pd.DataFrame(json.load(f))
+        with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
+            StrategyData = pd.read_json(f)
             
         self.Chrom:list = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
         
@@ -35,14 +38,15 @@ class Population():
     def Genealogy(self):
         for i in range(self.Size):
             print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
+    # print all Chromosome
 
 
     def GenerateOffspring_With_logFile(self):
         import time
         import os
 
-        if not os.path.exists(f'../data/{self.Setting["Path"]}/history/'):
-            os.makedirs(f'../data/{self.Setting["Path"]}/history')
+        if not os.path.exists(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/'):
+            os.makedirs(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History')
 
         STime = time.time()
         for i in range(self.Generation):
@@ -54,9 +58,11 @@ class Population():
             self.Inversion()
             e = time.time()
             print(f"Time: {e-s}\r\n")
-            with open(f'../data/{self.Setting["Path"]}/history/{i+1}-th.txt', 'w') as f:
+            gc.collect()
+            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/{i+1}-th.txt', 'w') as f:
                 f.writelines(f"Fitness: {chrom.fitness:10f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
                 f.write(f"Time: {e-s:3.5f}")
+            
 
         ETime = time.time()
         print(f"Total Time: {ETime - STime}")
@@ -76,10 +82,11 @@ class Population():
             self.Inversion()
 
         e = time.time()
+        gc.collect()
         print(f"Total Time: {e-s}")
-        return self.Chrom
-        
-
+        print(f"Finish Iterate\r\n")
+    
+        #Do BackTesting
             
             
 
@@ -93,8 +100,14 @@ class Population():
 
         self.Size = self.pSize
         self.Chrom = NextGeneration[:self.pSize]
-        
+
+        del NextGeneration
+        # del tmp
+
+        gc.collect(generation=0)
+
         # print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
+        
   
     # END of Selection
   
@@ -163,8 +176,9 @@ class Population():
 
             self.Size += 1
             self.Chrom.append(VarChrom)
-
             ## print(f"===================================== \t\n")
+
+       
             
     # END of Mutation
 
@@ -182,6 +196,9 @@ class Population():
             self.Size += 1
             
             self.Chrom.append(VarChrom)
+
+        # del Variants
+        # gc.collect(generation=0)
         
     # END of Inversion
             
@@ -283,6 +300,10 @@ class Population():
 
             self.Size += 1
             round += 1
+
+        # del Parents
+        # del Offsprings
+        # gc.collect(generation=0)
       
     # END of Crossover
 

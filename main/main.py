@@ -11,12 +11,13 @@ from SettingFile import SettingFile
 from Algo.Population import Population
 from Algo.Chromosome import Chromosome
 
+import cProfile
 
 Setting = SettingFile()
 Setting.print() 
 Setting = Setting.Read()
 
-DownloadStockData(Setting=Setting).DownloadStockData()
+# DownloadStockData(Setting=Setting).DownloadStockData()
 # 下載 股票資料
 
 # TIv = TIValue(Setting = Setting)
@@ -26,14 +27,18 @@ DownloadStockData(Setting=Setting).DownloadStockData()
 
 # TI2Signal(Setting = Setting).ProduceSignal()
 # TI2Signal(Setting = Setting).ProduceTable()
-# # 把value 轉換成 signal 
+# # # 把value 轉換成 signal 
 
-# Ranking(Setting = Setting).Top777() 
+# Ranking(Setting = Setting).Top555() 
 # 執行 ranking 策略為 Top555 / Top777
 
 
-# population = Population(Setting=Setting)
-# population.GenerateGenerateOffspring()
+population = Population(Setting=Setting)
+# cProfile.run('population.GenerateOffspring_With_logFile()')
+population.GenerateOffspring_With_logFile()
 # population.GenerateOffspring()
+# population.Genealogy()
+#iterate
 
 
+#chromosome 用 array 算 fintness?

@@ -1,15 +1,16 @@
+
 import sys
 import numpy as np
 import pandas as pd 
-import json 
 import math
+
 
 
 class Chromosome():
     def __init__(self, kGroup, WeightPart, mTS, Capital, StrategyData) -> None:
-        self.kGroup:int = kGroup                                            #分幾群
-        self.WeightPart:int = WeightPart                                    #要幾個 1
-        self.mTS:int = mTS                                                  #有幾個 TS (根據Ranking策略)
+        self.kGroup:int = kGroup                                                    #分幾群
+        self.WeightPart:int = WeightPart                                            #要幾個 1
+        self.mTS:int = mTS                                                          #有幾個 TS (根據Ranking策略)
 
         self.Data:pd.DataFrame = StrategyData
 
@@ -55,8 +56,7 @@ class Chromosome():
 
 
     def getGTSP(self):
-        GTSP = []
-        tmp = []
+        GTSP, tmp = [], []
         for i in self.gene[:self.mTS + self.kGroup]:
             if i == 0:
                 GTSP.append(tmp)
@@ -69,13 +69,11 @@ class Chromosome():
     def getWeight(self):
         Weight = []
         count = 0
-        total_ones = self.WeightPart
-        # print(f"{self.chromosome[self.mTS + self.kGroup:]}")
+
         for i in self.gene[self.mTS + self.kGroup:]:
             if i == 0:
-                # print(f"--> {count}")
-                Weight.append(count/total_ones)
-                count = 0
+                Weight.append(count/self.WeightPart)
+                count = 0 
             else:
                 count += 1
 
@@ -101,57 +99,79 @@ class Chromosome():
         return res
 
     def Fitness(self) -> float:
- 
-
         ALLtsp = self.__ADVcombine()
         TSPlen = len(ALLtsp)
     
-        def PR() -> float:
+        def PR() -> float:    
+            Allweight = self.getWeight()
             ReturnTSP = []
-            def returnTSP():
-                Allwight = self.getWeight()
-                for TSP in ALLtsp:
-                    for TS in range(len(TSP)):
-                        ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allwight[TS+1] * self.Capital)
-            returnTSP()
-            return sum(ReturnTSP)/TSPlen
 
-        # ======================= PR =======================
+            for TSP in ALLtsp:
+                [ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1]) for TS in range(self.kGroup)]
+            
+                # for TS in range(self.kGroup):
+                #     ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1])
+         
+            return sum(ReturnTSP)*self.Capital/TSPlen
+
+        # # ======================= PR =======================
 
         def RISK() -> float:
             RiskTSP = []
-            def riskTSP():
-                for TSP in ALLtsp:
-                    minRiskTsp = sys.maxsize
-                    for TS in range(len(TSP)):
-                        minRiskTsp = min(minRiskTsp, self.Data['MDD'][TSP[TS]-1])
-                    RiskTSP.append(minRiskTsp)
-            riskTSP()
-            return sum(RiskTSP)/TSPlen
 
+            for TSP in ALLtsp:
+                # minRiskTsp = sys.maxsize
+                # for TS in TSP:
+                #     minRiskTsp = min(minRiskTsp, self.Data['MDD'][TS-1])
+                # RiskTSP.append(minRiskTsp)
+                RiskTSP.append(min([self.Data['MDD'][TS-1] for TS in TSP]))
+           
+            return sum(RiskTSP)/TSPlen
+        
         # ====================== RISK =======================
 
         def GB() -> float:
-            sum = 0
+            S = []
             for TSG in self.getGTSP():
                 tmp = len(TSG)/self.mTS
-                sum += -tmp*math.log(tmp, 10)
-            return sum
+                S.append(-tmp*math.log(tmp, 10))
+            return sum(S)
 
         # ======================= GB =======================
 
         def WB() -> float:
-            sum = 0
+            S = 0
             for C in self.getWeight():
                 if C == 0:
                     continue
-                sum += -C*math.log(C, 10)
-            return sum
+                S += -C*math.log(C, 10)
+                # 此 C = |ci| / T 
+                # getWeight() 都算好了
+            return S
 
         self.fitness = PR()*RISK()*GB()*WB()
+        # del ALLtsp
+        
 
 
 
+if __name__ == "__main__":
+    import cProfile
+    #it__(self, kGroup, WeightPart, mTS, Capital, StrategyData) 
+    with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+            StrategyData = pd.read_json(f)
+
+    c = Chromosome(3, 100, 15, 100000, StrategyData)
+    cProfile.run('c.Fitness()')
+    # a = 0.042735868 * 0.36
+    # print(a)
+    # b = 0.0548327287 * 0.17
+    # print(b)
+    # c = 0.0757129283 * 0.37
+    # print(c)
+    # print()
+    # print(a+b+c)
+    # print(np.average([0, 0.042735868, 0.0548327287, 0.0757129283], weights=[0.1 ,0.36, 0.17,0.37]))
 
 
 

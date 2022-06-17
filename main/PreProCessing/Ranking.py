@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import json
 import sys
 
@@ -11,7 +10,7 @@ class Ranking():
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']
-        self.path = setting['Path']
+        self.path = f"{setting['Path']}/{setting['StockID']}"
         
         with open(f'{self.path}/TraningData/Table.json') as f:
             self.table = pd.DataFrame(json.load(f))

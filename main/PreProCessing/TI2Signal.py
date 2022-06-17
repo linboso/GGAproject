@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 
 from .Case import Case
 
@@ -17,19 +16,19 @@ class TI2Signal():
         ti_format = TIvale = data = pd.DataFrame()
         try:
             with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
-                ti_format = pd.DataFrame(json.load(f))
+                ti_format = pd.read_json(f)
         except:
             print("Missing TIformat.json \tlocation: ./PreProCessing/Case/TIformat.json")
 
         try:
             with open(f"{self.path}/TIvalue.json") as f:
-                TIvale = pd.DataFrame(json.load(f))
+                TIvale = pd.read_json(f)
         except:
             print(f"Missing TIvalue.json \tlocation: {self.path}/TIvalue.json")
 
         try:
             with open(f"{self.path}/Date.json") as f:
-                data = pd.DataFrame(json.load(f))
+                data = pd.read_json(f)
         except:
             print(f"Missing Date.json \tlocation: {self.path}/Date.json")
         
@@ -154,8 +153,8 @@ class TI2Signal():
 
     def ProduceTable(self):
         with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
-            Signal = pd.DataFrame(json.load(f1))
-            Data = pd.DataFrame(json.load(f2))
+            Signal = pd.read_json(f1)
+            Data = pd.read_json(f2)
 
 
         Signal_list = Signal.columns
