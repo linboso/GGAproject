@@ -23,7 +23,7 @@
 	"CrossoverRate": 0.8,
 	"MutationRate": 0.03,
 	"InversionRate": 0.6,
-	"Generation": 10,
+	"Generation": 25,
 	"kGroup": 3,
 	"mTS": 15,
 	"WeightPart": 100,

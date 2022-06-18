@@ -1,8 +1,7 @@
 
-import sys
 import numpy as np
 import pandas as pd 
-import math
+
 
 
 
@@ -55,6 +54,10 @@ class Chromosome():
         return self.gene
 
 
+    # def getGTSP(self):
+    #     tmp = np.array_split(self.gene[:self.mTS + self.kGroup -1], np.where(self.gene[:self.mTS + self.kGroup -1] == 0)[0])
+    #     return [GTSP[1:] if GTSP[0] == 0 else GTSP[:] for GTSP in tmp]
+
     def getGTSP(self):
         GTSP, tmp = [], []
         for i in self.gene[:self.mTS + self.kGroup]:
@@ -65,23 +68,27 @@ class Chromosome():
                 tmp.append(i)
 
         return GTSP
-
+        
     def getWeight(self):
-        Weight = []
-        count = 0
+        return (np.diff(np.where(self.gene[self.mTS + self.kGroup -1:] == 0)[0]) - 1) / self.WeightPart
 
-        for i in self.gene[self.mTS + self.kGroup:]:
-            if i == 0:
-                Weight.append(count/self.WeightPart)
-                count = 0 
-            else:
-                count += 1
+    # def getWeight(self):
+    #     Weight = []
+    #     count = 0
+        
+    #     for i in self.gene[self.mTS + self.kGroup:]:
+    #         if i == 0:
+    #             Weight.append(count/self.WeightPart)
+    #             count = 0 
+    #         else:
+    #             count += 1
 
-        return Weight
+    #     return Weight
 
     def __ADVcombine(self) -> list:
         GTSP = self.getGTSP()
-        n = len(GTSP)
+        n = self.kGroup
+      
         res = []
         #TSP 為 每一個不同的 TSG 中 各取一個 TS 組合成的 
         def backtrack(TSP, start):
@@ -99,16 +106,19 @@ class Chromosome():
         return res
 
     def Fitness(self) -> float:
-        ALLtsp = self.__ADVcombine()
-        TSPlen = len(ALLtsp)
-    
-        def PR() -> float:    
-            Allweight = self.getWeight()
-            ReturnTSP = []
+        import math
+        ALLtsp:list = self.__ADVcombine()
+        TSPlen:int = len(ALLtsp)
 
-            for TSP in ALLtsp:
-                [ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1]) for TS in range(self.kGroup)]
-            
+
+        def PR() -> float:    
+            Allweight:list = self.getWeight()
+            ARR = self.Data['ARR'] # 使用區域變數 可加速 python 速度
+            ReturnTSP = []
+            [[ReturnTSP.append(ARR[TSP[TS]-1] * Allweight[TS+1]) for TS in range(self.kGroup)] for TSP in ALLtsp]
+
+            # for TSP in ALLtsp:  
+            #     [ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1]) for TS in range(self.kGroup)]
                 # for TS in range(self.kGroup):
                 #     ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1])
          
@@ -118,13 +128,14 @@ class Chromosome():
 
         def RISK() -> float:
             RiskTSP = []
-
-            for TSP in ALLtsp:
+            MDD = self.Data['MDD']
+            [[RiskTSP.append(min([MDD[TS-1] for TS in TSP]))] for TSP in ALLtsp]
+            # for TSP in ALLtsp:
                 # minRiskTsp = sys.maxsize
                 # for TS in TSP:
                 #     minRiskTsp = min(minRiskTsp, self.Data['MDD'][TS-1])
                 # RiskTSP.append(minRiskTsp)
-                RiskTSP.append(min([self.Data['MDD'][TS-1] for TS in TSP]))
+                # RiskTSP.append(min([self.Data['MDD'][TS-1] for TS in TSP]))
            
             return sum(RiskTSP)/TSPlen
         
@@ -159,20 +170,28 @@ if __name__ == "__main__":
     import cProfile
     #it__(self, kGroup, WeightPart, mTS, Capital, StrategyData) 
     with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
-            StrategyData = pd.read_json(f)
+        StrategyData = pd.read_json(f)
 
-    c = Chromosome(3, 100, 15, 100000, StrategyData)
+    c = Chromosome(4, 10, 15, 100000, StrategyData)
+    # print(c.getGTSP())
+
     cProfile.run('c.Fitness()')
-    # a = 0.042735868 * 0.36
-    # print(a)
-    # b = 0.0548327287 * 0.17
-    # print(b)
-    # c = 0.0757129283 * 0.37
-    # print(c)
-    # print()
-    # print(a+b+c)
-    # print(np.average([0, 0.042735868, 0.0548327287, 0.0757129283], weights=[0.1 ,0.36, 0.17,0.37]))
 
+    # tmp = np.array_split(c.gene[:c.mTS+c.kGroup-1], np.where(c.gene[:c.mTS+c.kGroup-1] == 0)[0])
+    # [[RiskTSP.append(min([MDD[TS-1] for TS in TSP]))] for TSP in ALLtsp]
+
+    # print(c.gene[:c.mTS+c.kGroup-1])
+
+    # print([[TSG[1:]] if TSG[0] == 0 else [TSG[:]] for TSG in tmp ])
+    # print(tmp)
+    # print(np.where(tmp == 0))
+    
+    # print(np.delete(c.gene[:c.mTS+c.kGroup-1], tmp))
+    
+    # print(np.delete(tmp, np.where(tmp == 0)[0]) ) 
+    # print(np.array_split(c.gene[:c.mTS+c.kGroup-1], tmp))
+
+  
 
 
 
