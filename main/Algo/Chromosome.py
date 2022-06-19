@@ -58,17 +58,33 @@ class Chromosome():
     #     tmp = np.array_split(self.gene[:self.mTS + self.kGroup -1], np.where(self.gene[:self.mTS + self.kGroup -1] == 0)[0])
     #     return [GTSP[1:] if GTSP[0] == 0 else GTSP[:] for GTSP in tmp]
 
-    def getGTSP(self):
-        GTSP, tmp = [], []
-        for i in self.gene[:self.mTS + self.kGroup]:
-            if i == 0:
-                GTSP.append(tmp)
-                tmp = []
-            else:
-                tmp.append(i)
+    # def getGTSP(self):
+    #     tmp = np.array_split(self.gene[:self.mTS + self.kGroup -1], np.where(self.gene[:self.mTS + self.kGroup -1] == 0)[0])
+    #     return np.unique(tmp)
 
+    def getGTSP(self):
+        GTSP = []
+        gene = self.gene[:self.mTS + self.kGroup]
+        r = 0
+        for s in np.where(gene == 0)[0]:
+            GTSP.append(gene[r:s].tolist())
+            r = s + 1
         return GTSP
+
+
+    # def getGTSP(self):
+    #     GTSP, tmp = [], []
+    #     for i in self.gene[:self.mTS + self.kGroup]:
+    #         if i == 0:
+    #             GTSP.append(tmp)
+    #             tmp = []
+    #         else:
+    #             tmp.append(i)
+
+    #     return GTSP
+
         
+
     def getWeight(self):
         return (np.diff(np.where(self.gene[self.mTS + self.kGroup -1:] == 0)[0]) - 1) / self.WeightPart
 
@@ -173,23 +189,11 @@ if __name__ == "__main__":
         StrategyData = pd.read_json(f)
 
     c = Chromosome(4, 10, 15, 100000, StrategyData)
-    # print(c.getGTSP())
-
-    cProfile.run('c.Fitness()')
-
-    # tmp = np.array_split(c.gene[:c.mTS+c.kGroup-1], np.where(c.gene[:c.mTS+c.kGroup-1] == 0)[0])
-    # [[RiskTSP.append(min([MDD[TS-1] for TS in TSP]))] for TSP in ALLtsp]
-
-    # print(c.gene[:c.mTS+c.kGroup-1])
-
-    # print([[TSG[1:]] if TSG[0] == 0 else [TSG[:]] for TSG in tmp ])
-    # print(tmp)
-    # print(np.where(tmp == 0))
     
-    # print(np.delete(c.gene[:c.mTS+c.kGroup-1], tmp))
-    
-    # print(np.delete(tmp, np.where(tmp == 0)[0]) ) 
-    # print(np.array_split(c.gene[:c.mTS+c.kGroup-1], tmp))
+    print(c.getGTSP())
+
+    # cProfile.run('c.Fitness()')
+
 
   
 

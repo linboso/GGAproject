@@ -242,6 +242,7 @@ class Population():
             
             ParentsGroups = [Father.getGTSP()[x] for x in SelectedGroups] 
             OffspringGroups = Mother.getGTSP()
+    
 
             tmpSet1 = set(TS for GTS in ParentsGroups for TS in GTS)
             tmpSet2 = set(TS for GTS in OffspringGroups[InsertPoint:InsertPoint+2] for TS in GTS)

@@ -34,8 +34,8 @@ Setting = Setting.Read()
 
 
 population = Population(Setting=Setting)
-# cProfile.run('population.GenerateOffspring_With_logFile()')
-population.GenerateOffspring_With_logFile()
+cProfile.run('population.GenerateOffspring_With_logFile()')
+# population.GenerateOffspring_With_logFile()
 # population.GenerateOffspring()
 # population.Genealogy()
 #iterate
