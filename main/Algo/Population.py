@@ -6,8 +6,10 @@ import numpy as np
 import gc
 
 
-
-from .Chromosome import Chromosome
+if __name__ == "__main__":
+    from Chromosome import Chromosome
+else:
+    from .Chromosome import Chromosome
 
 
 class Population():
@@ -31,15 +33,21 @@ class Population():
 
         with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
             StrategyData = pd.read_json(f)
-            
+        
+        # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+        #     StrategyData = pd.read_json(f)
+
         self.Chrom:list = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
         
 
     def Genealogy(self):
-        for i in range(self.Size):
-            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
-    # print all Chromosome
+        # for i in range(self.Size):
+        #     print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
 
+        for i in range(self.Size):
+            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f}")
+
+    # print all Chromosome
 
     def GenerateOffspring_With_logFile(self):
         import time
@@ -95,20 +103,14 @@ class Population():
         [chrom.Fitness() for chrom in self.Chrom]
         FitList = sorted([chrom.fitness for chrom in self.Chrom], reverse=True)
         # print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
-
         NextGeneration = [chrom for chrom in self.Chrom if chrom.fitness in FitList[:self.pSize]]
-
         self.Size = self.pSize
         self.Chrom = NextGeneration[:self.pSize]
 
         del NextGeneration
-        # del tmp
-
-        gc.collect(generation=0)
-
+        
         # print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
         
-  
     # END of Selection
   
 
@@ -116,11 +118,7 @@ class Population():
     def Mutation(self):
         # 隨機選 2 群 A, B  從 A 中 隨機抽一個 TS 移到 B
         # 隨機選 1 個 1 & 1 個 0 交換
-        numbers = int(x-1) if (x:=self.pSize * self.MutationRate) % 2 else int(x)
-
-        if numbers < 1:
-            return
-
+        numbers:int = int(x-1) if (x:=self.pSize * self.MutationRate) % 2 else int(x)
         Variants:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False)) 
         # DEEPCOPY 很重要代表 "完整" 複製一份 
 
@@ -184,32 +182,30 @@ class Population():
 
 
     def Inversion(self):
-        numbers = int(x-1) if (x:=self.pSize * self.InversionRate) % 2 else int(x)
+        numbers:int = int(x-1) if (x:=self.pSize * self.InversionRate) % 2 else int(x)
         Variants:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
 
         for VarChrom in Variants:
             invertgroup = np.random.choice([x for x in range(self.kGroup)], 2, replace=False)
             GTSP = VarChrom.getGTSP()
             GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]]
-            VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(list(NewGroup) + [0]) for NewGroup in GTSP])
 
+            VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(list(NewGroup) + [0]) for NewGroup in GTSP])
             self.Size += 1
-            
+
             self.Chrom.append(VarChrom)
 
-        # del Variants
-        # gc.collect(generation=0)
+        del Variants
         
     # END of Inversion
             
     def Crossover(self):
-        numbers = int(x-1) if (x:=self.pSize * self.CrossoverRate) % 2 else int(x)
+        numbers:int = int(x-1) if (x:=self.pSize * self.CrossoverRate) % 2 else int(x)
 
         Parents:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
         Offsprings:list[Chromosome] = copy.deepcopy(Parents[:numbers//2])
 
         IndexList = [x for x in range(self.kGroup)]
-
         round = 0
         for Father, Mother in zip(Parents[:numbers//2], Parents[numbers//2:]):
 
@@ -219,17 +215,19 @@ class Population():
                 CutOffPoint[0], CutOffPoint[1] = CutOffPoint[1], CutOffPoint[0]
          
             while CutOffPoint[0] != CutOffPoint[1]:
-                Count_Father = 0 #gene 區間1的總數
-                Count_Mother = 0
+                Count_Father, Count_Mother = 0, 0 #gene 區間1的總數
+                
                 for k in range(CutOffPoint[0], CutOffPoint[1]): #count 區間內 1 的總數 如果值是 0 本就不妨礙 sum
                     Count_Father += Father.gene[-self.WeightPart_len:][k]
                     Count_Mother += Mother.gene[-self.WeightPart_len:][k]
 
                 if Count_Father == Count_Mother: # 總數相等 => 進行交換
-                    tmp =  Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]].copy()
-                    Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]]
-                    Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = tmp
-               
+                    # tmp =  Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]].copy()
+                    # Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]]
+                    # Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = tmp
+
+                    Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]], Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]], Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]]
+
                     self.Chrom.append(Father)
                     self.Chrom.append(Mother)
                     self.Size += 2
@@ -240,21 +238,22 @@ class Population():
             SelectedGroups = np.random.choice(IndexList, 2, replace = False) #選出 2組 插入
             InsertPoint:int = np.random.choice(IndexList[:self.kGroup-1])    #從第 x-th group 插入
             
-            ParentsGroups = [Father.getGTSP()[x] for x in SelectedGroups] 
-            OffspringGroups = Mother.getGTSP()
-    
+            tmp = Father.getGTSP()
+            ParentsGroups:list = [tmp[x] for x in SelectedGroups] 
+            OffspringGroups:list = Mother.getGTSP()
 
-            tmpSet1 = set(TS for GTS in ParentsGroups for TS in GTS)
-            tmpSet2 = set(TS for GTS in OffspringGroups[InsertPoint:InsertPoint+2] for TS in GTS)
+            tmpSet1:set = set(TS for GTS in ParentsGroups for TS in GTS)
+            tmpSet2:set = set(TS for GTS in OffspringGroups[InsertPoint:InsertPoint+2] for TS in GTS)
             ## print(f" ori :{OffspringGroups}")
+   
 
-            MissingTS= list(tmpSet2 - tmpSet1) # 缺少的 TS 需補上 
-            RepeatTS = list(tmpSet1 - tmpSet2) # 重複的 TS 需移除
+            MissingTS:list = list(tmpSet2 - tmpSet1) # 缺少的 TS 需補上 
+            RepeatTS:list = list(tmpSet1 - tmpSet2) # 重複的 TS 需移除
 
             OffspringGroups[InsertPoint] = ParentsGroups[0] 
             OffspringGroups[InsertPoint + 1] = ParentsGroups[1]
             
-            MissCount = 0 #計算 有幾個 MissTS 以補回
+            MissCount:int = 0 #計算 有幾個 MissTS 以補回
             ## print(f" pr0 :{OffspringGroups} \t Insert")
             ## print(f"MissingTS >> {MissingTS}")
             ## print(f"RepeatTS  >> {RepeatTS}")
@@ -262,9 +261,9 @@ class Population():
             for i in range(self.kGroup):
                 if i == InsertPoint or i == InsertPoint + 1:
                     continue 
-                # 如果 i == 插入&+1 的位置 則跳過
-              
-                NewGroup = OffspringGroups[i].copy() 
+                # 如果 i == 插入 & i+1 的位置 則跳過
+                
+                NewGroup:list = OffspringGroups[i].copy() 
 
                 for j in range(len(OffspringGroups[i])):
                     if OffspringGroups[i][j] in RepeatTS:
@@ -276,16 +275,17 @@ class Population():
                             NewGroup.remove(OffspringGroups[i][j])
               
                 OffspringGroups[i] = NewGroup
+                #用NewGroup 取代
             ## print(f" pr1 :{OffspringGroups} \t SWAP(MissingTS, RepeatTS)")
-    
-            for TS in MissingTS[MissCount:]:
-                OffspringGroups[self.kGroup-1].append(TS)
+
+            [OffspringGroups[self.kGroup-1].append(TS) for TS in MissingTS[MissCount:]]
+
             # 如果 MissingTS 裡面還有東西 則 通通直接 append 到最後一組 裡面
             ## print(f" pr2 :{OffspringGroups} \t appned all MissingTS to least Group")
 
             while (lenList := sorted(zip([len(GTS) for GTS in OffspringGroups], IndexList)))[0][0] == 0:
                 OffspringGroups[lenList[0][1]] = OffspringGroups[lenList[self.kGroup -1][1]][lenList[self.kGroup -1][0]//2:]
-                OffspringGroups[lenList[self.kGroup -1 ][1]] = OffspringGroups[lenList[self.kGroup -1 ][1]][:lenList[self.kGroup -1][0]//2]
+                OffspringGroups[lenList[self.kGroup -1][1]] = OffspringGroups[lenList[self.kGroup -1][1]][:lenList[self.kGroup -1][0]//2]
                 ## print(f" pr3 {OffspringGroups}")
             ## print(f" end :{OffspringGroups}\r\n")
 
@@ -296,15 +296,13 @@ class Population():
             # 最多做 k //2 次
 
             Offsprings[round].gene[:self.GroupingPart_len] = np.concatenate([(GTS + [0]) for GTS in OffspringGroups])
-
             self.Chrom.append(Offsprings[round])
-
-            self.Size += 1
             round += 1
+            
+        self.Size += round
+        del Parents
+        del Offsprings
 
-        # del Parents
-        # del Offsprings
-        # gc.collect(generation=0)
       
     # END of Crossover
 
@@ -320,17 +318,27 @@ class Population():
 
 
 if __name__ == "__main__":
-    import time
-    np.set_printoptions(linewidth=200)
+    import cProfile
+    import json
 
+    
+    # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+    #     StrategyData = pd.read_json(f)
 
-    p = Population(pSize=50, WeightPart=100, CrossoverRate=0.8, MutationRate=0.03, InversionRate=0.6, Generation=10)
+    with open(f"../setting.json") as f2:
+        Settg = json.load(f2)
 
+    p = Population(Setting=Settg)
+    # p.Genealogy()
     # p.Crossover()
     # p.Selection()
 
-
-    p.GenerateGeneration_With_logFile()
+    cProfile.run('p.Selection()')
+    # cProfile.run('p.Crossover()')
+    p.Crossover()
+    print('--------------------=-==-=-=-=-=-=-=-=-====')
+    # p.Genealogy()
+    
 
 
 

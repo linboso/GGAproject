@@ -9,7 +9,6 @@ from PreProCessing.Ranking import Ranking
 from SettingFile import SettingFile
 
 from Algo.Population import Population
-from Algo.Chromosome import Chromosome
 
 import cProfile
 
@@ -34,8 +33,8 @@ Setting = Setting.Read()
 
 
 population = Population(Setting=Setting)
-cProfile.run('population.GenerateOffspring_With_logFile()')
-# population.GenerateOffspring_With_logFile()
+# cProfile.run('population.GenerateOffspring_With_logFile()')
+population.GenerateOffspring_With_logFile()
 # population.GenerateOffspring()
 # population.Genealogy()
 #iterate

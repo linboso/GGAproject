@@ -1,8 +1,8 @@
 {
-	"StockID": "0050.TW",
+	"StockID": "2603.TW",
 	"TrainingPeriod": {
-		"StartDate": "2009-08-30",
-		"EndDate": "2011-08-30"
+		"StartDate": "2022-02-01",
+		"EndDate": "2022-06-16"
 	},
 	"ValidationPeriod": {
 		"StartDate": "2010-08-30",
@@ -11,7 +11,8 @@
 	"Path": "../data/stock",
 	"TechnicalIndicator": [
 		"MA5",
-		"MA20",
+		"MA10",
+		"MA15",
 		"MA30",
 		"RSI",
 		"MACD",
@@ -21,11 +22,11 @@
 	"Strategy": "Top555",
 	"pSize": 100,
 	"CrossoverRate": 0.8,
-	"MutationRate": 0.03,
+	"MutationRate": 0.06,
 	"InversionRate": 0.6,
-	"Generation": 25,
+	"Generation": 100,
 	"kGroup": 4,
 	"mTS": 15,
-	"WeightPart": 100,
+	"WeightPart": 200,
 	"Capital": 100000
 }
