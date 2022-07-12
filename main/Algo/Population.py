@@ -1,15 +1,9 @@
-
 import copy
-# import json
 import pandas as pd
 import numpy as np
-import gc
 
 
-if __name__ == "__main__":
-    from Chromosome import Chromosome
-else:
-    from .Chromosome import Chromosome
+from Chromosome import Chromosome
 
 
 class Population():
@@ -31,21 +25,18 @@ class Population():
         self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
-        with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
-            StrategyData = pd.read_json(f)
-        
-        # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+        # with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
         #     StrategyData = pd.read_json(f)
+        
+        with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+            StrategyData = pd.read_json(f)
 
         self.Chrom:list = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
         
 
     def Genealogy(self):
-        # for i in range(self.Size):
-        #     print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
-
         for i in range(self.Size):
-            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f}")
+            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
 
     # print all Chromosome
 
@@ -66,7 +57,7 @@ class Population():
             self.Inversion()
             e = time.time()
             print(f"Time: {e-s}\r\n")
-            gc.collect()
+            # gc.collect()
             with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/{i+1}-th.txt', 'w') as f:
                 f.writelines(f"Fitness: {chrom.fitness:10f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
                 f.write(f"Time: {e-s:3.5f}")
@@ -90,29 +81,26 @@ class Population():
             self.Inversion()
 
         e = time.time()
-        gc.collect()
+        # gc.collect()
         print(f"Total Time: {e-s}")
         print(f"Finish Iterate\r\n")
     
         #Do BackTesting
             
-            
+        
+    # END of Selection
 
-    def Selection(self): ## need fix
+    def Selection(self): 
+        Chromosomes = self.Chrom
 
-        [chrom.Fitness() for chrom in self.Chrom]
-        FitList = sorted([chrom.fitness for chrom in self.Chrom], reverse=True)
-        # print(f"really len {len(self.Chrom)}  <> Size: {self.Size}")
-        NextGeneration = [chrom for chrom in self.Chrom if chrom.fitness in FitList[:self.pSize]]
+        tmp = [chrom.Fitness() for chrom in Chromosomes]
+        FitList = sorted(tmp, reverse=True)
+        
+        NextGeneration = [chrom for chrom in Chromosomes if chrom.fitness in FitList[:self.pSize]]
         self.Size = self.pSize
         self.Chrom = NextGeneration[:self.pSize]
 
         del NextGeneration
-        
-        # print(f"really len {len(self.Chrom)}  <> Size: {self.Size} \t\n")
-        
-    # END of Selection
-  
 
 
     def Mutation(self):
@@ -175,9 +163,6 @@ class Population():
             self.Size += 1
             self.Chrom.append(VarChrom)
             ## print(f"===================================== \t\n")
-
-       
-            
     # END of Mutation
 
 
@@ -222,9 +207,6 @@ class Population():
                     Count_Mother += Mother.gene[-self.WeightPart_len:][k]
 
                 if Count_Father == Count_Mother: # 總數相等 => 進行交換
-                    # tmp =  Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]].copy()
-                    # Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]]
-                    # Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = tmp
 
                     Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]], Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]] = Mother.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]], Father.gene[-self.WeightPart_len:][CutOffPoint[0]:CutOffPoint[1]]
 
@@ -283,9 +265,16 @@ class Population():
             # 如果 MissingTS 裡面還有東西 則 通通直接 append 到最後一組 裡面
             ## print(f" pr2 :{OffspringGroups} \t appned all MissingTS to least Group")
 
+
             while (lenList := sorted(zip([len(GTS) for GTS in OffspringGroups], IndexList)))[0][0] == 0:
+
                 OffspringGroups[lenList[0][1]] = OffspringGroups[lenList[self.kGroup -1][1]][lenList[self.kGroup -1][0]//2:]
                 OffspringGroups[lenList[self.kGroup -1][1]] = OffspringGroups[lenList[self.kGroup -1][1]][:lenList[self.kGroup -1][0]//2]
+
+            # while (lenList := sorted(zip([len(GTS) for GTS in OffspringGroups], IndexList)))[0][0] == 0:
+            #     OffspringGroups[lenList[0][1]] = OffspringGroups[lenList[self.kGroup -1][1]][lenList[self.kGroup -1][0]//2:]
+            #     OffspringGroups[lenList[self.kGroup -1][1]] = OffspringGroups[lenList[self.kGroup -1][1]][:lenList[self.kGroup -1][0]//2]
+
                 ## print(f" pr3 {OffspringGroups}")
             ## print(f" end :{OffspringGroups}\r\n")
 
@@ -302,8 +291,6 @@ class Population():
         self.Size += round
         del Parents
         del Offsprings
-
-      
     # END of Crossover
 
 
@@ -314,28 +301,31 @@ class Population():
             
 
 
-
-
-
 if __name__ == "__main__":
     import cProfile
     import json
-
+    import time
+    import dask
+    # from .Chromosome import Chromosome
     
-    # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
-    #     StrategyData = pd.read_json(f)
+
+    dask.config.set(scheduler='processes')
 
     with open(f"../setting.json") as f2:
         Settg = json.load(f2)
 
     p = Population(Setting=Settg)
-    # p.Genealogy()
-    # p.Crossover()
-    # p.Selection()
 
-    cProfile.run('p.Selection()')
+    # s = time.time()
+    # p.Selection2()
+    # # p.Crossover()
+    # e = time.time()
+    # print(f"{e-s}")
+
+    # cProfile.run('p.Selection()')
+    cProfile.run('p.Selection2()') ## TOOOOO SLOW
     # cProfile.run('p.Crossover()')
-    p.Crossover()
+
     print('--------------------=-==-=-=-=-=-=-=-=-====')
     # p.Genealogy()
     

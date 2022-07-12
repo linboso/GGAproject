@@ -32,6 +32,7 @@ Setting = Setting.Read()
 # 執行 ranking 策略為 Top555 / Top777
 
 
+
 population = Population(Setting=Setting)
 # cProfile.run('population.GenerateOffspring_With_logFile()')
 population.GenerateOffspring_With_logFile()
