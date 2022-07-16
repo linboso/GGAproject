@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-from Chromosome import Chromosome
+from .Chromosome import Chromosome
 
 
 class Population():
@@ -25,13 +25,13 @@ class Population():
         self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
-        # with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
-        #     StrategyData = pd.read_json(f)
-        
-        with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+        with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
             StrategyData = pd.read_json(f)
+        
+        # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+        #     StrategyData = pd.read_json(f)
 
-        self.Chrom:list = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
+        self.Chrom:list[Chromosome] = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
         
 
     def Genealogy(self):
@@ -65,7 +65,7 @@ class Population():
 
         ETime = time.time()
         print(f"Total Time: {ETime - STime}")
-        #
+
         # Next Step Process Final GTSP
         # and Vail thw GTSP
 
@@ -90,17 +90,25 @@ class Population():
         
     # END of Selection
 
-    def Selection(self): 
-        Chromosomes = self.Chrom
+    # def Selection(self): 
+    #     Chromosomes = self.Chrom
 
-        tmp = [chrom.Fitness() for chrom in Chromosomes]
-        FitList = sorted(tmp, reverse=True)
+    #     tmp = [chrom.Fitness() for chrom in Chromosomes]
+    #     FitList = sorted(tmp, reverse=True)
         
-        NextGeneration = [chrom for chrom in Chromosomes if chrom.fitness in FitList[:self.pSize]]
-        self.Size = self.pSize
-        self.Chrom = NextGeneration[:self.pSize]
+    #     NextGeneration = [chrom for chrom in Chromosomes if chrom.fitness in FitList[:self.pSize]]
+    #     self.Size = self.pSize
+    #     self.Chrom = NextGeneration[:self.pSize]
 
-        del NextGeneration
+    #     del NextGeneration
+
+    def Selection(self):
+        # tmp = self.Chrom
+        FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])[:self.pSize]
+    
+        self.Size = self.pSize
+        self.Chrom = [Chrom[1] for Chrom in FitList]
+        del FitList
 
 
     def Mutation(self):
