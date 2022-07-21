@@ -54,10 +54,6 @@ class Chromosome():
         return self.gene
 
 
-    # def getGTSP(self):
-    #     tmp = np.array_split(self.gene[:self.mTS + self.kGroup -1], np.where(self.gene[:self.mTS + self.kGroup -1] == 0)[0])
-    #     return np.unique(tmp)
-
     def getGTSP(self):
         GTSP = []
         gene = self.gene[:self.mTS + self.kGroup]
@@ -67,20 +63,7 @@ class Chromosome():
             r = s + 1
         return GTSP
 
-
-    # def getGTSP(self):
-    #     GTSP, tmp = [], []
-    #     for i in self.gene[:self.mTS + self.kGroup]:
-    #         if i == 0:
-    #             GTSP.append(tmp)
-    #             tmp = []
-    #         else:
-    #             tmp.append(i)
-
-    #     return GTSP
-
         
-
     def getWeight(self):
         return (np.diff(np.where(self.gene[self.mTS + self.kGroup -1:] == 0)[0]) - 1) / self.WeightPart
 
@@ -97,24 +80,6 @@ class Chromosome():
 
     #     return Weight
 
-    # def __ADVcombine(self) -> list:
-    #     GTSP:list = self.getGTSP()
-    #     res:list = []
-    #     n:int = self.kGroup
- 
-    #     #TSP 為 每一個不同的 TSG 中 各取一個 TS 組合成的 
-    #     def backtrack(TSP, start):
-    #         if len(TSP) == n:
-    #             return res.append(TSP.copy())
-
-    #         for Kth_Group in range(start, n):
-    #             for TS in GTSP[Kth_Group]:
-    #                 TSP.append(TS)
-    #                 backtrack(TSP,  Kth_Group + 1)
-    #                 TSP.pop()
-        
-    #     backtrack([], 0)
-    #     return res
 
     def __ADVcombine(self) -> list:
         GTSP:list = self.getGTSP()
@@ -123,7 +88,7 @@ class Chromosome():
         Mdd = self.Data['MDD']
         GTSP = [[(Arr[i-1], Mdd[i-1]) for i in TSG] for TSG in GTSP]
 
-        res:list[Tuple] = []
+        res:list[tuple] = []
         n:int = self.kGroup
 
         #TSP 為 每一個不同的 TSG 中 各取一個 TS 組合成的 
@@ -145,7 +110,6 @@ class Chromosome():
         ALLtsp = self.__ADVcombine()
         TSPlen:int = len(ALLtsp)
 
-
         def PR() -> float:    
             Weight:list = self.getWeight()
             # ARR = self.Data['ARR'] # 使用區域變數 可加速 python 速度
@@ -158,6 +122,7 @@ class Chromosome():
             # for TSP in ALLtsp:  
                 # for TS in range(self.kGroup):
                 #     ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1])
+            # 功能一樣 但是這樣寫慢很多很多
 
          
             return sum(ReturnTSP)*self.Capital/TSPlen
@@ -176,32 +141,37 @@ class Chromosome():
             #     for TS in TSP:
             #         minRiskTsp = min(minRiskTsp, self.Data['MDD'][TS-1])
             #     RiskTSP.append(minRiskTsp)
+            # 功能一樣 但是這樣寫慢很多很多
 
             #     RiskTSP.append(min([self.Data['MDD'][TS-1] for TS in TSP]))
+            # 功能一樣 但是這樣寫還是偏慢
            
             return sum(RiskTSP)/TSPlen
         
         # ====================== RISK =======================
 
         def GB() -> float:
-            S:float = 0
-            for TSG in self.getGTSP():
-                tmp = len(TSG)/self.mTS
-                S += -tmp*math.log(tmp, 10)
-            return S
+            # S:float = 0
+            # for TSG in self.getGTSP():
+            #     tmp = len(TSG)/self.mTS
+            #     S += -tmp*math.log(tmp, 10)
+            # return S
+            return -sum([(tmp := len(TSG)/self.mTS) * math.log10(tmp) for TSG in self.getGTSP() ])
 
         # ======================= GB =======================
 
         def WB() -> float:
-   
-            S:float = 0
-            for C in self.getWeight():
-                if C == 0:
-                    continue
-                S += -C*math.log(C, 10)
-                # 此 C = |ci| / T 
-                # getWeight() 都算好了
-            return S
+            # S:float = 0
+            # for C in self.getWeight():
+            #     if C == 0:
+            #         continue
+            #     S += -C*math.log10(C)
+            #     # 此 C = |ci| / T 
+            #     # getWeight() 都算好了
+            # return S
+
+            return -sum([C*math.log10(C) for C in self.getWeight() if C != 0])
+            
 
         self.fitness = PR()*RISK()*GB()*WB()
 
@@ -213,16 +183,16 @@ class Chromosome():
 
 if __name__ == "__main__":
     import cProfile
-    import math 
+
     #it__(self, kGroup, WeightPart, mTS, Capital, StrategyData) 
     with open(f"../../data/stock/2603.TW/TraningData/Top555.json") as f:
         StrategyData = pd.read_json(f)
 
-    # c = Chromosome(4, 100, 15, 100000, StrategyData)
+    c = Chromosome(4, 100, 15, 100000, StrategyData)
 
     # cProfile.run('c.Fitness()')
-    # c.Fitness()
-    # print(f"Fitness Value: {c.fitness}")
+    c.Fitness()
+    print(f"Fitness Value: {c.fitness}")
 
 
 

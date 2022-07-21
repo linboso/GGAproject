@@ -24,8 +24,8 @@ class Ranking():
         Top555 = []
 
         for TS in TS_list[2:]:
-            Signal = Table[TS]
-            BuyPrice = 0
+            Signal:list = Table[TS]
+            BuyPrice:int = 0
             Flag:bool = False
             
             TF:int = 0
@@ -83,12 +83,12 @@ class Ranking():
     def Top777(self):
         Table:pd.DataFrame = self.table
         TS_list = Table.columns
-        ClosePrice= Table['close'].values
+        ClosePrice= Table['close'].to_numpy()
         Top777 = []
 
         for TS in TS_list[2:]:
-            Signal = Table[TS]
-            BuyPrice = 0
+            Signal:list = Table[TS]
+            BuyPrice:int = 0
             Flag:bool = False
             
             TF:int = 0

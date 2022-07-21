@@ -90,18 +90,6 @@ class Population():
         
     # END of Selection
 
-    # def Selection(self): 
-    #     Chromosomes = self.Chrom
-
-    #     tmp = [chrom.Fitness() for chrom in Chromosomes]
-    #     FitList = sorted(tmp, reverse=True)
-        
-    #     NextGeneration = [chrom for chrom in Chromosomes if chrom.fitness in FitList[:self.pSize]]
-    #     self.Size = self.pSize
-    #     self.Chrom = NextGeneration[:self.pSize]
-
-    #     del NextGeneration
-
     def Selection(self):
         # tmp = self.Chrom
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])[:self.pSize]

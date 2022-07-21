@@ -36,7 +36,6 @@ class TI2Signal():
         signal = []
         tmp = {}
         for TS in self.ti_list: # 有被選擇的 TI list 
-
             if TS not in ti_format:
                 for k in range(len(TS)):
                     if TS[k].isdigit() == True:
@@ -120,6 +119,7 @@ class TI2Signal():
                         TIvale[c[0]],
                         TIvale[c[1]]
                     ) 
+
                     signal = pd.DataFrame(signal)
                     signal.columns = [f"{c[0]}&{c[1]}"]
                     data = pd.concat([data, signal], axis=1)
@@ -139,7 +139,7 @@ class TI2Signal():
         def backtrack(tmp, start):
             
             if len(tmp) == 2:
-                res.append(tmp[:])
+                res.append(tmp.copy())
                 return
 
             for i in range(start, n):
@@ -164,18 +164,18 @@ class TI2Signal():
         for buy in Signal_list[1:]:
             print(f"========= {buy} =========")
             for sell in Signal_list[1:]: 
-                Buy_Signal = Signal[buy].values   # pd.Series to list
-                Sell_Signal = Signal[sell].values # 在小資料的情況下 List 的計算速度比 numpy.array 快
+                Buy_Signal = Signal[buy].to_numpy()   # pd.Series to np.array
+                Sell_Signal = Signal[sell].to_numpy() #
                 
-                New_Signal = []
+                New_Signal:list = []
                 Flag:bool = False
                 for i in range(len(Buy_Signal)):
                     if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
-                        if not Flag:
+                        if Flag:
                             New_Signal.append(-1)
-                            Flag = True
                         else:
                             New_Signal.append(1)
+                            Flag = True
                     elif Buy_Signal[i] == 1 and not Flag:
                         New_Signal.append(1)
                         Flag = True
@@ -189,6 +189,7 @@ class TI2Signal():
                 New_Signal.columns = [f"{buy}^{sell}"]
                 Table = pd.concat([Table, New_Signal], axis=1)
                 Table.to_json(f"{self.path}/Table.json", orient='records')
+                
                 print(f"==> {sell}")
             print()
 
