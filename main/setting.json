@@ -21,12 +21,12 @@
 	],
 	"Strategy": "Top555",
 	"pSize": 100,
-	"CrossoverRate": 0.8,
-	"MutationRate": 0.06,
-	"InversionRate": 0.6,
+	"CrossoverRate": 0.5,
+	"MutationRate": 0.5,
+	"InversionRate": 0.5,
 	"Generation": 100,
 	"kGroup": 4,
 	"mTS": 15,
-	"WeightPart": 200,
+	"WeightPart": 10,
 	"Capital": 100000
 }

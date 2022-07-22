@@ -84,8 +84,8 @@ class Chromosome():
     def __ADVcombine(self) -> list:
         GTSP:list = self.getGTSP()
 
-        Arr = self.Data['ARR']
-        Mdd = self.Data['MDD']
+        Arr = self.Data['ARR'].to_numpy()
+        Mdd = self.Data['MDD'].to_numpy()
         GTSP = [[(Arr[i-1], Mdd[i-1]) for i in TSG] for TSG in GTSP]
 
         res:list[tuple] = []

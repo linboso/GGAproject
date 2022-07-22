@@ -1,9 +1,12 @@
 import copy
+from tkinter.tix import Select
 import pandas as pd
 import numpy as np
 
-
-from .Chromosome import Chromosome
+if __name__ == "__main__":
+    from Chromosome import Chromosome
+else:
+    from .Chromosome import Chromosome
 
 
 class Population():
@@ -25,11 +28,12 @@ class Population():
         self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
-        with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
-            StrategyData = pd.read_json(f)
-        
-        # with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
-        #     StrategyData = pd.read_json(f)
+        if __name__ == "__main__":
+            with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+                StrategyData = pd.read_json(f)
+        else:
+            with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
+                StrategyData = pd.read_json(f)
 
         self.Chrom:list[Chromosome] = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
         
@@ -91,7 +95,6 @@ class Population():
     # END of Selection
 
     def Selection(self):
-        # tmp = self.Chrom
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])[:self.pSize]
     
         self.Size = self.pSize
@@ -102,59 +105,42 @@ class Population():
     def Mutation(self):
         # 隨機選 2 群 A, B  從 A 中 隨機抽一個 TS 移到 B
         # 隨機選 1 個 1 & 1 個 0 交換
-        numbers:int = int(x-1) if (x:=self.pSize * self.MutationRate) % 2 else int(x)
+        numbers:int = round(self.pSize * self.MutationRate)
         Variants:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False)) 
         # DEEPCOPY 很重要代表 "完整" 複製一份 
 
         for VarChrom in Variants:
-            #============== 處理 Grouping Part ==============
-            ## print(f"Origin Chromosome: {VarChrom.gene} >> {VarChrom.fitness}")
-            selected_group = np.random.choice([x for x in range(self.kGroup)], 2, replace=False)        
+            selected_group = np.random.choice(self.kGroup, 2, replace=False)        
             #選出 2 個 group   第一個: 是從該group 選出一個 TS, 第二個: insert 該 group
 
             GTSP = VarChrom.getGTSP()
-            pickTS = np.random.choice(GTSP[selected_group[0]])
-            #選出 1個 TS
+            pickTS = np.random.choice(GTSP[selected_group[0]])  #選出 1個 TS  **
 
-            ## print(f"Origin Gruop: {VarChrom.gene[:self.GroupingPart_len]}")
-            GTSP[selected_group[1]] = np.insert(GTSP[selected_group[1]], 0, pickTS)
-            #Insert into selected Group
-            ## print(f"Inserted GTSP: {GTSP} > Pick TS: {pickTS}") 
+            GTSP[selected_group[1]].append(pickTS)
+            # #插入 被選到的組裡
 
             if len(GTSP[selected_group[0]]) == 1:
-                ## print(" ====== Happend =====")
-                lenList = [len(x) for x in GTSP]
-                selected_group[1] = np.argmax(lenList)
-                #choice max_len group which means them have most number of elements  
+                lenList = [len(TSP) for TSP in GTSP]
+                selected_group[1] = np.argmax(lenList)   #選出有最多元素的子集
+                GTSP[selected_group[0]] = GTSP[selected_group[1]][: lenList[selected_group[1]]//2]  #把 最多元素的子集 拆分成 2 組
+                GTSP[selected_group[1]] = GTSP[selected_group[1]][lenList[selected_group[1]]//2:].copy()
 
-                ## print(f">>> Group len :{lenList}, \tMax Len Index:{selected_group[1]} ==> Selected Group: {GTSP[selected_group[1]]}")
-                GTSP[selected_group[0]] = GTSP[selected_group[1]][: lenList[selected_group[1]]//2]
-                #and divide group by 2
-                GTSP[selected_group[1]] = np.delete(GTSP[selected_group[1]], [x for x in range(lenList[selected_group[1]]//2)])
-
-                ## print(f">>> new GTSP: {GTSP}")
-                ## print(f" ====================")
+                
             else:
                 GTSP[selected_group[0]] = np.delete(GTSP[selected_group[0]], np.where(GTSP[selected_group[0]] == pickTS))
-                ## print(f"Deleted  GTSP: {GTSP}")   
-
+    
+            # print(f"GTSP[selected_group[1]]: >> {GTSP[selected_group[1]]}")
+            # print(f"GTSP[selected_group[0]]: >> {GTSP[selected_group[0]]}\r\n")
             VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(list(TSP) + [0]) for TSP in GTSP])
-            ## print(f"  New  Gruop: {VarChrom.gene[:self.GroupingPart_len]}")
- 
+            selected_group = np.random.choice(self.kGroup, 2, replace=False)        
+
             #============== 處理 Weigth Part ==============
-            ## print(f"Origin Weigth >> {VarChrom.gene[-self.WeightPart_len:]}")
-            Ones_index = []
-            Zeros_index = []
-            for i in range(len(VarChrom.gene[-self.WeightPart_len:-1])):
-                if VarChrom.gene[-self.WeightPart_len:][i] == 0:
-                    Zeros_index.append(i)
-                else:
-                    Ones_index.append(i)
+            geneTmp = VarChrom.gene[self.GroupingPart_len:-1]
+            Pick0 = np.random.choice(np.where(geneTmp == 0)[0])
+            Pick1 = np.random.choice(np.where(geneTmp == 1)[0])
 
-            Pick0 = np.random.choice(Zeros_index, 1)
-            Pick1 = np.random.choice(Ones_index, 1)
-
-            VarChrom.gene[-self.WeightPart_len:-1][Pick1], VarChrom.gene[-self.WeightPart_len:-1][Pick0] = VarChrom.gene[-self.WeightPart_len:-1][Pick0], VarChrom.gene[-self.WeightPart_len:-1][Pick1].copy()
+            geneTmp[Pick1], geneTmp[Pick0] = geneTmp[Pick0], geneTmp[Pick1]
+            VarChrom.gene[self.GroupingPart_len:-1] = geneTmp
 
             self.Size += 1
             self.Chrom.append(VarChrom)
@@ -163,15 +149,15 @@ class Population():
 
 
     def Inversion(self):
-        numbers:int = int(x-1) if (x:=self.pSize * self.InversionRate) % 2 else int(x)
+        numbers:int = round(self.pSize * self.InversionRate)
         Variants:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
 
         for VarChrom in Variants:
-            invertgroup = np.random.choice([x for x in range(self.kGroup)], 2, replace=False)
+            invertgroup = np.random.choice(self.kGroup, 2, replace=False)
             GTSP = VarChrom.getGTSP()
-            GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]]
+            GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]].copy()
 
-            VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(list(NewGroup) + [0]) for NewGroup in GTSP])
+            VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(NewGroup + [0]) for NewGroup in GTSP])
             self.Size += 1
 
             self.Chrom.append(VarChrom)
@@ -181,7 +167,8 @@ class Population():
     # END of Inversion
             
     def Crossover(self):
-        numbers:int = int(x-1) if (x:=self.pSize * self.CrossoverRate) % 2 else int(x)
+        numbers:int = int(x-1) if (x:=self.pSize * self.CrossoverRate) % 2 else int(x) 
+        #一定要整數
 
         Parents:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
         Offsprings:list[Chromosome] = copy.deepcopy(Parents[:numbers//2])
@@ -232,9 +219,9 @@ class Population():
             OffspringGroups[InsertPoint + 1] = ParentsGroups[1]
             
             MissCount:int = 0 #計算 有幾個 MissTS 以補回
-            ## print(f" pr0 :{OffspringGroups} \t Insert")
-            ## print(f"MissingTS >> {MissingTS}")
-            ## print(f"RepeatTS  >> {RepeatTS}")
+            # print(f" pr0 :{OffspringGroups} \t Insert")
+            # print(f"MissingTS >> {MissingTS}")
+            # print(f"RepeatTS  >> {RepeatTS}")
 
             for i in range(self.kGroup):
                 if i == InsertPoint or i == InsertPoint + 1:
@@ -263,7 +250,6 @@ class Population():
 
 
             while (lenList := sorted(zip([len(GTS) for GTS in OffspringGroups], IndexList)))[0][0] == 0:
-
                 OffspringGroups[lenList[0][1]] = OffspringGroups[lenList[self.kGroup -1][1]][lenList[self.kGroup -1][0]//2:]
                 OffspringGroups[lenList[self.kGroup -1][1]] = OffspringGroups[lenList[self.kGroup -1][1]][:lenList[self.kGroup -1][0]//2]
 
@@ -301,29 +287,29 @@ if __name__ == "__main__":
     import cProfile
     import json
     import time
-    import dask
     # from .Chromosome import Chromosome
-    
-
-    dask.config.set(scheduler='processes')
 
     with open(f"../setting.json") as f2:
         Settg = json.load(f2)
 
     p = Population(Setting=Settg)
 
-    # s = time.time()
-    # p.Selection2()
-    # # p.Crossover()
-    # e = time.time()
-    # print(f"{e-s}")
 
+    # p.Mutation()
+    # p.Inversion()
+    # cProfile.run('p.Mutation()')
     # cProfile.run('p.Selection()')
-    cProfile.run('p.Selection2()') ## TOOOOO SLOW
+    # cProfile.run('p.Inversion()')
     # cProfile.run('p.Crossover()')
 
+    cProfile.run('p.GenerateOffspring_With_logFile()')
+
+
+    for c in range(len(p.Chrom)):
+        print(f"{c}: {p.Chrom[c].gene.tolist()}")
+
     print('--------------------=-==-=-=-=-=-=-=-=-====')
-    # p.Genealogy()
+
     
 
 
