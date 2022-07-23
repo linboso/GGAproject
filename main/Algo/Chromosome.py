@@ -22,22 +22,24 @@ class Chromosome():
 
     def Initiate(self):
 
-        self.gene = np.concatenate([np.arange(1, self.mTS+1, dtype=int), 
-                                    np.zeros(self.kGroup*2, dtype=int),     #grouping 尾端補 0 
-                                    np.ones(self.WeightPart, dtype=int),
-                                    [0]                                     #Weight最尾端 補 0 方便後續計算 
-                                ]) 
-
+        TempGene = np.concatenate([np.arange(1, self.mTS+1, dtype=int), 
+                                    np.zeros(self.kGroup*2 +1, dtype=int),     
+                                    np.ones(self.WeightPart, dtype=int) ]) 
+        #Grouping 的最尾端補 0  
+        #WeightPart 的最尾端 也要補 0 方便後續計算
+        TempGene[-1], TempGene[-self.WeightPart-1] = TempGene[-self.WeightPart-1], TempGene[-1] 
+        #把其中一個 0 換到 最最後面
+         
         Groupinglen = self.mTS + self.kGroup -1 #不包含最後一個 0
 
         Flag = True
         while Flag:
-            np.random.shuffle(self.gene[:Groupinglen])
-            if self.gene[0] == 0 or self.gene[Groupinglen-1] == 0:
+            np.random.shuffle(TempGene[:Groupinglen])
+            if TempGene[0] == 0 or TempGene[Groupinglen-1] == 0:
                 continue
         
             for i in range(1, Groupinglen - 2): # 去 Head & tail
-                if self.gene[i] == self.gene[i+1]:
+                if TempGene[i] == TempGene[i+1]:
                     Flag = True
                     break
                 else:
@@ -45,13 +47,14 @@ class Chromosome():
 
         # shuffle 前半
 
-        np.random.shuffle(self.gene[Groupinglen+1:-1])
+        np.random.shuffle(TempGene[Groupinglen+1:-1])
+        self.gene = TempGene
         # shuffle 後半
         # Grouping part 有一個 尾0 所以要算回來 +1   Weight part 最後一個 0 不要動 所以扣掉 -1
 
         # 前半部為 mTS個 策略用 1 ~ mTS 表示 一樣用 0 區隔  k 群 需要 k-1 個 0     尾 0 + 1 => mTS + k -1 + 1 = mTS + k
         # 後半部為 C(0) + C(1) ~ C(k) 共 1 + k 個 C  需要 1+k-1 個 0             尾 0 + 1 => WeightPart + k + 1
-        return self.gene
+        # return self.gene
 
 
     def getGTSP(self):
