@@ -1,5 +1,4 @@
 import copy
-from tkinter.tix import Select
 import pandas as pd
 import numpy as np
 
@@ -15,6 +14,7 @@ class Population():
         self.pSize:int = Setting['pSize']
         self.Size:int = Setting['pSize']
         self.Chrom:list[Chromosome] = []
+
         self.CrossoverRate:float = Setting['CrossoverRate']
         self.MutationRate:float = Setting['MutationRate']
         self.InversionRate:float = Setting['InversionRate']
@@ -31,6 +31,7 @@ class Population():
         if __name__ == "__main__":
             with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
                 StrategyData = pd.read_json(f)
+            # For Test
         else:
             with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
                 StrategyData = pd.read_json(f)
@@ -40,9 +41,9 @@ class Population():
 
     def Genealogy(self):
         for i in range(self.Size):
-            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
+            print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f}")
+            # print(f"{i+1:3d}-th | Fitness Value: {self.Chrom[i].fitness:10.4f} >> Gene: {self.Chrom[i].gene}")
 
-    # print all Chromosome
 
     def GenerateOffspring_With_logFile(self):
         import time
@@ -55,40 +56,45 @@ class Population():
         for i in range(self.Generation):
             print(f"{i+1:3d}-th Generation")
             s = time.time()
+
             self.Selection()
             self.Crossover()
             self.Mutation()
             self.Inversion()
+
             e = time.time()
             print(f"Time: {e-s}\r\n")
             # gc.collect()
             with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/{i+1}-th.txt', 'w') as f:
-                f.writelines(f"Fitness: {chrom.fitness:10f} \t{list(chrom.gene)}\n" for chrom in self.Chrom)
-                f.write(f"Time: {e-s:3.5f}")
+                f.writelines(f"Fitness: {chrom.fitness:10f} \t{chrom.gene.tolist()}\n" for chrom in self.Chrom)
+                f.write(f"Generate Time: {e-s:3.5f}")
             
 
         ETime = time.time()
         print(f"Total Time: {ETime - STime}")
+
+        FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
+
+        print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
 
         # Next Step Process Final GTSP
         # and Vail thw GTSP
 
 
     def GenerateOffspring(self):
-        import time
-        s = time.time()
-        for _ in range(self.Generation):
 
+        for _ in range(self.Generation):
             self.Selection()
             self.Crossover()
             self.Mutation()
             self.Inversion()
 
-        e = time.time()
-        # gc.collect()
-        print(f"Total Time: {e-s}")
         print(f"Finish Iterate\r\n")
-    
+        
+        #準備選出 Fitness Value 最高的 Chromosome
+        FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
+        print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
+        
         #Do BackTesting
             
         
@@ -156,25 +162,27 @@ class Population():
             GTSP[invertgroup[0]] , GTSP[invertgroup[1]] = GTSP[invertgroup[1]] , GTSP[invertgroup[0]].copy()
 
             VarChrom.gene[:self.GroupingPart_len] = np.concatenate([(NewGroup + [0]) for NewGroup in GTSP])
-
             self.Chrom.append(VarChrom)
 
         self.Size += len(Variants)
 
         del Variants
-        
     # END of Inversion
             
+
     def Crossover(self):
-        numbers:int = int(x-1) if (x:=self.pSize * self.CrossoverRate) % 2 else int(x) 
-        #一定要整數
+        numbers:int = x-1 if (x:=int(self.pSize * self.CrossoverRate / 2)) % 1 else x
+        #取偶整數
 
         Parents:list[Chromosome] = copy.deepcopy(np.random.choice(self.Chrom, numbers, replace=False))
-        Offsprings:list[Chromosome] = copy.deepcopy(Parents[:numbers//2])
+        # Offsprings:list[Chromosome] = copy.deepcopy(Parents[:numbers//2])
+        Offsprings:list[Chromosome] = copy.deepcopy(Parents[:numbers])
+
 
         IndexList = [x for x in range(self.kGroup)]
         round = 0
-        for Father, Mother in zip(Parents[:numbers//2], Parents[numbers//2:]):
+        # for Father, Mother in zip(Parents[:numbers//2], Parents[numbers//2:]):
+        for Father, Mother in zip(Parents[:numbers], Parents[numbers:]):
             #======================================= Weight part =========================================
             CutOffPoint = np.random.choice(self.WeightPart_len, 2, replace = False) + self.GroupingPart_len
             #選出 2 個點 代表要切斷的距離
@@ -280,19 +288,20 @@ if __name__ == "__main__":
 
     p = Population(Setting=Settg)
 
+    # p.GenerateOffspring()
+    # p.GenerateOffspring_With_logFile()
 
-    print('--------------------=-==-=-=-=-=-=-=-=-====')
-    # p.Mutation()
-    # p.Inversion()
-    # p.Crossover()
+    # print(timeit.timeit('x-1 if (x:= int(0.5544* 123 / 2)) % 2 else x', number=100000))
+    # print(timeit.timeit('x-1 if (x:= int(0.5544* 123 / 2)) & 1 else x', number=100000))
 
-    # cProfile.run('p.Mutation()')
+
     # cProfile.run('p.Selection()')
+    # cProfile.run('p.Mutation()')
     # cProfile.run('p.Inversion()')
-
     # cProfile.run('p.Crossover()')
 
-    # cProfile.run('p.GenerateOffspring_With_logFile()')
+
+    cProfile.run('p.GenerateOffspring_With_logFile()')
 
 
     # for c in range(len(p.Chrom)):

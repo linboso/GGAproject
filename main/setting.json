@@ -22,7 +22,7 @@
 	"Strategy": "Top555",
 	"pSize": 100,
 	"CrossoverRate": 0.8,
-	"MutationRate": 0.06,
+	"MutationRate": 0.20,
 	"InversionRate": 0.6,
 	"Generation": 100,
 	"kGroup": 4,
