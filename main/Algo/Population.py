@@ -291,10 +291,6 @@ if __name__ == "__main__":
     # p.GenerateOffspring()
     # p.GenerateOffspring_With_logFile()
 
-    # print(timeit.timeit('x-1 if (x:= int(0.5544* 123 / 2)) % 2 else x', number=100000))
-    # print(timeit.timeit('x-1 if (x:= int(0.5544* 123 / 2)) & 1 else x', number=100000))
-
-
     # cProfile.run('p.Selection()')
     # cProfile.run('p.Mutation()')
     # cProfile.run('p.Inversion()')
