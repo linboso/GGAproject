@@ -11,47 +11,46 @@ class Chromosome():
         self.WeightPart:int = WeightPart                                            #要幾個 1
         self.mTS:int = mTS                                                          #有幾個 TS (根據Ranking策略)
 
-        self.Data:pd.DataFrame = StrategyData.copy()
-
+        self.Data:pd.DataFrame = StrategyData
         self.Capital:float = Capital
         self.gene:np.array
         self.fitness:float = 0
-        
         self.Initiate()
         self.Fitness()
 
     def Initiate(self):
 
-        self.gene = np.concatenate([np.arange(1, self.mTS+1, dtype=int), 
-                                    np.zeros(self.kGroup*2, dtype=int),     #grouping 尾端補 0 
-                                    np.ones(self.WeightPart, dtype=int),
-                                    [0]                                     #Weight最尾端 補 0 方便後續計算 
-                                ]) 
+        TempGene = np.concatenate([np.arange(1, self.mTS+1, dtype=int), 
+                                    np.zeros(self.kGroup*2 +1, dtype=int),     
+                                    np.ones(self.WeightPart, dtype=int) ]) 
+        #GroupingPart&WeightPart 的最尾端都要補 0 方便後續計算
 
-        Groupinglen = self.mTS + self.kGroup -1 #不包含最後一個 0
+        # 前半部為 mTS個 策略用 1 ~ mTS 表示 mTS個數, 區隔 k 群需要 k-1 個 0,尾補一個 0 => mTS + k -1 + 1 = mTS + k
+        # 後半部為 C(0) + C(1) ~ C(k) 共分成 1 + k 個C  需要 1+k-1 個 0  尾補一個 0    => WeightPart + k + 1
+        TempGene[-1], TempGene[-self.WeightPart-1] = TempGene[-self.WeightPart-1], TempGene[-1] 
+        #把其中一個 0 換到 最最後面
+         
+        Groupinglen = self.mTS + self.kGroup -1 # 不包含最後一個 0
 
         Flag = True
         while Flag:
-            np.random.shuffle(self.gene[:Groupinglen])
-            if self.gene[0] == 0 or self.gene[Groupinglen-1] == 0:
+            np.random.shuffle(TempGene[:Groupinglen])
+            if TempGene[0] == 0 or TempGene[Groupinglen-1] == 0:
                 continue
+            #如果GroupingPart 的頭||尾是 0 直接重來
         
             for i in range(1, Groupinglen - 2): # 去 Head & tail
-                if self.gene[i] == self.gene[i+1]:
+                if TempGene[i] == TempGene[i+1]:
                     Flag = True
                     break
                 else:
                     Flag = False
+        # shuffle GroupingPart
 
-        # shuffle 前半
+        np.random.shuffle(TempGene[Groupinglen+1:-1])
+        # shuffle WeigthPart
 
-        np.random.shuffle(self.gene[Groupinglen+1:-1])
-        # shuffle 後半
-        # Grouping part 有一個 尾0 所以要算回來 +1   Weight part 最後一個 0 不要動 所以扣掉 -1
-
-        # 前半部為 mTS個 策略用 1 ~ mTS 表示 一樣用 0 區隔  k 群 需要 k-1 個 0     尾 0 + 1 => mTS + k -1 + 1 = mTS + k
-        # 後半部為 C(0) + C(1) ~ C(k) 共 1 + k 個 C  需要 1+k-1 個 0             尾 0 + 1 => WeightPart + k + 1
-        return self.gene
+        self.gene = TempGene
 
 
     def getGTSP(self):
@@ -67,10 +66,9 @@ class Chromosome():
     def getWeight(self):
         return (np.diff(np.where(self.gene[self.mTS + self.kGroup -1:] == 0)[0]) - 1) / self.WeightPart
 
-    # def getWeight(self):
+    # def getWeight(self): #比較沒效率
     #     Weight = []
     #     count = 0
-        
     #     for i in self.gene[self.mTS + self.kGroup:]:
     #         if i == 0:
     #             Weight.append(count/self.WeightPart)
@@ -84,8 +82,8 @@ class Chromosome():
     def __ADVcombine(self) -> list:
         GTSP:list = self.getGTSP()
 
-        Arr = self.Data['ARR']
-        Mdd = self.Data['MDD']
+        Arr = self.Data['ARR'].to_numpy()
+        Mdd = self.Data['MDD'].to_numpy()
         GTSP = [[(Arr[i-1], Mdd[i-1]) for i in TSG] for TSG in GTSP]
 
         res:list[tuple] = []
@@ -176,7 +174,7 @@ class Chromosome():
         self.fitness = PR()*RISK()*GB()*WB()
 
         return self.fitness
-        # del ALLtsp
+
         
 
 
@@ -184,7 +182,6 @@ class Chromosome():
 if __name__ == "__main__":
     import cProfile
 
-    #it__(self, kGroup, WeightPart, mTS, Capital, StrategyData) 
     with open(f"../../data/stock/2603.TW/TraningData/Top555.json") as f:
         StrategyData = pd.read_json(f)
 
@@ -192,7 +189,7 @@ if __name__ == "__main__":
 
     # cProfile.run('c.Fitness()')
     c.Fitness()
-    print(f"Fitness Value: {c.fitness}")
+    # print(f"Fitness Value: {c.fitness}")
 
 
 
