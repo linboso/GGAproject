@@ -7,10 +7,15 @@ class TI2Signal():
     def __init__(self, Setting) -> None:
         setting = Setting
         self.stock_id = setting['StockID']
-        self.start = setting['TrainingPeriod']['StartDate']
-        self.end = setting['TrainingPeriod']['EndDate']
+        self.Tstart = setting['TrainingPeriod']['StartDate']
+        self.Tend = setting['TrainingPeriod']['EndDate']
+
+        self.Vstart = setting['ValidationPeriod']['StartDate']
+        self.Vend = setting['ValidationPeriod']['EndDate']
+
         self.ti_list = setting['TechnicalIndicator']
-        self.path = f"{setting['Path']}/{setting['StockID']}/TraningData"
+        self.path = f"{setting['Path']}/{setting['StockID']}"
+        #self.path = f"{setting['Path']}/{setting['StockID']}/TraningData"
 
     def ProduceSignal(self):
         ti_format = TIvale = data = pd.DataFrame()
@@ -21,16 +26,16 @@ class TI2Signal():
             print("Missing TIformat.json \tlocation: ./PreProCessing/Case/TIformat.json")
 
         try:
-            with open(f"{self.path}/TIvalue.json") as f:
+            with open(f"{self.path}/TraningData/TIvalue.json") as f:
                 TIvale = pd.read_json(f)
         except:
-            print(f"Missing TIvalue.json \tlocation: {self.path}/TIvalue.json")
+            print(f"Missing TIvalue.json \tlocation: {self.path}/TraningData/TIvalue.json")
 
         try:
-            with open(f"{self.path}/Date.json") as f:
+            with open(f"{self.path}/TraningData/Date.json") as f:
                 data = pd.read_json(f)
         except:
-            print(f"Missing Date.json \tlocation: {self.path}/Date.json")
+            print(f"Missing Date.json \tlocation: {self.path}/TraningData/Date.json")
         
         # above all are just make sure to get Essential Data Value
         signal = []
@@ -108,7 +113,7 @@ class TI2Signal():
                 signal = pd.DataFrame(signal)
                 signal.columns = [TS]       # 命名 Column
                 data = pd.concat([data, signal], axis=1)
-                data.to_json(f"{self.path}/Signal.json", orient='records')
+                data.to_json(f"{self.path}/TraningData/Signal.json", orient='records')
 
        # 把 ma, sma... 之類的指標都 append 到 tmp 裡面後再一次處理
         for i in tmp:
@@ -123,10 +128,125 @@ class TI2Signal():
                     signal = pd.DataFrame(signal)
                     signal.columns = [f"{c[0]}&{c[1]}"]
                     data = pd.concat([data, signal], axis=1)
-                    data.to_json(f"{self.path}/Signal.json", orient='records')
+                    data.to_json(f"{self.path}/TraningData/Signal.json", orient='records')
                 except:
                     print(f"TIValue has no {c[0]} or {c[1]} value")
-            print(f"Finished all producing signal")   
+            print(f"Finished all producing signal")  
+        
+        #===================================================================================
+        #ValidationData part
+        ti_format = TIvale = data = pd.DataFrame()
+        try:
+            with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
+                ti_format = pd.read_json(f)
+        except:
+            print("Missing TIformat.json \tlocation: ./PreProCessing/Case/TIformat.json")
+
+        try:
+            with open(f"{self.path}/ValidationData/TIvalue.json") as f:
+                TIvale = pd.read_json(f)
+        except:
+            print(f"Missing TIvalue.json \tlocation: {self.path}/ValidationData/TIvalue.json")
+
+        try:
+            with open(f"{self.path}/ValidationData/Date.json") as f:
+                data = pd.read_json(f)
+        except:
+            print(f"Missing Date.json \tlocation: {self.path}/ValidationData/Date.json")
+        
+        # above all are just make sure to get Essential Data Value 
+        signal = []
+        tmp = {}
+        for TS in self.ti_list: # 有被選擇的 TI list 
+
+            if TS not in ti_format:
+                for k in range(len(TS)):
+                    if TS[k].isdigit() == True:
+                        break
+                print(f" >>> {TS[:k]}  <>  {TS} \t{tmp}")
+                if TS[:k] not in tmp:
+                    tmp[TS[:k]] = []
+                tmp[TS[:k]].append(TS)
+                
+
+            else:
+                case = ti_format[TS]['Case']
+                print(f"TI: {TS} is belong to \t Case : {case}")
+                if case == "1":
+                    signal = Case.case1(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                    )
+
+                elif case == "2":
+                    signal = Case.case2(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
+                    )
+                elif case == "3":
+                    signal = Case.case3(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
+                    )
+                elif case == "4":
+                    signal = Case.case4(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2']            # C2
+                    )
+                elif case == "5":
+                    signal = Case.case5(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        ti_format[TS]["InputArray"]['C1']            # C1
+                    )
+                elif case == "6":
+                    signal = Case.case6(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
+                    )
+                elif case == "AROON": # Special
+                    signal = Case.caseAROON(
+                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        ti_format[TS]["InputArray"]['C1'],           # C1
+                        ti_format[TS]["InputArray"]['C2'],           # C2
+                        ti_format[TS]["InputArray"]['C3']            # C3
+                    )
+
+                signal = pd.DataFrame(signal)
+                signal.columns = [TS]       # 命名 Column
+                data = pd.concat([data, signal], axis=1)
+                data.to_json(f"{self.path}/ValidationData/Signal.json", orient='records')
+                #ValidationData needs to wait until the backtesting part
+                #Reason1:TS of Validation Data is mapping from TS of training data
+                #Reason2:the result has two different types with SLSP and without SLSP
+
+       # 把 ma, sma... 之類的指標都 append 到 tmp 裡面後再一次處理
+        for i in tmp:
+            Combinaion = self.__combine(tmp[i])
+            print(f"{tmp[i]} Do Combination  \r\n{Combinaion}")
+            for c in Combinaion:
+                try:
+                    signal = Case.case1(
+                        TIvale[c[0]],
+                        TIvale[c[1]]
+                    ) 
+                    signal = pd.DataFrame(signal)
+                    signal.columns = [f"{c[0]}&{c[1]}"]
+                    data = pd.concat([data, signal], axis=1)
+                    data.to_json(f"{self.path}/ValidationData/Signal.json", orient='records')
+                except:
+                    print(f"TIValue has no {c[0]} or {c[1]} value")
+            print(f"Finished all producing signal") 
     ##
 
 
