@@ -1,3 +1,4 @@
+from ast import Return
 from ssl import SSLWantReadError
 import pandas as pd
 import json
@@ -27,10 +28,9 @@ class BackTesting():
         
 
         for buy in Signal_list[1:]:
-            #print(f"========= {buy} =========")
             for sell in Signal_list[1:]: 
-                Buy_Signal = Signal[buy].values   # pd.Series to list
-                Sell_Signal = Signal[sell].values # 在小資料的情況下 List 的計算速度比 numpy.array 快
+                Buy_Signal = Signal[buy].values   
+                Sell_Signal = Signal[sell].values 
                 
                 New_Signal = []
                 Flag:bool = False
@@ -38,15 +38,16 @@ class BackTesting():
                     if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
                         if Flag:
                             New_Signal.append(-1)
-                            Flag = True
+                            Flag = False
                         else:
                             New_Signal.append(1)
+                            Flag = True
                     elif Buy_Signal[i] == 1 and not Flag:
                         New_Signal.append(1)
                         Flag = True
                     elif Sell_Signal[i] == -1 and Flag:
                         New_Signal.append(-1)
-                        Flag = True
+                        Flag = False
                     else:
                         New_Signal.append(0)
 
@@ -55,8 +56,6 @@ class BackTesting():
                 Table = pd.concat([Table, New_Signal], axis=1)
                 #Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLSP.json", orient='records')
                 Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLSP.csv")
-                #print(f"==> {sell}")
-            #print()
 
         print("Finished Producing Table_withoutSLSP\r\n")        
 
@@ -78,11 +77,59 @@ class BackTesting():
         print(withoutSLSP.columns)
         withoutSLSP.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLSP.csv")
         
+        #table setting
+        withoutSLSP_list = withoutSLSP.columns               
+        detail = {
+                    "Date" : [],
+                    "Trading_strategy" : [],
+                    "Type:" : [],
+                    "Stock_price" : [],
+                    "Money" : [],
+                    "Return_money" : [],
+                    "Rate_of_Return" : []
+                }
+        detail_table = pd.DataFrame(detail) 
+        date = withoutSLSP["Date"].values
+        price = withoutSLSP["close"].values
+        
+        for signal in withoutSLSP_list[2:]:
+                now_Signal = withoutSLSP[signal].values                 
+                buy_price = 0
+                
+                for i in range(len(now_Signal)):
+                    if now_Signal[i] == 1:
+                        buy_price = price[i]
+                        detail_table = detail_table.append({
+                            "Date" : f"{date[i]}",
+                            "Trading_strategy" : f"{signal}",
+                            "Type:" : f"{now_Signal[i]}",
+                            "Stock_price" : f"{price[i]}",
+                            "Money" : f"10000",
+                            "Return_money" : f"0",
+                            "Rate_of_Return" : f"0"
+                        },ignore_index=True)
+                        #改pd.concat
+                    elif now_Signal[i] == -1:
+                        Return_money = (price[i] - buy_price) / buy_price * 10000
+                        detail_table = detail_table.append({
+                            "Date" : f"{date[i]}",
+                            "Trading_strategy" : f"{signal}",
+                            "Type:" : f"{now_Signal[i]}",
+                            "Stock_price" : f"{price[i]}",
+                            "Money" : f"10000",
+                            "Return_money" : f"{Return_money}",
+                            "Rate_of_Return" : f"{(Return_money/10000)}"
+                        },ignore_index=True)
+                detail_table = detail_table.sort_values(["Date"],ascending = True)
+                #detail_table.to_json(f"{self.path}/Table.json", orient='records')
+                detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/detail_table.csv")
+        print()
+        print("Finished detail_Table\r\n")
+
         #to do-list:
-        #read by 1 or -1 to create new table called transaction details
-        #then sorted by date
+        #read by 1 or -1 to create new table called transaction details then sorted by date,done but need to enhance
         #query this table by what u want
-    
+     
 
 
 if __name__ == '__main__':

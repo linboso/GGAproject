@@ -293,7 +293,7 @@ class TI2Signal():
                     if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
                         if not Flag:
                             New_Signal.append(-1)
-                            Flag = True
+                            Flag = True 
                         else:
                             New_Signal.append(1)
                     elif Buy_Signal[i] == 1 and not Flag:
