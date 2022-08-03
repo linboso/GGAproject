@@ -4,15 +4,16 @@ from ssl import SSLWantReadError
 from numpy import array
 import pandas as pd
 import json
+from Algo.Chromosome import Chromosome
 
 # from .Chromosome import Chromosome
 
 
 class BackTesting():
-    def __init__(self, StopLess:float, TakeProfit:float, GTSP:array, Setting) -> None:
+    def __init__(self, StopLess:float, TakeProfit:float, Chrom:Chromosome, Setting) -> None:
         self.SL = StopLess
         self.TP = TakeProfit
-        self.GTSP = GTSP
+        self.Chrom = Chrom
         
         self.StockID = Setting['StockID']
         self.Path = Setting['Path']
@@ -77,9 +78,22 @@ class BackTesting():
             withoutSLSP = pd.read_csv(f)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
             chosenTS = pd.read_json(s) 
-        map_group = dict(chosenTS["Trading Strategy"])
-        map_group = {value:key for key,value in map_group.items()}#key value change
-        #print(map_group)
+        map_group1 = dict(chosenTS["Trading Strategy"])
+        map_group2 = {value:key for key,value in map_group1.items()}#key value change
+
+        map = {}
+        num = 0
+        for i in self.Chrom.gene[:self.Chrom.mTS + self.Chrom.kGroup]:
+            if i == 0:
+                num += 1
+            else:
+                map[f"{i-1}"] = num
+
+        for i in map_group2:
+            index = map_group2[f"{i}"]
+            map_group2[f"{i}"] = map[f"{index}"]
+
+        print(map_group2)
 
 
         #table setting
@@ -88,32 +102,45 @@ class BackTesting():
         date = withoutSLSP["Date"].values
         price = withoutSLSP["close"].values
         
-        for signal in withoutSLSP_list[2:]:
+        for signal in withoutSLSP_list[3:]:
                 now_Signal = withoutSLSP[signal].values                 
                 buy_price = 0 
-                weight = [0.25, 0.25, 0.25, 0.25] #到時候用chromosome.getWeight()
+                weight = self.Chrom.getWeight() #到時候用chromosome.getWeight()
 
                 for i in range(len(now_Signal)):
                     record = []
+                    Transaction_amount = self.Capital * weight[map_group2[signal]]
                     if now_Signal[i] == 1:
-                        buy_price = price[i]
-                        record.extend([date[i], signal, now_Signal[i], price[i], self.Capital, None, None])
+                        buy_price = price[i]                      
+                        record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None])
                     elif now_Signal[i] == -1:
-                        Return_money = (price[i] - buy_price) / buy_price * self.Capital
-                        record.extend([date[i], signal, now_Signal[i], price[i], self.Capital, Return_money, Return_money/10000])
+                        Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                        record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, Return_money/Transaction_amount])
                     record = pd.DataFrame(record)
                     detail_table = pd.concat([detail_table , record.T], axis=0)
                 
-        detail_table.columns = ["Date", "Trading_strategy", "Type", "Stock_price", "Money", "Return_money", "Rate_of_Return"]
-        #detail_table = detail_table.sort_values(["Date"],ascending = True)
+        detail_table.columns = ["Date", "Trading_strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         #detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/detail_table.json", orient='records')
         detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/detail_table.csv")
         print("Finished detail_Table\r\n")
-        #print(self.Capital)
-        #print(self.GTSP)
+         
         #to do-list:
         #query this table by what u want
-     
+    
+    def Query(self):
+        with open(f'{self.Path}/{self.StockID}/ValidationData/detail_table.csv') as f:
+            detail_table = pd.read_csv(f)
+        """Alltsp:list = self.Chrom.__ADVcombine() #I dunno why I cannot compile this
+        tsplen:int = len(Alltsp)
+        for tsp in Alltsp:
+            table = pd.DataFrame()
+            for i in tsp:
+                temp = detail_table[detail_table["Trading Strategy"] == f"{i}"]
+                table = pd.concat([table,temp],axis = 0)
+            table.sort_values("Date")
+            table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/folder/{tsp}.csv")
+        
+        print("finished all backtesting works")"""
 
 
 if __name__ == '__main__':

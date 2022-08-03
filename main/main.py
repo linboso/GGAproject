@@ -35,18 +35,18 @@ Setting = Setting.Read()
 
 
 
-#population = Population(Setting=Setting)
+population = Population(Setting=Setting)
 # cProfile.run('population.GenerateOffspring_With_logFile()')
-#population.GenerateOffspring_With_logFile()
-# population.GenerateOffspring()
-# population.Genealogy()
+population.GenerateOffspring_With_logFile()
+population.GenerateOffspring()
+population.Genealogy()
 #iterate
 
-fortest = [12, 15, 13, 8, 7, 10, 6, 9, 11, 0, 3, 0, 14, 2, 0, 1, 4, 5, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
-
-ini  = Algo.BackTesting.BackTesting(0.25,0.15,fortest,Setting = Setting)
+print(population.Chrom[0].gene)
+ini  = Algo.BackTesting.BackTesting(0.25,0.15,population.Chrom[0],Setting = Setting)
 #之後補GTSP
 ini.ProduceTable()
 ini.Run()
+ini.Query()
 
 #chromosome 用 array 算 fintness?
