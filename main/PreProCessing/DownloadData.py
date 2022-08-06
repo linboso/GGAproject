@@ -29,17 +29,17 @@ class DownloadStockData():
             print("Fail to download Traning Data ")
 
         try:
-            if not os.path.exists(f"{self.path}/TraningData/"):
-                os.makedirs(f"{self.path}/TraningData/")
-                print("Create TraningData folder")
+            if not os.path.exists(f"{self.path}/TrainingData/"):
+                os.makedirs(f"{self.path}/TrainingData/")
+                print("Create TrainingData folder")
             
-            data.to_json(f"{self.path}/TraningData/StockData.json", orient='records')
+            data.to_json(f"{self.path}/TrainingData/StockData.json", orient='records')
 
             data = pd.DataFrame(data.index)
-            data.to_json(f"{self.path}/TraningData/Date.json", orient='records')
+            data.to_json(f"{self.path}/TrainingData/Date.json", orient='records')
             # Separate Date & StockDate
             # Save as Json Type
-            print(f"Saving TraningData data at {self.path}/TraningData \r\n")
+            print(f"Saving TrainingData data at {self.path} \r\n")
         except:
             print("Fail to saving file \r\n")
         #

@@ -112,15 +112,18 @@ class Chromosome():
             Weight:list = self.getWeight()
             # ARR = self.Data['ARR'] # 使用區域變數 可加速 python 速度
             ReturnTSP:list = []
+
             # [[ReturnTSP.append(ARR[TSP[TS]-1] * Weight[TS+1]) for TS in range(self.kGroup)] for TSP in ALLtsp]
+            # 版本 2 
 
             [[ReturnTSP.append(TSP[i][0] * Weight[i+1]) for i in range(self.kGroup)] for TSP in ALLtsp]
 
-            # print(f"ReturnTSP: {ReturnTSP}")
+            
+            # 版本 1 很慢
             # for TSP in ALLtsp:  
                 # for TS in range(self.kGroup):
                 #     ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1])
-            # 功能一樣 但是這樣寫慢很多很多
+
 
          
             return sum(ReturnTSP)*self.Capital/TSPlen
@@ -133,6 +136,7 @@ class Chromosome():
             # [[RiskTSP.append(min([MDD[TS-1] for TS in TSP]))] for TSP in ALLtsp]
 
             [[RiskTSP.append(min([TS[1]for TS in TSP]))] for TSP in ALLtsp]
+            
             # print(f"RiskTSP: {RiskTSP}")
             # for TSP in ALLtsp:
             #     minRiskTsp = sys.maxsize

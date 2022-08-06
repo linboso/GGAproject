@@ -1,7 +1,7 @@
 {
 	"StockID": "2603.TW",
 	"TrainingPeriod": {
-		"StartDate": "2022-02-01",
+		"StartDate": "2012-02-01",
 		"EndDate": "2022-06-16"
 	},
 	"ValidationPeriod": {

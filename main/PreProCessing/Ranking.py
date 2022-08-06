@@ -11,14 +11,14 @@ class Ranking():
         self.stock_id = setting['StockID']
         self.start = setting['TrainingPeriod']['StartDate']
         self.end = setting['TrainingPeriod']['EndDate']
-        self.path = f"{setting['Path']}/{setting['StockID']}"
         
         if __name__ == "__main__":
-            with open(f'../../data/stock/{self.stock_id}/TraningData/Table.json') as f:
-                self.table = pd.DataFrame(json.load(f))
+            self.path = f"../{setting['Path']}/{setting['StockID']}/TrainingData"
         else:
-            with open(f'{self.path}/TraningData/Table.json') as f:
-                self.table = pd.DataFrame(json.load(f))
+            self.path = f"{setting['Path']}/{setting['StockID']}/TrainingData"
+
+        with open(f'{self.path}/Table.json') as f:
+            self.table = pd.DataFrame(json.load(f))
         
 
 
@@ -58,10 +58,7 @@ class Ranking():
         Top15 = Top15.drop(DontKeep).sort_values(by=["ARR"], ascending =False).reset_index(drop=True)
         #保留 ARR最高的 前 15 個
 
-        if __name__ == "__main__":
-            Top15.T.to_json(f"../../data/stock/{self.stock_id}/TraningData/Top15.json", orient = 'index')
-        else:
-            Top15.T.to_json(f"{self.path}/TraningData/Top15.json", orient = 'index')
+        Top15.T.to_json(f"{self.path}/Top15.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
         print("已完成 TOP15 的篩選")
@@ -102,10 +99,7 @@ class Ranking():
         Top15 = Top15.drop(DontKeep).sort_values(by=["ARR"], ascending =False).reset_index(drop=True)
         #保留 ARR最高的 前 21 個
 
-        if __name__ == "__main__":
-            Top15.T.to_json(f"../../data/stock/{self.stock_id}/TraningData/Top21.json", orient = 'index')
-        else:
-            Top15.T.to_json(f"{self.path}/TraningData/Top21.json", orient = 'index')
+        Top15.T.to_json(f"{self.path}/Top21.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
         print("已完成 TOP21 的篩選")
@@ -171,10 +165,7 @@ class Ranking():
         Top555 = Top555.drop(DontKeep).reset_index(drop=True)
         # 一次 drop 所有不要的部位
         
-        if __name__ == "__main__":
-            Top555.T.to_json(f"../../data/stock/{self.stock_id}/TraningData/Top555.json", orient = 'index')
-        else:
-            Top555.T.to_json(f"{self.path}/TraningData/Top555.json", orient = 'index')
+        Top555.T.to_json(f"{self.path}/Top555.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
         print("已完成 TOP555 的篩選")
@@ -236,7 +227,7 @@ class Ranking():
         Keep = [dontkeep for dontkeep in Top777.index if dontkeep not in Keep]
         
         Top777 = Top777.drop(Keep).reset_index(drop=True)
-        Top777.T.to_json(f"{self.path}/TraningData/Top777.json", orient = 'index')
+        Top777.T.to_json(f"{self.path}/Top777.json", orient = 'index')
         print("已完成 Top777 的篩選")
     #==================================== Top777 ===========================================
 
@@ -250,12 +241,14 @@ class Ranking():
 
 
 if __name__ == "__main__":
+    # 獨立執行 測試用
     with open('../setting.json') as f:
         ranking = Ranking(json.load(f))
-
-    # ranking.Top555()
+    
+    ranking.Top777()
+    ranking.Top555()
     ranking.Top21()
-    # ranking.Top15()
+    ranking.Top15()
 
 
 

@@ -28,12 +28,14 @@ class Population():
         self.GroupingPart_len:int = Setting['mTS'] + Setting['kGroup'] 
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
+     
+
         if __name__ == "__main__":
-            with open(f"../../data/stock/0050.TW/TraningData/Top555.json") as f:
+            with open(f"../../data/stock/{Setting['StockID']}/TrainingData/Top555.json") as f:
                 StrategyData = pd.read_json(f)
             # For Test
         else:
-            with open(f"{Setting['Path']}/{Setting['StockID']}/TraningData/{Setting['Strategy']}.json") as f:
+            with open(f"{Setting['Path']}/{Setting['StockID']}/TrainingData/{Setting['Strategy']}.json") as f:
                 StrategyData = pd.read_json(f)
 
         self.Chrom:list[Chromosome] = [Chromosome(kGroup=self.kGroup, WeightPart=self.WeightPart, mTS=self.mTS, Capital=self.Capital, StrategyData=StrategyData) for _ in range(self.pSize)]
