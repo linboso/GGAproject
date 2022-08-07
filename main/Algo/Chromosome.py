@@ -101,7 +101,7 @@ class Chromosome():
 
     #     return Weight
 
-    def __ADVcombine(self) -> list:
+    def ADVcombine(self) -> list:
         GTSP = self.getGTSP()
         n = self.kGroup
       
@@ -123,7 +123,7 @@ class Chromosome():
 
     def Fitness(self) -> float:
         import math
-        ALLtsp:list = self.__ADVcombine()
+        ALLtsp:list = self.ADVcombine()
         TSPlen:int = len(ALLtsp)
 
 

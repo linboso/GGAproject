@@ -4,6 +4,8 @@ from ssl import SSLWantReadError
 from numpy import array
 import pandas as pd
 import json
+
+from sqlalchemy import false
 from Algo.Chromosome import Chromosome
 
 # from .Chromosome import Chromosome
@@ -78,8 +80,8 @@ class BackTesting():
             withoutSLSP = pd.read_csv(f)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
             chosenTS = pd.read_json(s) 
-        map_group1 = dict(chosenTS["Trading Strategy"])
-        map_group2 = {value:key for key,value in map_group1.items()}#key value change
+        map_group1 = dict(chosenTS["Trading Strategy"])#{'2': MACD^STOCH}
+        map_group2 = {value:key for key,value in map_group1.items()}#key value change {'MACD^STOCH': 2}
 
         map = {}
         num = 0
@@ -111,16 +113,19 @@ class BackTesting():
                     record = []
                     Transaction_amount = self.Capital * weight[map_group2[signal]]
                     if now_Signal[i] == 1:
-                        buy_price = price[i]                      
-                        record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None])
+                        buy_price = price[i] 
+                        record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None]                     
+                        #record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None])
                     elif now_Signal[i] == -1:
                         Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
-                        record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, Return_money/Transaction_amount])
+                        record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, (Return_money/Transaction_amount)]
+                        #record.extend([date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, Return_money/Transaction_amount])
                     record = pd.DataFrame(record)
                     detail_table = pd.concat([detail_table , record.T], axis=0)
                 
-        detail_table.columns = ["Date", "Trading_strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
-        #detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/detail_table.json", orient='records')
+        detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
+        detail_table.reset_index(drop=True, inplace=True)
+        detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/detail_table.json", orient='records')
         detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/detail_table.csv")
         print("Finished detail_Table\r\n")
          
@@ -130,17 +135,21 @@ class BackTesting():
     def Query(self):
         with open(f'{self.Path}/{self.StockID}/ValidationData/detail_table.csv') as f:
             detail_table = pd.read_csv(f)
-        """Alltsp:list = self.Chrom.__ADVcombine() #I dunno why I cannot compile this
-        tsplen:int = len(Alltsp)
+        with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
+            chosenTS = pd.read_json(s) 
+        map_group1 = dict(chosenTS["Trading Strategy"])#{'2': MACD^STOCH}
+        Alltsp:list = self.Chrom.ADVcombine() #I dunno why I cannot compile this
+        #tsplen:int = len(Alltsp)
         for tsp in Alltsp:
             table = pd.DataFrame()
             for i in tsp:
-                temp = detail_table[detail_table["Trading Strategy"] == f"{i}"]
+                temp = detail_table[detail_table["Trading_Strategy"] == map_group1[i-1]]
                 table = pd.concat([table,temp],axis = 0)
-            table.sort_values("Date")
-            table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/folder/{tsp}.csv")
+            table = table.sort_values("Date")
+            table.reset_index(drop=True, inplace=True)
+            table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/folder/{tsp}.csv",index = False)
         
-        print("finished all backtesting works")"""
+        print("Finished all backtesting works")
 
 
 if __name__ == '__main__':

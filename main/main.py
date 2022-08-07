@@ -37,9 +37,9 @@ Setting = Setting.Read()
 
 population = Population(Setting=Setting)
 # cProfile.run('population.GenerateOffspring_With_logFile()')
-population.GenerateOffspring_With_logFile()
-population.GenerateOffspring()
-population.Genealogy()
+#population.GenerateOffspring_With_logFile()
+#population.GenerateOffspring()
+#population.Genealogy()
 #iterate
 
 print(population.Chrom[0].gene)
