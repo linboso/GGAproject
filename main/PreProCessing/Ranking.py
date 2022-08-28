@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 import json
 
 
@@ -23,13 +24,15 @@ class Ranking():
 
 
     def Top15(self):
+        
         Table:pd.DataFrame = self.table
         TS_list = Table.columns
         ClosePrice= Table['close'].to_list()
+
         Top15 = []
 
         for TS in TS_list[2:]:
-            Signal:list = Table[TS].to_list()
+            Signal:np.array = Table[TS].to_list()
             BuyPrice:int = 0
             Flag:bool = False
             
@@ -61,7 +64,7 @@ class Ranking():
         Top15.T.to_json(f"{self.path}/Top15.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
-        print("已完成 TOP15 的篩選")
+        print("完成 TOP15 的篩選")
 
     def Top21(self):
         Table:pd.DataFrame = self.table
@@ -102,7 +105,7 @@ class Ranking():
         Top15.T.to_json(f"{self.path}/Top21.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
-        print("已完成 TOP21 的篩選")
+        print("完成 TOP21 的篩選")
     #==================================== Top15 ===========================================
 
     def Top555(self):
@@ -111,7 +114,7 @@ class Ranking():
         ClosePrice= Table['close'].to_list()
         Top555 = []
 
-        tmp = []
+        # tmp = []
         for TS in TS_list[2:]:
             Signal:list = Table[TS].to_list()
             BuyPrice:int = 0
@@ -168,7 +171,7 @@ class Ranking():
         Top555.T.to_json(f"{self.path}/Top555.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
-        print("已完成 TOP555 的篩選")
+        print("完成 TOP555 的篩選")
 
     #==================================== Top555 ===========================================
     
@@ -228,7 +231,7 @@ class Ranking():
         
         Top777 = Top777.drop(Keep).reset_index(drop=True)
         Top777.T.to_json(f"{self.path}/Top777.json", orient = 'index')
-        print("已完成 Top777 的篩選")
+        print("完成 Top777 的篩選")
     #==================================== Top777 ===========================================
 
 
@@ -241,14 +244,16 @@ class Ranking():
 
 
 if __name__ == "__main__":
+    import cProfile
     # 獨立執行 測試用
     with open('../setting.json') as f:
         ranking = Ranking(json.load(f))
     
-    ranking.Top777()
-    ranking.Top555()
-    ranking.Top21()
-    ranking.Top15()
+    # ranking.Top777()
+    # ranking.Top555()
+    # ranking.Top21()
+    # ranking.Top15()
+    cProfile.run("ranking.Top15()")
 
 
 

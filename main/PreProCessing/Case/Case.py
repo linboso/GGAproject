@@ -1,18 +1,17 @@
 import pandas as pd
 import json
-
+import numpy as np
 
 def case1(ti1: pd.Series, ti2: pd.Series):
-    ti1 = ti1.values
-    ti2 = ti2.values
-    r = []
+    ti1 = ti1.to_numpy()
+    ti2 = ti2.to_numpy()
+
+    r = np.zeros(len(ti1))
     for i in range(len(ti1)):
         if ti1[i] > ti2[i] and ti1[i-1] < ti2[i-1]:
-            r.append(1)
+            r[i] = 1
         elif ti1[i] < ti2[i] and ti1[i-1] > ti2[i-1]:
-            r.append(-1)
-        else:
-            r.append(0)
+            r[i] = -1 
     return r
 
 def case2(ti: pd.Series, c1: float, c2: float):

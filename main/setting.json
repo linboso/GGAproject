@@ -1,7 +1,7 @@
 {
 	"StockID": "2603.TW",
 	"TrainingPeriod": {
-		"StartDate": "2012-02-01",
+		"StartDate": "2016-02-01",
 		"EndDate": "2022-06-16"
 	},
 	"ValidationPeriod": {
@@ -11,13 +11,15 @@
 	"Path": "../data/stock",
 	"TechnicalIndicator": [
 		"MA5",
-		"MA10",
 		"MA15",
-		"MA30",
-		"RSI",
-		"MACD",
-		"STOCH",
-		"CCI"
+		"WMA10",
+		"SMA10",
+		"MAMA",
+		"KAMA5",
+		"EMA15",
+		"DEMA5",
+		"TEMA20",
+		"TRIMA10"
 	],
 	"Strategy": "Top555",
 	"pSize": 100,

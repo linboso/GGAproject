@@ -1,5 +1,3 @@
-import os
-
 import pandas as pd
 import talib
 from talib import abstract
@@ -34,7 +32,7 @@ class TIValue():
 
         _df_with_ti = pd.DataFrame()
         _ALL_TI_LIST = talib.get_functions()
-        print(_ALL_TI_LIST)
+        # print(_ALL_TI_LIST)
  
         for _ti in self.ti_list: #selected n techical indicator
             try:

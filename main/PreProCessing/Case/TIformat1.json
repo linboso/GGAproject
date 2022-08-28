@@ -1,0 +1,232 @@
+{
+  "WMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "WMA",
+      "ti2": "WMA"
+    }
+  },
+  "TRIMA": {
+    "Case": "1",
+    "InputArray": {
+        "ti1": "TRIMA",
+        "ti2": "TRIMA"
+    }
+  },
+  "TEMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "TEMA",
+      "ti2": "TEMA"
+    }
+  },
+  "SMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "SMA",
+      "ti2": "SMA"
+    }
+  },
+  "MAMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "MAMA",
+      "ti2": "FAMA"
+    }
+  },
+  "MA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "MA",
+      "ti2": "MA"
+    }
+  },
+  "KAMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "KAMA",
+      "ti2": "KAMA"
+    }
+  },
+  "EMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "EMA",
+      "ti2": "EMA"
+    }
+  },
+  "DEMA": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "DEMA",
+      "ti2": "DEMA"
+    }
+  },
+  "TRIX": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "TRIX",
+      "ti2": "TRIXMA"
+    }
+  },
+  "DI": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "PLUS_DM",
+      "ti2": "PLUS_DI"
+    }
+  },
+  "RSI": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "RSI",
+      "C1": 30,
+      "C2": 70
+    }
+  },
+  "PSY": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "PSY",
+      "C1": 0.25,
+      "C2": 0.25
+    }
+  },
+  "WMS%R": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "WMS%R",
+      "C1": -80,
+      "C2": -20
+    }
+  },
+  "ULTOSC": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "ULTOSC",
+      "C1": 35,
+      "C2": 70
+    }
+  },
+  "MOM": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "MOM",
+      "C1": 0,
+      "C2": 0
+    }
+  },
+  "BOP": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "BOP",
+      "C1": 0,
+      "C2": 0
+    }
+  },
+  "APO": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "APO",
+      "C1": 0,
+      "C2": 0
+    }
+  },
+  "MFI": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "MFI",
+      "C1": 20,
+      "C2": 80
+    }
+  },
+  "AROONOSC": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "AROONOSC",
+      "C1": 50,
+      "C2": -50
+    }
+  },
+  "CCI": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "CCI",
+      "C1": -1,
+      "C2": 1
+    }
+  },
+  "CMO": {
+    "Case": "2",
+    "InputArray": {
+	    "ti1": "CMO",
+      "C1": 50,
+      "C2": -50
+    }
+  },
+  "STOCH": {
+    "Case": "33",
+    "InputArray": {
+        "C1": 20,
+        "C2": 80,
+        "ti1": "SLOWK",
+        "ti2": "SLOWD"
+    }
+  },
+  "ROC": {
+    "Case": "55",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "ROC",
+      "ti2": "MAROC"
+    }
+  },
+  "PPO": {
+    "Case": "55",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "PPO",
+      "ti2": "EMA"
+     }
+  },
+  "MACD": {
+    "Case": "55",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "MACD",
+      "ti2": "MACDSIGNAL"
+    }
+  },
+  "ADX": {
+    "Case": "55",
+    "InputArray": {
+      "C1": 25,
+	  "ti1": "ADX",
+      "ti2": "PLUS_DI",
+      "ti3": "MINUS_DI"
+    }
+  },
+  "ADXR": {
+    "Case": "66",
+    "InputArray": {
+      "ti1": "ADX",
+      "ti2": "ADXR",
+      "ti3": "PLUS_DI",
+      "ti4": "MINUS_DI"
+    }
+  },
+  "AROON": {
+    "Case": "AROON",
+    "InputArray": {
+	  "ti1": "AROONOSC",
+	  "ti2": "AROONUP",
+	  "ti3": "AROONDOWN",
+	  "C1": 0,
+      "C2": 50,
+      "C3": 50
+    }
+  }
+}

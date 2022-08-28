@@ -100,10 +100,13 @@ class SettingFile():
             print("Failed to saving file")
 
 
+
 if __name__ == '__main__':
     baseEnv = SettingFile()
     print(baseEnv.data['TrainingPeriod'])
     baseEnv.print() 
+
+    
     # baseEnv.Set(TechnicalIndicator = ['CCI'])
 
     # NewDate = {
