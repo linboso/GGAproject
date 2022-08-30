@@ -49,10 +49,12 @@ class Ranking():
 
                 if not Flag and BuyDay[b] < SellDay[s]:
                     buyPrice = ClosePrice[BuyDay[b]]
+                    # print(f" T -> {BuyDay[b]} -> {ClosePrice[BuyDay[b]]}") #Debug
                     Flag = True
                 
                 if Flag:
                     returnRate.append((ClosePrice[SellDay[s]] - buyPrice) / buyPrice)
+                    # print(f" T -> {SellDay[s]} -> {ClosePrice[SellDay[s]]}") #Debug
                     Flag = False
 
                 if BuyDay[b] > SellDay[s]:
@@ -289,10 +291,10 @@ if __name__ == "__main__":
     with open('../setting.json') as f:
         ranking = Ranking(json.load(f))
     
-    ranking.Top777()
+    # ranking.Top777()
     # ranking.Top555()
-    # ranking.Top21() # Work
-    # ranking.Top15() # Work
+    # ranking.Top21() 
+    # ranking.Top15() 
     # cProfile.run("ranking.Top555()")
     # cProfile.run("ranking.Top21()")
     # cProfile.run("ranking.Top15()")

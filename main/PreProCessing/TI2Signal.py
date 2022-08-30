@@ -177,6 +177,7 @@ class TI2Signal():
         Signal = Signal.to_numpy()
 
         Table = np.concatenate([Data['close'].to_numpy().reshape(n, 1), np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], axis=1)
+
         # Table中 第1行是 Close 收盤價
         # 接下來合併 n * (TSlen-1)^2 大小的 0 矩陣
         #Martix Size = n * [(TSlen-1)^2 + 2]
@@ -185,7 +186,7 @@ class TI2Signal():
 
 
         # print(Table)
-        Col = 0
+        Col = 1
         for buy in range(1, TSlen):
             Buy_Signal:np.array = Signal[:, buy]   # pd.Series to np.array
 
