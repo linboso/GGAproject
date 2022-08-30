@@ -60,7 +60,7 @@ class TIValue():
         print(f"計算出來的 數值有: {list(_df_with_ti.columns)}")
 
         try:
-            _df_with_ti.to_json(f"{self.path}/TIvalue.json" ,orient='records') #save file 
+            _df_with_ti.to_json(f"{self.path}/TIvalue.json" ,orient='records')
             print(f"Saving TIvalue.json file at {self.path}\r\n")
         except:
             print(f"Saving File Faild")

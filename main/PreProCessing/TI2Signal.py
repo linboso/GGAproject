@@ -176,13 +176,13 @@ class TI2Signal():
 
         Signal = Signal.to_numpy()
 
-        Table = np.concatenate([Signal[:, 0].reshape(n, 1), Data['close'].to_numpy().reshape(n, 1)], axis=1)
-        #Table 的第一列是 日期  第二列是 Close 收盤價
-        Table = np.concatenate([Table, np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], axis=1)
+        Table = np.concatenate([Data['close'].to_numpy().reshape(n, 1), np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], axis=1)
+        # Table中 第1行是 Close 收盤價
         # 接下來合併 n * (TSlen-1)^2 大小的 0 矩陣
         #Martix Size = n * [(TSlen-1)^2 + 2]
 
-        ColName:list = ["Data", "close"]
+        ColName:list = ["close"]
+
 
         # print(Table)
         Col = 0
