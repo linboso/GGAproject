@@ -43,7 +43,7 @@ population = Population(Setting=Setting)
 #iterate
 
 print(population.Chrom[0].gene)
-ini  = Algo.BackTesting.BackTesting(0.25,0.15,population.Chrom[0],Setting = Setting)
+ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
 #之後補GTSP
 ini.ProduceTable()
 ini.Run()
