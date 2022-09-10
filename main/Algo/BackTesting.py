@@ -74,8 +74,8 @@ class BackTesting():
         del Keep[0:2]  #保留'Date', 'close'
         Table = Table.drop(Keep,axis = 1).reset_index(drop=True)#delete not chosen TS
         
-        #Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.json", orient='records')
-        Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.csv")
+        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.json", orient='records')
+        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.csv")
         print("Finished Producing Table_withoutSLTP\r\n")  
     
 
@@ -140,19 +140,19 @@ class BackTesting():
         del Keep[0:2]  #保留'Date', 'close'
         Table = Table.drop(Keep,axis = 1).reset_index(drop=True)#delete not chosen TS
         
-        #Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.json", orient='records')
-        Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.csv")
+        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.json", orient='records')
+        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.csv")
         print("Finished Producing Table_withSLTP\r\n")
          
     def Run(self):   
-        with open(f'{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.csv') as f1, open(f'{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.csv') as f2:
-            withoutSLTP = pd.read_csv(f1)
-            withSLTP = pd.read_csv(f2)
+        with open(f'{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.json') as f1, open(f'{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.json') as f2:
+            withoutSLTP = pd.read_json(f1)
+            withSLTP = pd.read_json(f2)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
             chosenTS = pd.read_json(s) 
         
         price = withoutSLTP["close"].values    
-        date = withoutSLTP["Date"].values       
+        date  = withoutSLTP["Date"].values       
         
         
         #define map_group
@@ -175,6 +175,7 @@ class BackTesting():
         bh_return_rate = (price[-1] - price[0])/price[0]
         bh_return_money = bh_return_rate * self.Capital
         buy_and_hold = {
+          "Date": f"{date[0]} ~ {date[-1]}",
           "return_rate": bh_return_rate,
           "return_money": bh_return_money,
         }
@@ -205,8 +206,8 @@ class BackTesting():
                 
         detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table.reset_index(drop=True, inplace=True)
-        #detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json", orient='records')
-        detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.csv")
+        detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json", orient='records')
+        #detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.csv")
         print("Finished withoutSLTP_table\r\n")
         
         
@@ -233,15 +234,15 @@ class BackTesting():
                 
         detail_table2.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table2.reset_index(drop=True, inplace=True)
-        #detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json", orient='records')
-        detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.csv")
+        detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json", orient='records')
+        #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.csv")
         print("Finished withSLTP_table\r\n")
 
     
     def Query(self):
-        with open(f'{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.csv') as f1,open(f'{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.csv') as f2:
-            withoutSLTP_table = pd.read_csv(f1)
-            withSLTP_table = pd.read_csv(f2)
+        with open(f'{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json') as f1,open(f'{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json') as f2:
+            withoutSLTP_table = pd.read_json(f1)
+            withSLTP_table = pd.read_json(f2)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
             chosenTS = pd.read_json(s) 
         map_group1 = dict(chosenTS["Trading Strategy"])#{'2': MACD^STOCH}
@@ -255,13 +256,9 @@ class BackTesting():
                 table = pd.concat([table,temp],axis = 0)
             table = table.sort_values("Date")
 
-            #total_return_money = table["Return_money"].sum()
-            #total_rate_of_return = (self.Capital * total_return_money)/self.Capital
-            #record = { "Transaction_amount" : self.Capital, "Return_money" : total_return_money, "Rate_of_Return" : total_rate_of_return }
-            #record = pd.DataFrame(record)
-            #table = pd.concat([table , record], axis=0)
             table.reset_index(drop=True, inplace=True)
-            table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_folder/{tsp}.csv",index = False)
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_folder/{tsp}.json", orient='records')
+            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_folder/{tsp}.csv",index = False)
 
         #withSLTP    
         for tsp in Alltsp:
@@ -271,13 +268,9 @@ class BackTesting():
                 table = pd.concat([table,temp],axis = 0)
             table = table.sort_values("Date")
 
-            #total_return_money = table["Return_money"].sum()
-            #total_rate_of_return = (self.Capital * total_return_money)/self.Capital
-            #record = { "Transaction_amount" : self.Capital, "Return_money" : total_return_money, "Rate_of_Return" : total_rate_of_return }
-            #record = pd.DataFrame(record)
-            #table = pd.concat([table , record], axis=0)
             table.reset_index(drop=True, inplace=True)
-            table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_folder/{tsp}.csv",index = False)
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_folder/{tsp}.json", orient='records')
+            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_folder/{tsp}.csv",index = False)
             
             
         print("Finished all backtesting works")
