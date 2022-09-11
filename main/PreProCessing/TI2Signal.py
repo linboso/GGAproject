@@ -240,7 +240,8 @@ if __name__ == "__main__":
         ti2s = TI2Signal(json.load(f))
     
     # ti2s.ProduceSignal()
-    ti2s.ProduceTable()
+    # ti2s.ProduceTable()
+    # cProfile.run("ti2s.ProduceSignal()")
     # cProfile.run("ti2s.ProduceTable()")
 
 
