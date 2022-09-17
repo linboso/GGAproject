@@ -30,63 +30,41 @@ class TIValue():
 
 
 
-        _df_with_ti = pd.DataFrame()
-        _ALL_TI_LIST = talib.get_functions()
-        # print(_ALL_TI_LIST)
+        TIValueTable = pd.DataFrame()
+        # _ALL_TI_LIST = talib.get_functions()
 
-        Signal, MovingAvg = [], []
-        for TI in self.TI_List: #selected n techical indicator
-            try:
-                # ========================= need improve
-                if TI[-2:].isdigit():                               #如果 最後兩位 是數字
-                    MovingAvg.append((int(TI[-2:]), TI))
-                    output = eval(f'abstract.{TI[:-2]}(df, timeperiod = {TI[-2:]})')
-
-                elif not TI[-2].isdigit() and TI[-1].isdigit():     #如果 最後一位 是數字
-                    MovingAvg.append((int(TI[-1:]), TI))
-                    output = eval(f'abstract.{TI[:-1]}(df, timeperiod = {TI[-1]})')
-
-                # elif TI in CustomCase: # 補充
-                else:
-                    output = eval(f'abstract.{TI}(df)') 
-
-            except:
-                print(f"--> No such technical Inidicator like \"{TI}\"\r\n")
-                
-        output = pd.DataFrame(output) 
-        output.columns = [TI] if list(output.columns)[0] == 0 else [str(i).upper() for i in list(output.columns)] 
-        _df_with_ti = pd.concat([_df_with_ti, output], axis=1)
+        ColName = []
         
-        # for _ti in self.ti_list: #selected n techical indicator
-        #     try:
-        #         # ========================= need improve
-        #         if not _ti in _ALL_TI_LIST:
-        #             for k in range(len(_ti)):
-        #                 if _ti[k].isdigit() == True: # 這邊需要改
-        #                     break
-
-        #             output = eval(f'abstract.{_ti[:k]}(df, timeperiod = {_ti[k:]})')
-
-        #             #Talib not suport MA5, MA10, MAxx so need to use 'timeperiod' attr
-        #         else:
-        #             output = eval(f'abstract.{_ti}(df)') #eval is great Function!
-
-
-        #         output = pd.DataFrame(output) #turn "output" into DataFrame type
-        #         output.columns = [_ti] if list(output.columns)[0]==0 else [str(i).upper() for i in list(output.columns)] #name it
-        #         _df_with_ti = pd.concat([_df_with_ti, output], axis=1)
-        #         #merge Techical indicator value into main.json file
-        #     except:
-        #         print(f"--> No such technical Inidicator like \"{_ti}\"\r\n")
+        for TI in self.TI_List:
+            try:
+                if TI[-2:].isdigit():                               #如果 最後兩位 是數字
+                    TIValue:pd.DataFrame = eval(f'abstract.{TI[:-2]}(df, timeperiod={TI[-2:]})')
+                    ColName.append(TI)
+                    
+                elif not TI[-2].isdigit() and TI[-1].isdigit():     #如果 最後一位 是數字
+                    TIValue:pd.DataFrame = eval(f'abstract.{TI[:-1]}(df, timeperiod={TI[-1]})')
+                    ColName.append(TI)
+                    
+                # elif TI in CustomCase: # 補充 at未來?
+                else:
+                    TIValue:pd.DataFrame = eval(f'abstract.{TI}(df)') 
+                    [ColName.append(Name.upper()) for Name in list(TIValue.columns)]
                 
+            except:
+                print(f"沒有此 {TI} 技術指標\r\n")
+                continue
 
-        print(f"計算出來的 數值有: {list(_df_with_ti.columns)}")
+            TIValueTable = pd.concat([TIValueTable, TIValue], axis=1)
+            #把算出來的Value 合併到 Table 中
+        TIValueTable.columns = ColName
+        # Rename 行
 
-        # try:
-        #     _df_with_ti.to_json(f"{self.path}/TIvalue.json" ,orient='records')
-        #     print(f"Saving TIvalue.json file at {self.path}\r\n")
-        # except:
-        #     print(f"Saving File Faild")
+        print(f"計算出來的 指標數值有: {list(TIValueTable.columns)}")
+        # print(TIValueTable.head(5))
+        
+        TIValueTable.to_json(f"{self.path}/TIvalue.json" ,orient='records')
+        print(f"儲存 TIvalue.json 在 {self.path}\r\n")
+        
 
 
 
