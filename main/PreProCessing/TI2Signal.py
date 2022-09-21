@@ -105,15 +105,7 @@ class TI2Signal():
                         TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
                         TIvale[ti_format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
                     )
-                elif case == "AROON": # Special
-                    signal = Case.caseAROON(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2'],           # C2
-                        ti_format[TS]["InputArray"]['C3']            # C3
-                    )
+                
 
                 signal = pd.DataFrame(signal)
                 signal.columns = [TS]       # 命名 Column
@@ -176,7 +168,10 @@ class TI2Signal():
 
         Signal = Signal.to_numpy()
 
-        Table = np.concatenate([Data['close'].to_numpy().reshape(n, 1), np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], axis=1)
+        Table = np.concatenate(
+                    [Data['close'].to_numpy().reshape(n, 1), 
+                    np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], 
+                        axis=1)
 
         # Table中 第1行是 Close 收盤價
         # 接下來合併 n * (TSlen-1)^2 大小的 0 矩陣

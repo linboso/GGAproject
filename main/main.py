@@ -16,7 +16,7 @@ Setting = SettingFile()
 Setting.print() 
 Setting = Setting.Read()
 
-DownloadStockData(Setting=Setting).DownloadStockData()
+# DownloadStockData(Setting=Setting).DownloadStockData()
 # 下載 股票資料
 
 TIv = TIValue(Setting = Setting)
