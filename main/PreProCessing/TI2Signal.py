@@ -23,15 +23,15 @@ class TI2Signal():
 
 
     def ProduceSignal(self):
-        ti_format, TIvale ,data = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+        TI_Format, TIvale ,data = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
         if __name__ == "__main__":
             with open(f'./Case/TIformat1.json', 'r', encoding="utf-8") as f:
-                ti_format = pd.read_json(f)
+                TI_Format = pd.read_json(f)
         else:
             try:
                 with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
-                    ti_format = pd.read_json(f)
+                    TI_Format = pd.read_json(f)
             except:
                 print("缺失 TIformat.json \t位置: ./PreProCessing/Case/TIformat.json")
                 return 
@@ -63,47 +63,47 @@ class TI2Signal():
                 MovingAvg.append((int(TS[-1:]), TS))
 
             else:
-                case = ti_format[TS]['Case']
+                case = TI_Format[TS]['Case']
                 # print(f"TI: {TS:5} \t 屬於第 {case} Case")
                 if case == "1":
                     signal = Case.case1(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
                     )
 
                 elif case == "2":
                     signal = Case.case2(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TI_Format[TS]["InputArray"]['C1'],           # C1
+                        TI_Format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "3":
                     signal = Case.case3(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TI_Format[TS]["InputArray"]['C1'],           # C1
+                        TI_Format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "4":
                     signal = Case.case4(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TI_Format[TS]["InputArray"]['C1'],           # C1
+                        TI_Format[TS]["InputArray"]['C2']            # C2
                     )
                 elif case == "5":
                     signal = Case.case5(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
-                        ti_format[TS]["InputArray"]['C1']            # C1
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        TI_Format[TS]["InputArray"]['C1']            # C1
                     )
                 elif case == "6":
                     signal = Case.case6(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
+                        TIvale[TI_Format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
                     )
                 elif case == "AROON": # Special
                     signal = Case.caseAROON(
