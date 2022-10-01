@@ -159,45 +159,42 @@
   "CMO": {
     "Case": "2",
     "InputArray": {
-	    "ti1": "CMO",
+	  "ti1": "CMO",
       "C1": 50,
       "C2": -50
     }
   },
+  "ROC": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "ROC",
+      "C1": 0,
+      "C2": 0
+    }
+  },
+  "PPO": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "PPO",
+      "C1": 0,
+      "C2": 0
+     }
+  },
+  "MACD": {
+    "Case": "2",
+    "InputArray": {
+	  "ti1": "macdhist",
+      "C1": 0,
+      "C2": 0 
+    }
+  },
   "STOCH": {
-    "Case": "33",
+    "Case": "3",
     "InputArray": {
         "C1": 20,
         "C2": 80,
         "ti1": "SLOWK",
         "ti2": "SLOWD"
-    }
-  },
-  "ROC": {
-    "Case": "55",
-    "InputArray": {
-      "C1": 0,
-      "C2": 0,
-      "ti1": "ROC",
-      "ti2": "MAROC"
-    }
-  },
-  "PPO": {
-    "Case": "55",
-    "InputArray": {
-      "C1": 0,
-      "C2": 0,
-      "ti1": "PPO",
-      "ti2": "EMA"
-     }
-  },
-  "MACD": {
-    "Case": "55",
-    "InputArray": {
-      "C1": 0,
-      "C2": 0,
-      "ti1": "MACD",
-      "ti2": "MACDSIGNAL"
     }
   },
   "ADX": {
@@ -216,17 +213,6 @@
       "ti2": "ADXR",
       "ti3": "PLUS_DI",
       "ti4": "MINUS_DI"
-    }
-  },
-  "AROON": {
-    "Case": "AROON",
-    "InputArray": {
-	  "ti1": "AROONOSC",
-	  "ti2": "AROONUP",
-	  "ti3": "AROONDOWN",
-	  "C1": 0,
-      "C2": 50,
-      "C3": 50
     }
   }
 }
