@@ -13,7 +13,13 @@ class TI2Signal():
         self.stock_id = Setting['StockID']
         self.start = Setting['TrainingPeriod']['StartDate']
         self.end = Setting['TrainingPeriod']['EndDate']
-        self.ti_list = Setting['TechnicalIndicator']
+        # self.ti_list = Setting['TechnicalIndicator'] #自選
+        self.TI_List = ['WMA5', 'WMA10', 'WMA20', 'WMA60', 'TRIMA5', 'TRIMA10', 'TRIMA20', 'TRIMA60', 
+                        'TEMA5', 'TEMA10', 'TEMA20', 'TEMA60', 'SMA5', 'SMA10', 'SMA20', 'SMA60', 
+                        'MAMA', 'MA5', 'MA10', 'MA20', 'MA60', 'KAMA5', 'KAMA10', 'KAMA20', 
+                        'KAMA60', 'EMA5', 'EMA10', 'EMA20', 'EMA60', 'DEMA5', 'DEMA10', 'DEMA20', 'DEMA60', 'TRIX', 
+                        'PLUS_DI', 'PLUS_DM', 'RSI', 'WILLR', 'ULTOSC', 'MOM', 'BOP', 'APO', 'MFI', 'AROONOSC', 'CCI', 
+                        'CMO', 'ROC', 'PPO', 'MACD', 'STOCH', 'ADX', 'ADXR']
 
         if __name__ == "__main__":
             self.path = f"../{Setting['Path']}/{Setting['StockID']}/TrainingData"
@@ -26,7 +32,7 @@ class TI2Signal():
         TI_Format, TIvale ,data = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
         if __name__ == "__main__":
-            with open(f'./Case/TIformat1.json', 'r', encoding="utf-8") as f:
+            with open(f'./Case/TIformat.json', 'r', encoding="utf-8") as f:
                 TI_Format = pd.read_json(f)
         else:
             try:
@@ -54,7 +60,7 @@ class TI2Signal():
         #確認所有 必要的資料 是否都在
         signal, MovingAvg = [], []
 
-        for TS in self.ti_list: # 有被選擇的 TI list 
+        for TS in self.TI_List: # 有被選擇的 TI list 
             
             # --- Moving Average Tpye 的指標 要另外處理 ---
             if TS[-2:].isdigit():                               #如果 最後兩位 是數字
@@ -165,9 +171,7 @@ class TI2Signal():
 
         n = len(Signal)
         TSlen = len(Signal_list)
-
         Signal = Signal.to_numpy()
-
         Table = np.concatenate(
                     [Data['close'].to_numpy().reshape(n, 1), 
                     np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], 
@@ -178,14 +182,16 @@ class TI2Signal():
         #Martix Size = n * [(TSlen-1)^2 + 2]
 
         ColName:list = ["close"]
-
-
         # print(Table)
-        Col = 1
+
+        Col = 1 #第一列是 Close
+        Output = pd.DataFrame()
         for buy in range(1, TSlen):
             Buy_Signal:np.array = Signal[:, buy]   # pd.Series to np.array
 
-            for sell in range(1, TSlen): 
+            StartCol = 0 if Col == 1 else Col
+
+            for sell in range(1, TSlen):
                 Sell_Signal:np.array = Signal[:, sell] #                
 
                 # print(f"{buy} : {sell} ==> {Col}")
@@ -214,18 +220,19 @@ class TI2Signal():
                 Col += 1
                 ColName.append(f"{Signal_list[buy]}^{Signal_list[sell]}")
 
- 
-        Output = pd.DataFrame(Table, columns=ColName)
+            Output = pd.DataFrame(Table[:, StartCol:Col], columns=ColName)
+            ColName = [] # clean
 
-        if __name__ == "__main__":
-            Output.to_csv(f"{self.path}/Table.csv")
-        Output.to_json(f"{self.path}/Table.json", orient='columns')
-        # Output.to_json(f"{self.path}/Table_test.json", orient='records')
+            # if __name__ == "__main__":
+            #     Output.to_csv(f"{self.path}/Table.csv")
+            Output.to_csv(f"{self.path}/tmp/Table{Col}.csv")
+            # Output.to_json(f"{self.path}/Table.json", orient='columns')
 
-
+        # if __name__ == "__main__":
+        #     Output.to_csv(f"{self.path}/Table.csv")
+        # Output.to_json(f"{self.path}/Table.json", orient='columns')
         print("Finished Producing TradingRule Table\r\n")
-            
-  
+
       
 if __name__ == "__main__":
     # 獨立執行 測試用
@@ -235,36 +242,7 @@ if __name__ == "__main__":
         ti2s = TI2Signal(json.load(f))
     
     # ti2s.ProduceSignal()
-    # ti2s.ProduceTable()
+    ti2s.ProduceTable()
     # cProfile.run("ti2s.ProduceSignal()")
     # cProfile.run("ti2s.ProduceTable()")
 
-
-
-'''
-		"WMA",
-		"TRIMA",
-		"SMA",
-		"MAMA",
-		"KAMA",
-		"EMA",
-		"DEMA",
-		"TRIX",
-		"PLUS_DM",
-		"PLUS_DI",
-		"MINUS_DM",
-		"MINUS_DI",
-		"PSY",
-		"WMS%R",
-		"ULTOSC",
-		"MOM",
-		"BOP",
-		"APO",
-		"MFI",
-		"CMO",
-		"ADX",
-		"ROC",
-		"PPO",
-		"ADXR",
-		"AROON"
-'''
