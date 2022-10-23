@@ -5,9 +5,13 @@ from numpy import array
 import pandas as pd
 import json
 
-from sqlalchemy import false
 from Algo.Chromosome import Chromosome
 
+
+#Manual:
+#每次的backTesting調整參數（除了挑整weight可以從RUN跑）
+#都要全部重跑拉
+#Target:10秒內更新目標資料回傳
 
 class BackTesting():
     def __init__(self, StopLess:float, TakeProfit:float, Chrom:Chromosome, Setting) -> None:
@@ -238,7 +242,6 @@ class BackTesting():
         #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.csv")
         print("Finished withSLTP_table\r\n")
 
-    
     def Query(self):
         with open(f'{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json') as f1,open(f'{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json') as f2:
             withoutSLTP_table = pd.read_json(f1)
@@ -275,16 +278,15 @@ class BackTesting():
             
         print("Finished all backtesting works")
 
+if __name__ == "__main__":
+    #獨立執行 測試用
+    import cProfile
+    #ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
+    #之後補GTSP
+    #ini.ProduceTable()
+    #ini.Run()
+    #ini.Query()
 
-if __name__ == '__main__':
-    #import os
-
-    #print(f"{os.path}")
-
-    #with open(f'../../data/stock/0050.TW/ValidationData/StockData.json') as f:
-        #VaildationData = pd.read_json(f)
-    
-    #print(VaildationData)
 
     #a = pd.DataFrame(json.load(f))
     print()

@@ -42,11 +42,20 @@ population = Population(Setting=Setting)
 #population.Genealogy()
 #iterate
 
+#print(population.Chrom[0].gene)
+#ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
+#之後補GTSP
+#ini.ProduceTable()
+#ini.Run()
+#ini.Query()
+
+#測試用
 print(population.Chrom[0].gene)
 ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
 #之後補GTSP
-ini.ProduceTable()
-ini.Run()
-ini.Query()
+#cProfile.run("ini.ProduceTable()")
+#cProfile.run("ini.Run()")
+#cProfile.run("ini.Query()")
+
 
 #chromosome 用 array 算 fintness?
