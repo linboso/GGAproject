@@ -52,6 +52,9 @@ population = Population(Setting=Setting)
 #測試用
 print(population.Chrom[0].gene)
 ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
+ini.ProduceTable()
+ini.Run()
+ini.Query()
 #之後補GTSP
 #cProfile.run("ini.ProduceTable()")
 #cProfile.run("ini.Run()")

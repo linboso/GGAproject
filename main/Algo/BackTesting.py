@@ -25,7 +25,15 @@ class BackTesting():
         self.Capital = Setting['Capital']
         self.Strategy = Setting['Strategy']
     
+    #def PreBackTesting():
+        #DownloadData
+        #CalculateTivalue
+        #TI2signal
+    
     def ProduceTable(self):
+        #此function為將買賣signal合併為交易信號，最終結果分為兩個files:
+        #1.Table_GTSP.json:為該GTSP的最終交易訊號
+        #2.Table_SLTP.josn:為該GTSP的最終交易訊號且具有停損停利之功能
         
         with open(f"{self.Path}/{self.StockID}/ValidationData/Signal.json") as f1, open(f"{self.Path}/{self.StockID}/ValidationData/StockData.json") as f2:
             Signal = pd.read_json(f1)
@@ -36,8 +44,7 @@ class BackTesting():
                         
         Signal_list = Signal.columns
         
-        
-        #Without_SLTP
+        #===================================================Table_GTSP===================================================
         Table = pd.concat([Signal['Date'], Data['close']], axis=1) #create a new table
         for buy in Signal_list[1:]:
             for sell in Signal_list[1:]: 
@@ -78,12 +85,12 @@ class BackTesting():
         del Keep[0:2]  #保留'Date', 'close'
         Table = Table.drop(Keep,axis = 1).reset_index(drop=True)#delete not chosen TS
         
-        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.json", orient='records')
-        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.csv")
-        print("Finished Producing Table_withoutSLTP\r\n")  
+        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_GTSP.json", orient='records')
+        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_GTSP.csv")
+        print("Finished Table_GTSP\r\n")  
     
 
-        #With_SLTP
+        #===================================================Table_SLTP===================================================
         Table = pd.concat([Signal['Date'], Data['close']], axis=1) #create a new table
         close = Data["close"].values
         
@@ -144,12 +151,17 @@ class BackTesting():
         del Keep[0:2]  #保留'Date', 'close'
         Table = Table.drop(Keep,axis = 1).reset_index(drop=True)#delete not chosen TS
         
-        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.json", orient='records')
-        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.csv")
-        print("Finished Producing Table_withSLTP\r\n")
+        Table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Table_SLTP.json", orient='records')
+        #Table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Table_SLTPP.csv")
+        print("Finished Table_SLTP\r\n")
          
-    def Run(self):   
-        with open(f'{self.Path}/{self.StockID}/ValidationData/Table_withoutSLTP.json') as f1, open(f'{self.Path}/{self.StockID}/ValidationData/Table_withSLTP.json') as f2:
+    def Run(self): 
+        #此function為將買賣signal合併為交易信號，最終結果分為三個files:
+        #1.Buy&Hold.json:為該區間使用B&H的效果(目的是為了比對GTSP系統是否有效果)
+        #2.Detail_GTSP.json:為該GTSP的最終交易訊號
+        #3.Detail_SLTP.josn:為該GTSP的最終交易訊號且具有停損停利之功能
+        
+        with open(f'{self.Path}/{self.StockID}/ValidationData/Table_GTSP.json') as f1, open(f'{self.Path}/{self.StockID}/ValidationData/Table_SLTP.json') as f2:
             withoutSLTP = pd.read_json(f1)
             withSLTP = pd.read_json(f2)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
@@ -158,10 +170,24 @@ class BackTesting():
         price = withoutSLTP["close"].values    
         date  = withoutSLTP["Date"].values       
         
+        #===================================================Buy&Hold===================================================
+        bh_return_rate = (price[-1] - price[0])/price[0]
+        bh_return_money = bh_return_rate * self.Capital
+        buy_and_hold = {
+          "Date": f"{date[0]} ~ {date[-1]}",
+          "return_rate": bh_return_rate,
+          "return_money": bh_return_money,
+        }
+        with open(f'{self.Path}/{self.StockID}/ValidationData/Buy&Hold.json', "w") as outfile:
+            json.dump(buy_and_hold, outfile)
         
-        #define map_group
-        map_group1 = dict(chosenTS["Trading Strategy"])# {'2': MACD^STOCH}
-        map_group2 = {value:key for key,value in map_group1.items()}#key value change {'MACD^STOCH': 2}
+                
+        #define map_group:用來mapping data
+        map_group1 = dict(chosenTS["Trading Strategy"])
+        # {'2': MACD^STOCH}:指標2 is MACD^STOCH
+        map_group2 = {value:key for key,value in map_group1.items()}
+        # {'MACD^STOCH': 2}:MACD^STOCH is 指標2
+        
         map = {}
         num = 0
         for i in self.Chrom.gene[:self.Chrom.mTS + self.Chrom.kGroup]:
@@ -172,22 +198,10 @@ class BackTesting():
         for i in map_group2:
             index = map_group2[f"{i}"]
             map_group2[f"{i}"] = map[f"{index}"]
-        #print(map_group2)
- 
         
-        #Buy and Hold strategy
-        bh_return_rate = (price[-1] - price[0])/price[0]
-        bh_return_money = bh_return_rate * self.Capital
-        buy_and_hold = {
-          "Date": f"{date[0]} ~ {date[-1]}",
-          "return_rate": bh_return_rate,
-          "return_money": bh_return_money,
-        }
-        with open(f'{self.Path}/{self.StockID}/ValidationData/buy_and_hold.json', "w") as outfile:
-            json.dump(buy_and_hold, outfile)
         
-
-        #withoutSLTP
+        
+        #===================================================Detail_GTSP===================================================
         withoutSLTP_list = withoutSLTP.columns               
         detail_table = pd.DataFrame()
         
@@ -210,12 +224,12 @@ class BackTesting():
                 
         detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table.reset_index(drop=True, inplace=True)
-        detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json", orient='records')
-        #detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.csv")
-        print("Finished withoutSLTP_table\r\n")
+        detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Detail_GTSP.json", orient='records')
+        #detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Detail_GTSP.csv")
+        print("Finished Detail_GTSP\r\n")
         
         
-        #withSLTP
+        #===================================================Detail_SLTP===================================================
         withSLTP_list = withSLTP.columns               
         detail_table2 = pd.DataFrame()
         
@@ -238,12 +252,16 @@ class BackTesting():
                 
         detail_table2.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table2.reset_index(drop=True, inplace=True)
-        detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json", orient='records')
-        #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.csv")
-        print("Finished withSLTP_table\r\n")
+        detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.json", orient='records')
+        #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.csv")
+        print("Finished Detail_SLTP\r\n")
 
+        
     def Query(self):
-        with open(f'{self.Path}/{self.StockID}/ValidationData/withoutSLTP_detail.json') as f1,open(f'{self.Path}/{self.StockID}/ValidationData/withSLTP_detail.json') as f2:
+        #將所有可能組合出來放入Folder:
+        #1.Folder_GTSP:存放該GTSP交易明細所有組合之資料夾
+        #2.Folder_SLTP:存放該GTSP且具有SLTP功能之交易明細所有組合之資料夾
+        with open(f'{self.Path}/{self.StockID}/ValidationData/Detail_GTSP.json') as f1,open(f'{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.json') as f2:
             withoutSLTP_table = pd.read_json(f1)
             withSLTP_table = pd.read_json(f2)
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
@@ -251,7 +269,7 @@ class BackTesting():
         map_group1 = dict(chosenTS["Trading Strategy"])#{'2': MACD^STOCH}
         Alltsp:list = self.Chrom.ADVcombine()
             
-        #withoutSLTP    
+        #===================================================Folder_GTSP=================================================== 
         for tsp in Alltsp:
             table = pd.DataFrame()
             for i in tsp:
@@ -260,10 +278,11 @@ class BackTesting():
             table = table.sort_values("Date")
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_folder/{tsp}.json", orient='records')
-            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withoutSLTP_folder/{tsp}.csv",index = False)
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_GTSP/{tsp}.json", orient='records')
+            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Folder_GTSP/{tsp}.csv",index = False)
+        print("Finished Folder_GTSP\r\n")
 
-        #withSLTP    
+        #===================================================Folder_SLTP===================================================    
         for tsp in Alltsp:
             table = pd.DataFrame()
             for i in tsp:
@@ -272,11 +291,10 @@ class BackTesting():
             table = table.sort_values("Date")
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_folder/{tsp}.json", orient='records')
-            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/withSLTP_folder/{tsp}.csv",index = False)
-            
-            
-        print("Finished all backtesting works")
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_SLTP/{tsp}.json", orient='records')
+            #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Folder_SLTP/{tsp}.csv",index = False)
+                        
+        print("Finished Folder_SLTP\r\n")
 
 if __name__ == "__main__":
     #獨立執行 測試用
