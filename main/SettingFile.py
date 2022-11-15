@@ -6,39 +6,45 @@ class SettingFile():
     def __init__(self) -> None:
         try:
             with open("./Setting.json") as f:
-                    data = json.load(f)
+                data = json.load(f)
+                print(data)
             self.data = data
 
             if not os.path.exists(data['Path']):
                 os.makedirs(data['path'])
+                init_setting = {
+                    "StockID":"0050.TW",
+                    "TrainingPeriod": {
+                            "StartDate":"2009-08-30",
+                            "EndDate":"2010-12-30"
+                        },
+                    "ValidationPeriod": {
+                            "StartDate":"2010-08-30",
+                            "EndDate":"2012-12-30"
+                        },
+                    "Path":"../data/stock",
+                    "TechnicalIndicator":["MA5", "MA20", "MA30", "MACD", "STOCH", "CCI"],
+                    "Strategy": "Top777",
+                    "pSize": 100,
+                    "CrossoverRate": 0.8,
+                    "MutationRate": 0.03,
+                    "InversionRate": 0.3,
+                    "Generation": 10,
+                    "kGroup": 5,
+                    "mTS": 21,
+                    "WeightPart":100,
+                    "Capital": 100000          
+                }
+                #init setting format
+                self.__SavingFile(init_setting)
+                self.data = init_setting
+                print("...Creating Setting.json")
+            # end if 
+
         except:
-            init_setting = {
-                "StockID":"0050.TW",
-                "TrainingPeriod": {
-                        "StartDate":"2009-08-30",
-                        "EndDate":"2010-12-30"
-                    },
-                "ValidationPeriod": {
-                        "StartDate":"2010-08-30",
-                        "EndDate":"2012-12-30"
-                    },
-                "Path":"../data/stock/0050.TW/",
-                "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI"],
-                "Strategy": "Top777",
-                "pSize": 100,
-                "CrossoverRate": 0.8,
-                "MutationRate": 0.03,
-                "InverstionRate": 0.3,
-                "Generation": 10,
-                "kroup": 5,
-                "mTS": 21,
-                "WeightPart":100,
-                "Capital": 100000          
-            }
-            #init setting format
-            self.__SavingFile(init_setting)
-            self.data = init_setting
-            print("...Creating Setting.json")
+            print("讀取 Setting.json 失敗")
+            print("檢查 json 格式 是否正確")
+             
         
     
 
@@ -103,8 +109,8 @@ class SettingFile():
 
 if __name__ == '__main__':
     baseEnv = SettingFile()
-    print(baseEnv.data['TrainingPeriod'])
-    baseEnv.print() 
+    # print(baseEnv.data['TrainingPeriod'])
+    # baseEnv.print() 
 
     
     # baseEnv.Set(TechnicalIndicator = ['CCI'])

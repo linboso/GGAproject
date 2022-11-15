@@ -29,6 +29,7 @@ TI2Signal(Setting = Setting).ProduceTable()
 # 把value 轉換成 signal 
 
 Ranking(Setting = Setting).Top555() 
+Ranking(Setting = Setting).Top555() 
 # 執行 ranking 策略為 Top555 / Top777
 
 

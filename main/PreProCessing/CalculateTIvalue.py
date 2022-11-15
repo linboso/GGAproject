@@ -36,7 +36,7 @@ class TIValue():
         ColName = []
         
         for TI in self.TI_List:
-            try:
+            try:  
                 if TI[-2:].isdigit():                               #如果 最後兩位 是數字
                     TIValue:pd.DataFrame = eval(f'abstract.{TI[:-2]}(df, timeperiod={TI[-2:]})')
                     ColName.append(TI)
@@ -47,8 +47,12 @@ class TIValue():
                     
                 # elif TI in CustomCase: # 補充 at未來?
                 else:
-                    TIValue:pd.DataFrame = eval(f'abstract.{TI}(df)') 
-                    [ColName.append(Name.upper()) for Name in list(TIValue.columns)]
+                    TIValue = eval(f'abstract.{TI}(df)')
+                    if type(TIValue) == pd.Series:
+                        ColName.append(TI)
+                    else:
+                        [ColName.append(Name.upper()) for Name in list(TIValue.columns)]
+
                 
             except:
                 print(f"沒有此 {TI} 技術指標\r\n")

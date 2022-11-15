@@ -44,9 +44,11 @@ class DownloadStockData():
             print(f"Saving TrainingData data at {self.path} \r\n")
         except:
             print("Fail to saving file \r\n")
+            
         #
         # ValidationData
         #
+
         try:       
             data:pd.DataFrame = yf.download(self.stock_id, start = self.Vstart, end = self.Vend)
             data.drop(['Adj Close'], axis=1, inplace=True)
