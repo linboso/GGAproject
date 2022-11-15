@@ -1,0 +1,34 @@
+{
+	"StockID": "2603.TW",
+	"TrainingPeriod": {
+		"StartDate": "2016-02-01",
+		"EndDate": "2022-06-16"
+	},
+	"ValidationPeriod": {
+		"StartDate": "2010-08-30",
+		"EndDate": "2012-12-30"
+	},
+	"Path": "../data/stock",
+	"TechnicalIndicator": [
+		"MA5",
+		"MA15",
+		"WMA10",
+		"SMA10",
+		"MAMA",
+		"KAMA5",
+		"EMA15",
+		"DEMA5",
+		"TEMA20",
+		"TRIMA10"
+	],
+	"Strategy": "Top555",
+	"pSize": 100,
+	"CrossoverRate": 0.8,
+	"MutationRate": 0.20,
+	"InversionRate": 0.6,
+	"Generation": 100,
+	"kGroup": 4,
+	"mTS": 15,
+	"WeightPart": 200,
+	"Capital": 100000
+}

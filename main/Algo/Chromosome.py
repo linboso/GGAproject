@@ -107,7 +107,7 @@ class Chromosome():
         import math
         ALLtsp = self.__ADVcombine()
         TSPlen:int = len(ALLtsp)
-
+        # print(ALLtsp)
         def PR() -> float:    
             Weight:list = self.getWeight()
             # ARR = self.Data['ARR'] # 使用區域變數 可加速 python 速度
@@ -115,6 +115,7 @@ class Chromosome():
 
             # [[ReturnTSP.append(ARR[TSP[TS]-1] * Weight[TS+1]) for TS in range(self.kGroup)] for TSP in ALLtsp]
             # 版本 2 
+            
 
             [[ReturnTSP.append(TSP[i][0] * Weight[i+1]) for i in range(self.kGroup)] for TSP in ALLtsp]
 
@@ -125,7 +126,6 @@ class Chromosome():
                 #     ReturnTSP.append(self.Data['ARR'][TSP[TS]-1] * Allweight[TS+1])
 
 
-         
             return sum(ReturnTSP)*self.Capital/TSPlen
 
         # # ======================= PR =======================
@@ -176,6 +176,7 @@ class Chromosome():
             
 
         self.fitness = PR()*RISK()*GB()*WB()
+        # print(f"{PR()} <> {RISK()} <> {GB()} <> {WB()}")
 
         return self.fitness
 
@@ -186,15 +187,15 @@ class Chromosome():
 if __name__ == "__main__":
     import cProfile
 
-    with open(f"../../data/stock/2603.TW/TraningData/Top555.json") as f:
+    with open(f"../../data/stock/2603.TW/TrainingData/Top555.json") as f:
         StrategyData = pd.read_json(f)
 
     c = Chromosome(4, 100, 15, 100000, StrategyData)
 
     # cProfile.run('c.Fitness()')
     c.Fitness()
-    # print(f"Fitness Value: {c.fitness}")
-
+    print(f"Fitness Value: {c.fitness}")
+    
 
 
 

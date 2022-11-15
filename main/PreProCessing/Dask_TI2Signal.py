@@ -1,6 +1,8 @@
+
 import numpy as np
 import pandas as pd
-# import dask
+
+import dask
 import dask.dataframe as dd
 import dask.array as da
 
@@ -164,76 +166,72 @@ class Dask_TI2Signal():
     #======================================
 
     def ProduceTable(self):
-        with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
-            Signal:dd = dd.read_json(f1)
-            Data:dd = dd.read_json(f2)
 
-        Signal_list = Signal.columns
+        Signal:pd.DataFrame = pd.read_json(f"{self.path}/Signal.json")
+        # Data:dd = dd.read_json(f"{self.path}/StockData.json")
+
+        Signal_list:list = Signal.columns
         #把 Signal 的 name 轉成 list
 
         n = len(Signal)
-        TSlen = len(Signal_list)
+        TSlen = len(Signal_list) # == m 
+
         Signal = Signal.to_numpy()
-        Table = np.concatenate(
-                [Data['close'].to_numpy().reshape(n, 1), 
-                np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], 
-                    axis=1)
+        # Signal = Signal.to_numpy()
+
+        # Table = np.concatenate(
+        #         [Data['close'].to_numpy().reshape(n, 1), 
+        #         np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], 
+        #             axis=1)
 
         # Table中 第1行是 Close 收盤價
         # 接下來合併 n * (TSlen-1)^2 大小的 0 矩陣
         #Martix Size = n * [(TSlen-1)^2 + 2]
 
-        ColName:list = ["close"]
-        # print(Table)
+        # ColName:list = ["close"]
+        # Col = 1 #第一列是 Close
 
-        Col = 1 #第一列是 Close
-        Output = pd.DataFrame()
-        for buy in range(1, TSlen):
-            Buy_Signal:np.array = Signal[:, buy]   # pd.Series to np.array
+        # Output = dd
 
-            StartCol = 0 if Col == 1 else Col
 
-            for sell in range(1, TSlen):
-                Sell_Signal:np.array = Signal[:, sell] #                
+        def Cul(Buy_Signal, Sell_Signal, ColName, n):
+            Table = np.zeros(n, dtype=np.int0)           
+            Flag:bool = False 
 
-                # print(f"{buy} : {sell} ==> {Col}")
-                Flag:bool = False # True == 有買了
-                for i in range(n):
-                    if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
-                        #當 同時有 Buy & Sell 的信號時
-                        # 要先確認 Flag
-                        if Flag:
-                            Table[:, Col][i] = -1
-                            Flag = False
-                            #Flag 狀態改為 尚未買
-                        else:
-                            Table[:, Col][i] = 1
-                            Flag = True
-                            #Flag 狀態改為 有買了
-
-                    elif (not Flag) and Buy_Signal[i] == 1:
-                        Table[:, Col][i] = 1
-                        Flag = True
-                        #還沒買 後 完改 True
-                    elif Flag and Sell_Signal[i] == -1:
-                        Table[:, Col][i] = -1
+            for i in range(n):
+                if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
+                    if Flag:
+                        Table[i] = -1
                         Flag = False
+                    else:
+                        Table[i] = 1
+                        Flag = True
 
-                Col += 1
-                ColName.append(f"{Signal_list[buy]}^{Signal_list[sell]}")
+                elif (not Flag) and Buy_Signal[i] == 1:
+                    Table[i] = 1
+                    Flag = True
 
-            Output = pd.DataFrame(Table[:, StartCol:Col], columns=ColName)
-            ColName = [] # clean
+                elif Flag and Sell_Signal[i] == -1:
+                    Table[i] = -1
+                    Flag = False
 
-            # if __name__ == "__main__":
-            #     Output.to_csv(f"{self.path}/Table.csv")
-            Output.to_csv(f"{self.path}/tmp/Table{Col}.csv")
-            # Output.to_json(f"{self.path}/Table.json", orient='columns')
+            Output:pd.DataFrame = pd.DataFrame(Table, columns=ColName)
+            Output.to_csv(f"{self.path}/tmp/Table-*.csv")
 
-        # if __name__ == "__main__":
-        #     Output.to_csv(f"{self.path}/Table.csv")
-        # Output.to_json(f"{self.path}/Table.json", orient='columns')
+
+        print("Begin")
+        for buy in range(1, TSlen):
+            Buy_Signal = Signal[:, buy] 
+            Progress = []
+            for sell in range(1, TSlen):
+                Sell_Signal = Signal[:, sell] 
+                ColName = [f"{Signal_list[buy]}^{Signal_list[sell]}"]
+                
+                Progress.append(dask.delayed(Cul)(Buy_Signal, Sell_Signal, ColName, n))
+            dask.compute(*Progress)
+
         print("Finished Producing TradingRule Table\r\n")
+
 
       
 if __name__ == "__main__":
@@ -243,8 +241,18 @@ if __name__ == "__main__":
     with open('../setting.json') as f:
         ti2s = Dask_TI2Signal(json.load(f))
     
-    ti2s.ProduceSignal()
-    # ti2s.ProduceTable()
+    # ti2s.ProduceSignal()
+    ti2s.ProduceTable()
     # cProfile.run("ti2s.ProduceSignal()")
     # cProfile.run("ti2s.ProduceTable()")
+
+    # import dask.dataframe as dd 
+    # with open("../../data/stock/2603.TW/TrainingData/Table.json") as f:
+    #     df = dd.read_json(f)
+    # df = dd.read_json("../../data\stock/2603.TW/TrainingData/Table.json")
+
+    # print(df)
+
+
+
 

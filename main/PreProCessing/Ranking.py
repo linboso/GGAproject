@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 import numpy as np
 import json
@@ -68,16 +66,15 @@ class Ranking():
 
             if (TF:=len(returnRate)) != 0:
                 ARR = sum(returnRate) / TF
-
             Top15.append([TSList[Col], ARR])
         
         Top15 = pd.DataFrame(Top15, columns=["Trading Strategy","ARR"])
 
         DontKeep = Top15['ARR'].sort_values(ascending=False).index[15:]
+
         #捨棄後 85 個
         Top15 = Top15.drop(DontKeep).sort_values(by=["ARR"], ascending =False).reset_index(drop=True)
         #保留 ARR最高的 前 15 個
-
         Top15.T.to_json(f"{self.path}/Top15.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
@@ -179,6 +176,7 @@ class Ranking():
             if TF != 0:
                 MDD = min(returnRate)
                 ARR = sum(returnRate) / TF
+                
                 # ARR = ARR / TF
             else:
                 MDD = 0
@@ -276,41 +274,17 @@ class Ranking():
         print("完成 Top777 的篩選")
     #==================================== Top777 ===========================================
 
-
-    def __minmax_norm(self, df:pd.DataFrame): # Min-Max normalize 標準化的一種 把數字 mapping 到 0 ~ 1
-        return (df - df.min()) / (df.max() - df.min())
-
-            
-            
-
-
-
-if __name__ == "__main__":
-    import cProfile
-    # 獨立執行 測試用
-    with open('../setting.json') as f:
-        ranking = Ranking(json.load(f))
-    
-    # ranking.Top777()
-    # ranking.Top555()
-    # ranking.Top21() 
-    # ranking.Top15() 
-    # cProfile.run("ranking.Top555()")
-    # cProfile.run("ranking.Top21()")
-    # cProfile.run("ranking.Top15()")
-
-
-
-''' 
-#原版 比較慢  大約慢 現有版本的 2 倍
-    def Top21(self):
-        Table:pd.DataFrame = self.table
-        TS_list = Table.columns
-        ClosePrice= Table['close'].to_list()
+    #原版 比較慢  大約慢 現有版本的 2 倍
+    #但是可以用來Check
+    def Top21_for_debug(self):
+        TSList = self.table.columns
+        Table:np.array = self.table.to_numpy()
+        ClosePrice= Table[:, 0]
         Top15 = []
+        n = Table.shape[1]
 
-        for TS in TS_list[2:]:
-            Signal:list = Table[TS].to_list()
+        for Col in range(2, n):
+            Signal:np.array = Table[:, Col]
             BuyPrice:int = 0
             Flag:bool = False
             
@@ -332,7 +306,7 @@ if __name__ == "__main__":
             if (TF:=len(Temp)) != 0:
                 ARR = sum(Temp) / TF
 
-            Top15.append([TS, ARR])
+            Top15.append([TSList[Col], ARR])
         
         Top15 = pd.DataFrame(Top15, columns=["Trading Strategy","ARR"])
 
@@ -341,11 +315,37 @@ if __name__ == "__main__":
         Top15 = Top15.drop(DontKeep).sort_values(by=["ARR"], ascending =False).reset_index(drop=True)
         #保留 ARR最高的 前 21 個
 
-        Top15.T.to_json(f"{self.path}/Top21.json", orient = 'index')
+        Top15.T.to_json(f"{self.path}/Top21_Debug.json", orient = 'index')
 
         # 先 轉置 在輸出 json 
-        print("完成 TOP21 的篩選")
+        print("完成 TOP21 for Debug 的篩選")
 
 
-'''
+    def __minmax_norm(self, df:pd.DataFrame): # Min-Max normalize 標準化的一種 把數字 mapping 到 0 ~ 1
+        return (df - df.min()) / (df.max() - df.min())
+
+            
+            
+
+
+
+if __name__ == "__main__":
+    import cProfile
+    # 獨立執行 測試用
+    with open('../setting.json') as f:
+        ranking = Ranking(json.load(f))
+    
+    # ranking.Top777()
+    # ranking.Top555()
+    # ranking.Top21() 
+    ranking.Top21_for_debug()
+    ranking.Top15() 
+    # cProfile.run("ranking.Top555()")
+    # cProfile.run("ranking.Top21()")
+    # cProfile.run("ranking.Top15()")
+
+
+
+
+
 

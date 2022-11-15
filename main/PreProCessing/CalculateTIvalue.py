@@ -1,4 +1,4 @@
-from tokenize import Name
+
 import pandas as pd
 import talib
 from talib import abstract

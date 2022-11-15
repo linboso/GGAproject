@@ -13,7 +13,7 @@ class TI2Signal():
         self.stock_id = Setting['StockID']
         self.start = Setting['TrainingPeriod']['StartDate']
         self.end = Setting['TrainingPeriod']['EndDate']
-        # self.ti_list = Setting['TechnicalIndicator'] #自選
+        # self.TI_List = Setting['TechnicalIndicator'] #自選
         self.TI_List = ['WMA5', 'WMA10', 'WMA20', 'WMA60', 'TRIMA5', 'TRIMA10', 'TRIMA20', 'TRIMA60', 
                         'TEMA5', 'TEMA10', 'TEMA20', 'TEMA60', 'SMA5', 'SMA10', 'SMA20', 'SMA60', 
                         'MAMA', 'MA5', 'MA10', 'MA20', 'MA60', 'KAMA5', 'KAMA10', 'KAMA20', 
@@ -171,7 +171,9 @@ class TI2Signal():
 
         n = len(Signal)
         TSlen = len(Signal_list)
+        print(Signal_list)
         Signal = Signal.to_numpy()
+
         Table = np.concatenate(
                     [Data['close'].to_numpy().reshape(n, 1), 
                     np.zeros((n, (TSlen - 1)*(TSlen - 1)), dtype=np.int0) ], 
@@ -183,15 +185,11 @@ class TI2Signal():
 
         ColName:list = ["close"]
         # print(Table)
-
-        Col = 1 #第一列是 Close
-        Output = pd.DataFrame()
+        Col = 1
         for buy in range(1, TSlen):
             Buy_Signal:np.array = Signal[:, buy]   # pd.Series to np.array
 
-            StartCol = 0 if Col == 1 else Col
-
-            for sell in range(1, TSlen):
+            for sell in range(1, TSlen): 
                 Sell_Signal:np.array = Signal[:, sell] #                
 
                 # print(f"{buy} : {sell} ==> {Col}")
@@ -220,13 +218,13 @@ class TI2Signal():
                 Col += 1
                 ColName.append(f"{Signal_list[buy]}^{Signal_list[sell]}")
 
-            Output = pd.DataFrame(Table[:, StartCol:Col], columns=ColName)
-            ColName = [] # clean
+        Output = pd.DataFrame(Table, columns=ColName)
+        ColName = [] # clean
 
             # if __name__ == "__main__":
             #     Output.to_csv(f"{self.path}/Table.csv")
-            Output.to_csv(f"{self.path}/tmp/Table{Col}.csv")
-            # Output.to_json(f"{self.path}/Table.json", orient='columns')
+            # Output.to_csv(f"{self.path}/tmp/Table{Col}.csv")
+        Output.to_json(f"{self.path}/Table.json", orient='columns')
 
         # if __name__ == "__main__":
         #     Output.to_csv(f"{self.path}/Table.csv")
