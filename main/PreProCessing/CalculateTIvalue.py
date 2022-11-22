@@ -7,37 +7,35 @@ from talib import abstract
 
 class TIValue():
     def __init__(self, Setting) -> None:
-        setting = Setting
-        
-        self.stock_id = setting['StockID']
-        self.start = setting['TrainingPeriod']['StartDate']
-        self.end = setting['TrainingPeriod']['EndDate']
+        setting = Setting        
+        self.StockID = setting['StockID']
+        # self.start = setting['TrainingPeriod']['StartDate']
+        # self.end = setting['TrainingPeriod']['EndDate']
         # self.TI_List = setting['TechnicalIndicator'] # 自選
-        self.TI_List = ['WMA5', 'WMA10', 'WMA20', 'WMA60', 'TRIMA5', 'TRIMA10', 'TRIMA20', 'TRIMA60', 
-                        'TEMA5', 'TEMA10', 'TEMA20', 'TEMA60', 'SMA5', 'SMA10', 'SMA20', 'SMA60', 
-                        'MAMA', 'MA5', 'MA10', 'MA20', 'MA60', 'KAMA5', 'KAMA10', 'KAMA20', 
-                        'KAMA60', 'EMA5', 'EMA10', 'EMA20', 'EMA60', 'DEMA5', 'DEMA10', 'DEMA20', 'DEMA60', 'TRIX', 
-                        'PLUS_DI', 'PLUS_DM', 'RSI', 'WILLR', 'ULTOSC', 'MOM', 'BOP', 'APO', 'MFI', 'AROONOSC', 'CCI', 
-                        'CMO', 'ROC', 'PPO', 'MACD', 'STOCH', 'ADX', 'ADXR']
+        # self.TI_List = ['WMA5', 'WMA10', 'WMA20', 'WMA60', 'TRIMA5', 'TRIMA10', 'TRIMA20', 'TRIMA60', 
+        #                 'TEMA5', 'TEMA10', 'TEMA20', 'TEMA60', 'SMA5', 'SMA10', 'SMA20', 'SMA60', 
+        #                 'MAMA', 'MA5', 'MA10', 'MA20', 'MA60', 'KAMA5', 'KAMA10', 'KAMA20', 
+        #                 'KAMA60', 'EMA5', 'EMA10', 'EMA20', 'EMA60', 'DEMA5', 'DEMA10', 'DEMA20', 'DEMA60', 'TRIX', 
+        #                 'PLUS_DI', 'PLUS_DM', 'RSI', 'WILLR', 'ULTOSC', 'MOM', 'BOP', 'APO', 'MFI', 'AROONOSC', 'CCI', 
+        #                 'CMO', 'ROC', 'PPO', 'MACD', 'STOCH', 'ADX', 'ADXR']
         
 
         if __name__ == "__main__":
-            self.path = f"../{setting['Path']}/{setting['StockID']}/TrainingData"
+            self.Path = f"../{setting['Path']}/{setting['StockID']}/TrainingData"
         else:
-            self.path = f"{setting['Path']}/{setting['StockID']}/TrainingData"
+            self.Path = f"{setting['Path']}/{setting['StockID']}/TrainingData"
 
     def CalculateTIValue(self):
         df = pd.DataFrame()
 
         try:
-            with open(f"{self.path}/StockData.json") as f:
+            with open(f"{self.Path}/StockData.json") as f:
                 df = pd.read_json(f)
-
         except:
-            print(f"缺失 {self.stock_id} 的 StockData.json 的資料")
+            print(f"缺失 {self.StockID} 的 StockData.json 的資料")
         
         TIValueTable = pd.DataFrame()
-        # ALL_TI_List = talib.get_functions()
+
         
         ColName = []
         for TI in self.TI_List:
@@ -71,15 +69,15 @@ class TIValue():
         print(f"計算出來的 指標數值有: {list(TIValueTable.columns)}")
         # print(TIValueTable.head(5))
         
-        TIValueTable.to_json(f"{self.path}/TIvalue.json" ,orient='records')
-        print(f"儲存 TIvalue.json 在 {self.path}\r\n")
+        TIValueTable.to_json(f"{self.Path}/TIvalue.json" ,orient='columns')
+        print(f"儲存 TIvalue.json 在 {self.Path}\r\n")
         
 
 
 
     def getTIValue(self):
         table = pd.DataFrame()
-        with open(f"{self.path}/TIvalue.json", 'r') as f:
+        with open(f"{self.Path}/TIvalue.json", 'r') as f:
             table = pd.read_json(f)
 
         return table
@@ -89,7 +87,6 @@ class TIValue():
 
 if __name__ == "__main__":
     # 獨立執行 測試用
-    import json
     import cProfile
 
     with open('../setting.json') as f:
