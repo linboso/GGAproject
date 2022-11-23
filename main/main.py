@@ -1,4 +1,3 @@
-
 from PreProCessing.DownloadData import DownloadStockData
 from PreProCessing.CalculateTIvalue import TIValue
 from PreProCessing.TI2Signal import TI2Signal
@@ -34,7 +33,6 @@ Setting = Setting.Read()
 # 執行 ranking 策略為 Top555 / Top777
 
 
-
 population = Population(Setting=Setting)
 # cProfile.run('population.GenerateOffspring_With_logFile()')
 #population.GenerateOffspring_With_logFile()
@@ -42,23 +40,13 @@ population = Population(Setting=Setting)
 #population.Genealogy()
 #iterate
 
-#print(population.Chrom[0].gene)
-#ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
-#之後補GTSP
+#測試用
+print(population.Chrom[0].gene)
+print(population.Chrom[0].getWeight())
+ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
 #ini.ProduceTable()
 #ini.Run()
 #ini.Query()
-
-#測試用
-print(population.Chrom[0].gene)
-ini  = Algo.BackTesting.BackTesting(0.01,0.01,population.Chrom[0],Setting = Setting)
-ini.ProduceTable()
-ini.Run()
-ini.Query()
-#之後補GTSP
-#cProfile.run("ini.ProduceTable()")
-#cProfile.run("ini.Run()")
-#cProfile.run("ini.Query()")
-
-
-#chromosome 用 array 算 fintness?
+cProfile.run("ini.ProduceTable()")
+cProfile.run("ini.Run()")
+cProfile.run("ini.Query()")

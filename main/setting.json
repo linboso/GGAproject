@@ -1,32 +1,32 @@
 {
-	"StockID": "2603.TW",
-	"TrainingPeriod": {
-		"StartDate": "2022-02-01",
-		"EndDate": "2022-06-16"
-	},
-	"ValidationPeriod": {
-		"StartDate": "2010-08-30",
-		"EndDate": "2012-12-30"
-	},
-	"Path": "../data/stock",
-	"TechnicalIndicator": [
-		"MA5",
-		"MA10",
-		"MA15",
-		"MA30",
-		"RSI",
-		"MACD",
-		"STOCH",
-		"CCI"
-	],
-	"Strategy": "Top555",
-	"pSize": 100,
-	"CrossoverRate": 0.8,
-	"MutationRate": 0.06,
-	"InversionRate": 0.6,
-	"Generation": 100,
-	"kGroup": 4,
-	"mTS": 15,
-	"WeightPart": 200,
-	"Capital": 100000
+    "StockID": "2603.TW",
+    "TrainingPeriod": {
+        "StartDate": "2022-02-01",
+        "EndDate": "2022-06-16"
+    },
+    "ValidationPeriod": {
+        "StartDate": "2010-08-30",
+        "EndDate": "2012-12-30"
+    },
+    "Path": "../data/stock",
+    "TechnicalIndicator": [
+        "MA5",
+        "MA10",
+        "MA15",
+        "MA30",
+        "MACD",
+        "STOCH",
+	"RSI",
+	"CCI"
+    ],
+    "Strategy": "Top555",
+    "pSize": 100,
+    "CrossoverRate": 0.8,
+    "MutationRate": 0.06,
+    "InversionRate": 0.6,
+    "Generation": 100,
+    "kGroup": 4,
+    "mTS": 15,
+    "WeightPart": 200,
+    "Capital": 100000
 }

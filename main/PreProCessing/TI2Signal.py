@@ -272,7 +272,7 @@ class TI2Signal():
         
 
     def ProduceTable(self):
-        with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
+        with open(f"{self.path}/TraningData/Signal.json") as f1, open(f"{self.path}/TraningData/StockData.json") as f2:
             Signal = pd.read_json(f1)
             Data = pd.read_json(f2)
 

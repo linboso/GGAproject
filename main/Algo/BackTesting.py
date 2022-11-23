@@ -1,6 +1,3 @@
-from ast import Return
-from sqlite3 import Date
-from ssl import SSLWantReadError
 from numpy import array
 import pandas as pd
 import json
@@ -156,6 +153,7 @@ class BackTesting():
         print("Finished Table_SLTP\r\n")
          
     def Run(self): 
+        #約花34秒
         #此function為將買賣signal合併為交易信號，最終結果分為三個files:
         #1.Buy&Hold.json:為該區間使用B&H的效果(目的是為了比對GTSP系統是否有效果)
         #2.Detail_GTSP.json:為該GTSP的最終交易訊號
@@ -203,8 +201,10 @@ class BackTesting():
         
         #===================================================Detail_GTSP===================================================
         withoutSLTP_list = withoutSLTP.columns               
-        detail_table = pd.DataFrame()
         
+        #record用column方式並起來
+        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(7)]
+
         for signal in withoutSLTP_list[3:]:
             now_Signal = withoutSLTP[signal].values                 
             buy_price = 0 
@@ -215,14 +215,38 @@ class BackTesting():
                 Transaction_amount = self.Capital * weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
-                    record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None]            
+                    #record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None]
+                    recordDate.append(date[i])
+                    Trading_Strategy.append(signal)
+                    recordTransaction_Type.append(now_Signal[i])
+                    recordStock_price.append(price[i])
+                    recordTransaction_amount.append(Transaction_amount)
+                    recordReturn_money.append(None)
+                    recordRate_of_Return.append(None)          
                 elif now_Signal[i] == -1:
                     Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
-                    record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, (Return_money/Transaction_amount)]
-                record = pd.DataFrame(record)
-                detail_table = pd.concat([detail_table , record.T], axis=0)
-                
-        detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
+                    #record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, (Return_money/Transaction_amount)]
+                    recordDate.append(date[i])
+                    Trading_Strategy.append(signal)
+                    recordTransaction_Type.append(now_Signal[i])
+                    recordStock_price.append(price[i])
+                    recordTransaction_amount.append(Transaction_amount)
+                    recordReturn_money.append(Return_money)
+                    recordRate_of_Return.append((Return_money/Transaction_amount))      
+                #record = pd.DataFrame(record)
+                #detail_table = pd.concat([detail_table , record.T], axis=0)
+        
+        detail_table = pd.DataFrame({
+            "Date" :recordDate,
+            "Trading_Strategy":Trading_Strategy, 
+            "Transaction_Type":recordTransaction_Type, 
+            "Stock_price":recordStock_price, 
+            "Transaction_amount":recordTransaction_amount, 
+            "Return_money":recordReturn_money, 
+            "Rate_of_Return":recordRate_of_Return
+        })
+
+        #detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table.reset_index(drop=True, inplace=True)
         detail_table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Detail_GTSP.json", orient='records')
         #detail_table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Detail_GTSP.csv")
@@ -230,8 +254,10 @@ class BackTesting():
         
         
         #===================================================Detail_SLTP===================================================
-        withSLTP_list = withSLTP.columns               
-        detail_table2 = pd.DataFrame()
+        withSLTP_list = withSLTP.columns
+
+        #record用column方式並起來
+        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(7)]             
         
         for signal in withSLTP_list[3:]:
             now_Signal = withSLTP[signal].values                 
@@ -243,14 +269,38 @@ class BackTesting():
                 Transaction_amount = self.Capital * weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
-                    record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None]                     
+                    #record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, None, None]
+                    recordDate.append(date[i])
+                    Trading_Strategy.append(signal)
+                    recordTransaction_Type.append(now_Signal[i])
+                    recordStock_price.append(price[i])
+                    recordTransaction_amount.append(Transaction_amount)
+                    recordReturn_money.append(None)
+                    recordRate_of_Return.append(None)                      
                 elif now_Signal[i] == -1:
                     Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
-                    record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, (Return_money/Transaction_amount)]
-                record = pd.DataFrame(record)
-                detail_table2 = pd.concat([detail_table2 , record.T], axis=0)
-                
-        detail_table2.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
+                    #record = [date[i], signal, now_Signal[i], price[i], Transaction_amount, Return_money, (Return_money/Transaction_amount)]
+                    recordDate.append(date[i])
+                    Trading_Strategy.append(signal)
+                    recordTransaction_Type.append(now_Signal[i])
+                    recordStock_price.append(price[i])
+                    recordTransaction_amount.append(Transaction_amount)
+                    recordReturn_money.append(Return_money)
+                    recordRate_of_Return.append((Return_money/Transaction_amount))  
+                #record = pd.DataFrame(record)
+                #detail_table2 = pd.concat([detail_table2 , record.T], axis=0)
+        
+        detail_table2 = pd.DataFrame({
+            "Date" :recordDate,
+            "Trading_Strategy":Trading_Strategy, 
+            "Transaction_Type":recordTransaction_Type, 
+            "Stock_price":recordStock_price, 
+            "Transaction_amount":recordTransaction_amount, 
+            "Return_money":recordReturn_money, 
+            "Rate_of_Return":recordRate_of_Return
+        }) 
+
+        #detail_table2.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table2.reset_index(drop=True, inplace=True)
         detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.json", orient='records')
         #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.csv")
@@ -272,13 +322,15 @@ class BackTesting():
         #===================================================Folder_GTSP=================================================== 
         for tsp in Alltsp:
             table = pd.DataFrame()
+            
             for i in tsp:
                 temp = withoutSLTP_table[withoutSLTP_table["Trading_Strategy"] == map_group1[i-1]]
                 table = pd.concat([table,temp],axis = 0)
             table = table.sort_values("Date")
+            total_return_money = table['Return_money'].sum()
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_GTSP/{tsp}.json", orient='records')
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_GTSP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Folder_GTSP/{tsp}.csv",index = False)
         print("Finished Folder_GTSP\r\n")
 
@@ -289,9 +341,10 @@ class BackTesting():
                 temp = withSLTP_table[withSLTP_table["Trading_Strategy"] == map_group1[i-1]]
                 table = pd.concat([table,temp],axis = 0)
             table = table.sort_values("Date")
+            total_return_money = table['Return_money'].sum()
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_SLTP/{tsp}.json", orient='records')
+            table.to_json(f"{self.Path}/{self.StockID}/ValidationData/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Folder_SLTP/{tsp}.csv",index = False)
                         
         print("Finished Folder_SLTP\r\n")
