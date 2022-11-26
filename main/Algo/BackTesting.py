@@ -305,8 +305,7 @@ class BackTesting():
         detail_table2.to_json(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.json", orient='records')
         #detail_table2.to_csv(f"{self.Path}/{self.StockID}/ValidationData/Detail_SLTP.csv")
         print("Finished Detail_SLTP\r\n")
-
-        
+     
     def Query(self):
         #將所有可能組合出來放入Folder:
         #1.Folder_GTSP:存放該GTSP交易明細所有組合之資料夾
