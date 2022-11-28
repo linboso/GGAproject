@@ -21,8 +21,13 @@ class BackTesting():
             print("讀取 record.json 失敗")
             print("請確認該檔案是否存在")
         print()
-
+    
+    def PreBackTesting():
+        #DownloadData
+        print('okay')
+        #CalculateTivalue
+        #TI2signal
 
 if __name__ == '__main__':
     obj = BackTesting()
-    print(obj)
+    #print(obj)
