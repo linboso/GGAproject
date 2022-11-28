@@ -14,7 +14,7 @@ class BackTesting():
             self.TP = data['SLTP'][1]
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
-            self.weight = data['weight']
+            self.Weight = data['Weight']
             self.TradingStrategy = data['TradingStrategy']
             self.SignalMap = data['SignalMap']
         except:
