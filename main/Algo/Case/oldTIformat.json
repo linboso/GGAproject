@@ -66,7 +66,7 @@
     "Case": "1",
     "InputArray": {
       "ti1": "TRIX",
-      "ti2": "TRIX"
+      "ti2": "TRIXMA"
     }
   },
   "PLUS_DM": {
@@ -81,6 +81,20 @@
     "InputArray": {
       "ti1": "PLUS_DM",
       "ti2": "PLUS_DI"
+    }
+  },
+  "MINUS_DM": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "PLUS_DM",
+      "ti2": "MINUS_DM"
+    }
+  },
+  "MINUS_DI": {
+    "Case": "1",
+    "InputArray": {
+      "ti1": "PLUS_DI",
+      "ti2": "MINUS_DI"
     }
   },
   "RSI": {
@@ -99,10 +113,10 @@
       "C2": 0.25
     }
   },
-  "WILLR": {
+  "WMS%R": {
     "Case": "2",
     "InputArray": {
-	  "ti1": "WILLR",
+	  "ti1": "WMS%R",
       "C1": -80,
       "C2": -20
     }
@@ -166,33 +180,9 @@
   "CMO": {
     "Case": "2",
     "InputArray": {
-	  "ti1": "CMO",
+	    "ti1": "CMO",
       "C1": 50,
       "C2": -50
-    }
-  },
-  "ROC": {
-    "Case": "2",
-    "InputArray": {
-	  "ti1": "ROC",
-      "C1": 0,
-      "C2": 0
-    }
-  },
-  "PPO": {
-    "Case": "2",
-    "InputArray": {
-	  "ti1": "PPO",
-      "C1": 0,
-      "C2": 0
-     }
-  },
-  "MACD": {
-    "Case": "2",
-    "InputArray": {
-	  "ti1": "MACDHIST",
-      "C1": 0,
-      "C2": 0 
     }
   },
   "STOCH": {
@@ -204,8 +194,35 @@
         "ti2": "SLOWD"
     }
   },
+  "ROC": {
+    "Case": "4",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "ROC",
+      "ti2": "MAROC"
+    }
+  },
+  "PPO": {
+    "Case": "4",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "PPO",
+      "ti2": "EMA"
+     }
+  },
+  "MACD": {
+    "Case": "4",
+    "InputArray": {
+      "C1": 0,
+      "C2": 0,
+      "ti1": "MACD",
+      "ti2": "MACDSIGNAL"
+    }
+  },
   "ADX": {
-    "Case": "55",
+    "Case": "5",
     "InputArray": {
       "C1": 25,
 	  "ti1": "ADX",
@@ -214,12 +231,23 @@
     }
   },
   "ADXR": {
-    "Case": "66",
+    "Case": "6",
     "InputArray": {
       "ti1": "ADX",
       "ti2": "ADXR",
       "ti3": "PLUS_DI",
       "ti4": "MINUS_DI"
+    }
+  },
+  "AROON": {
+    "Case": "AROON",
+    "InputArray": {
+	  "ti1": "AROONOSC",
+	  "ti2": "AROONUP",
+	  "ti3": "AROONDOWN",
+	  "C1": 0,
+      "C2": 50,
+      "C3": 50
     }
   }
 }
