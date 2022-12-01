@@ -43,31 +43,28 @@ MA_TYPE_ARR = []
 for TS in TIarray:                            
     if TS[-2:].isdigit():                               #如果 最後兩位 是數字
         MA_TYPE.append((int(TS[-2:]), TS))
-        MA_TYPE_ARR.append({TS[:-2] : int(TS[-2:])})
+        MA_TYPE_ARR.append([TS[:-2], int(TS[-2:])])
 
     elif not TS[-2].isdigit() and TS[-1].isdigit():     #如果 最後一位 是數字
         MA_TYPE.append((int(TS[-1:]), TS))
-        MA_TYPE_ARR.append({TS[:-1] : int(TS[-1:])})
+        MA_TYPE_ARR.append([TS[:-1], int(TS[-1:])])
     else:
         NON_MA_TYPE.append(TS)
         
 
-with open('../TI_List.json', 'w') as f:
-    inti_file = {
-        "NON_MA_TYPE": NON_MA_TYPE,
-        "MA_TYPE": MA_TYPE_ARR
-    }
-    json.dump(inti_file, f)
+# with open('../TI_List.json', 'w') as f:
+#     inti_file = {
+#         "NON_MA_TYPE": NON_MA_TYPE,
+#         "MA_TYPE": MA_TYPE_ARR
+#     }
+#     json.dump(inti_file, f)
 
 
 MA_TYPE = [TS[1] for TS in sorted(MA_TYPE)]         #天數小的放前面 # ma5 < ma10 <...< ma100
 MA_TYPE = Combine(MA_TYPE)
 
 
-with open('./SignalMap2.json', 'w') as f:
-    inti_file = {
-        "NON_MA_TYPE": NON_MA_TYPE,
-        "MA_TYPE": MA_TYPE
-    }
-    json.dump(inti_file, f)
+with open('./SignalMap.json', 'w') as f:
+
+    json.dump(NON_MA_TYPE + MA_TYPE, f)
 

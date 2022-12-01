@@ -3,21 +3,19 @@ import json
 import os
 
 class RFiles():
-    def __init__(self) -> None:
-
+    def __init__(self):
         try:
             with open("./Setting.json") as f1, open("./TI_List.json") as f2, open("./SignalMap.json") as f3:
-                Setting_File = json.load(f1)
+                Setting = json.load(f1)
                 TI_List = json.load(f2)
                 SignalMap = json.load(f3)
                     
-            self.Setting_File = Setting_File
+            self.Setting = Setting
             self.TI_List = TI_List
             self.SignalMap = SignalMap
-   
 
-            if not os.path.exists(Setting_File['Path']):
-                os.makedirs(Setting_File['path'])
+            if not os.path.exists(Setting['Path']):
+                os.makedirs(Setting['path'])
         except:
             init_Setting = {
                 "StockID":"0050.TW",
@@ -29,7 +27,7 @@ class RFiles():
                         "StartDate":"2010-08-30",
                         "EndDate":"2012-12-30"
                     },
-                "Path":"../data/stock/0050.TW/",
+                "Path":"../data/stock/",
                 # "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI", "MAMA"],
                 "Strategy": "Top777",
                 "pSize": 100,
@@ -85,7 +83,7 @@ class RFiles():
             return True
 
     def print(self):
-        data = self.Setting_File
+        data = self.Setting
         print("======================================== Setting Content ========================================")
         print(f"\tStock ID: {data['StockID']}")
         print(f"\t>   Traning  Period\tStratDate: {data['TrainingPeriod']['StartDate']} ~ {data['TrainingPeriod']['EndDate']}")
@@ -123,7 +121,8 @@ class RFiles():
 
 
 if __name__ == '__main__':
-    baseEnv = SettingFile()
+    baseEnv = RFiles()
+    print(baseEnv.SignalMap)
     # print(baseEnv.Setting_File['TrainingPeriod'])
     # print(baseEnv.TI_List["MA_TYPE"])
     # print(baseEnv.SignalMap["NON_MA_TYPE"])

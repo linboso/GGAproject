@@ -4,7 +4,7 @@ import yfinance as yf
 
 
 class DownloadStockData():
-    def __init__(self, Setting) -> None:
+    def __init__(self, Setting):
         setting = Setting
 
         self.stock_id = setting['StockID']
@@ -15,7 +15,7 @@ class DownloadStockData():
         self.Vend = setting['ValidationPeriod']['EndDate']
         
         self.path = f"{setting['Path']}/{setting['StockID']}"
-        print(f"Store at {self.path}")
+        print(f"儲存在 {self.path}")
 
 
     def DownloadStockData(self):
@@ -33,13 +33,10 @@ class DownloadStockData():
                 os.makedirs(f"{self.path}/TrainingData/")
                 print("Create TrainingData folder")
             
-            # data.to_json(f"{self.path}/TrainingData/StockData.json", orient='columns')
             data.to_json(f"{self.path}/TrainingData/StockData.json", orient='records')
-
             data = pd.DataFrame(data.index)
-
-            # data.to_json(f"{self.path}/TrainingData/Date.json", orient='columns')
             data.to_json(f"{self.path}/TrainingData/Date.json", orient='records')
+            
 
             print(f"Saving TrainingData data at {self.path} \r\n")
         except:
@@ -59,11 +56,9 @@ class DownloadStockData():
                 os.makedirs(f"{self.path}/ValidationData/")
                 print("Create ValidationData folder")
             
-            # data.to_json(f"{self.path}/ValidationData/StockData.json", orient='columns')
-            data.to_json(f"{self.path}/ValidationData/StockData.json", orient='records')
 
+            data.to_json(f"{self.path}/ValidationData/StockData.json", orient='records')
             data = pd.DataFrame(data.index)
-            # data.to_json(f"{self.path}/ValidationData/Date.json", orient='columns')
             data.to_json(f"{self.path}/ValidationData/Date.json", orient='records')
 
 

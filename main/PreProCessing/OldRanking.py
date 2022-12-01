@@ -30,9 +30,11 @@ class Ranking():
         Top15 = []
         n = Table.shape[1]
         for Col in range(2, n):
+            
             BuyDay:np.array = np.where(Table[:, Col] == 1)[0]
             SellDay:np.array = np.where(Table[:, Col] == -1)[0]
-
+            # idea 是 你一定是 先買 才賣 所以 Buy_day 一定 > Sell_day
+            # 所以 Singal 的 index 當作 day  其實也剛好  1列 = 1天
             blen = len(BuyDay)  # 2者長度不一定相同
             slen = len(SellDay)
 
@@ -45,10 +47,12 @@ class Ranking():
 
                 if not Flag and BuyDay[b] < SellDay[s]:
                     buyPrice = ClosePrice[BuyDay[b]]
+                    # print(f" T -> {BuyDay[b]} -> {ClosePrice[BuyDay[b]]}") #Debug
                     Flag = True
                 
                 if Flag:
                     returnRate.append((ClosePrice[SellDay[s]] - buyPrice) / buyPrice)
+                    # print(f" T -> {SellDay[s]} -> {ClosePrice[SellDay[s]]}") #Debug
                     Flag = False
 
                 if BuyDay[b] > SellDay[s]:
@@ -132,20 +136,24 @@ class Ranking():
         print("完成 TOP21 的篩選")
     #==================================== Top21 ===========================================
 
-    
-    
-  
-    def Top555(Table, n, ClosePrice, ColName):
-        Collect = np.empty((n, 3))
-        for Col in range(n):
+    def Top555(self):
+        TSList = self.table.columns
+        Table:np.array = self.table.to_numpy()
+        ClosePrice:np.array = Table[:, 0] #Close Price 
+
+        Top555 = []
+        n = Table.shape[1]
+        for Col in range(2, n):
+            
             BuyDay:np.array = np.where(Table[:, Col] == 1)[0]
             SellDay:np.array = np.where(Table[:, Col] == -1)[0]
+
             blen = len(BuyDay)
             slen = len(SellDay)
 
             b, s = 0, 0
             Flag:bool = False
-            buyPrice:int = 0
+            buyPrice:int = 0 
             returnRate = []
 
             while b < blen and s < slen:
@@ -168,26 +176,36 @@ class Ranking():
             if TF != 0:
                 MDD = min(returnRate)
                 ARR = sum(returnRate) / TF
-                # ARR = ARR / TFTop555
+                
+                # ARR = ARR / TF
             else:
                 MDD = 0
-            Collect[Col] = [ARR, MDD, TF]
+            Top555.append([TSList[Col], ARR, MDD, TF])
+        
+        Top555 = pd.DataFrame(Top555, columns=["Trading Strategy","ARR", "MDD", "TF"])
+        Top555['MDD'] = self.__minmax_norm(Top555['MDD']) #執行 normalize
 
-        Select = []
-        for i in range(3):
+        Keep = []
+        for i in Top555.columns[1:]:
             count = 0
-            for Top5 in Collect[:, i].argsort():
+            for top5 in Top555[i].sort_values(ascending=False).index:
+                # 先由大->小排 再取 index
                 if count == 5:
                     break
-                if Top5 not in Select:
-                    Select.append(Top5)
+
+                if top5 not in Keep:
+                    Keep.append(top5)
                     count += 1
-        ColName = ColName[Select]
-        Top555 = Collect[Select]
-        
-        del Select
-        del Collect
-        return Top555, ColName
+
+
+        DontKeep = [dontkeep for dontkeep in Top555.index if dontkeep not in Keep]
+        #沒有要保留的
+        Top555 = Top555.drop(DontKeep).reset_index(drop=True)
+        # 一次 drop 所有不要的部位
+        Top555.T.to_json(f"{self.path}/Top555.json", orient = 'index')
+
+        # 先 轉置 在輸出 json 
+        print("完成 TOP555 的篩選")
 
     #==================================== Top555 ===========================================
     
@@ -314,30 +332,19 @@ class Ranking():
 if __name__ == "__main__":
     import cProfile
     # 獨立執行 測試用
-    # with open('../setting.json') as f:
-    #     ranking = Ranking(json.load(f))
+    with open('../setting.json') as f:
+        ranking = Ranking(json.load(f))
     
     # ranking.Top777()
     # ranking.Top555()
     # ranking.Top21() 
-    # ranking.Top21_for_debug()
-    # ranking.Top15() 
+    ranking.Top21_for_debug()
+    ranking.Top15() 
     # cProfile.run("ranking.Top555()")
     # cProfile.run("ranking.Top21()")
     # cProfile.run("ranking.Top15()")
 
-    a = [12,1,15645,90,498,790,8,1651,651,6565,654,97,940651,5101,4,919,4904,5,61,201,16,501,561,6156,109,879,87,9,84,165,1561,61,21,15615,61654,564564,564564,41,213,51,65,64,98,44,54,6,4,4,654,654,564,5646,545645,4564,561561,321,654564,13,3]
-    a = np.array(a)
-    
-    print(np.argsort(a))
-    print(np.argsort(-a))
-    gg = []
-    # c = 0 
-    for i in np.argsort(-a):
-        if len(gg) > 15:
-            break
-        gg.append(i)
-    print(gg)
+
 
 
 

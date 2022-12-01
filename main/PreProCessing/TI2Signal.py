@@ -9,7 +9,7 @@ else:
     
 
 class TI2Signal():
-    def __init__(self, Setting) -> None:
+    def __init__(self, Setting):
         if __name__ == "__main__":
             self.path = f"../{Setting['Path']}/{Setting['StockID']}/TrainingData"
         else:
@@ -23,29 +23,19 @@ class TI2Signal():
         SignalMap, Date = pd.DataFrame(), pd.DataFrame()
 
         if __name__ == "__main__":
-            with open(f'./Case/TIformat.json', 'r', encoding="utf-8") as f:
-                TI_Format = pd.read_json(f)
+            with open(f'./Case/TIformat.json', encoding="utf-8") as f1, open(f'../SignalMap.json', encoding="utf-8") as f2:
+                TI_Format = json.load(f1)
+                SignalMap = json.load(f2)
         else:
             try:
-                with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
-                    TI_Format = pd.read_json(f)
+                with open('./PreProCessing/Case/TIformat.json', encoding="utf-8") as f1, open('./SignalMap.json', encoding="utf-8") as f2:
+                    TI_Format = json.load(f1)
+                    SignalMap = json.load(f2)
             except:
-                print("缺失 TIformat.json \t位置: ./PreProCessing/Case/TIformat.json")
+                print("缺少 TIformat.json or SignalMap.json")
                 return 
 
-        # ================================================================================
-        if __name__ == "__main__":
-            with open(f'../SignalMap.json', 'r', encoding="utf-8") as f:
-                SignalMap = json.load(f)
-        else:
-            
-            try:
-                with open('./SignalMap.json', 'r', encoding="utf-8") as f:
-                    SignalMap = pd.read_json(f)
-            except:
-                print("缺失 SignalMap.json")
-                return 
-        
+
         # ================================================================================
         try:
             with open(f"{self.path}/TIvalue.json") as f:
