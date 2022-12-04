@@ -38,7 +38,7 @@ class BackTesting():
             
         with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
             chosenTS = pd.read_json(s) 
-                        
+          
         Signal_list = Signal.columns
         
         #===================================================Table_GTSP===================================================
