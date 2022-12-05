@@ -43,7 +43,19 @@ class BackTesting():
         except:
             print("BackTesting物件初始化失敗")
             print("請確認該程序是否有誤")
-
+    
+    def reWeight(self):
+        try:
+            with open("./BackTestingBlock.json") as f:
+                data = json.load(f)
+                #print(data)
+            self.Weight = data['Weight']
+            self.PreBackTesting()
+            self.Run()
+            self.Query()
+        except:
+            print("在reWight時 讀取 BackTestingBlock.json 失敗")
+            print("請確認該檔案是否存在")  
 
     def PreBackTesting(self):
         #DownloadData
