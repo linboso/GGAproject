@@ -32,26 +32,17 @@ class BackTesting():
             self.Path = f"../data/stock/{self.StockID}/ValidationData"
             self.privateMapping = {}
         except:
-            print("讀取 record.json 失敗")
+            print("讀取 BackTestingBlock.json 失敗")
             print("請確認該檔案是否存在")
         print()
-    
-    def mapTest(self):
-        TI_List = set()
-        for i in self.TradingStrategy.values():
-            if isinstance(self.SignalMap[i[0]], str):
-                TI_List.add(self.SignalMap[i[0]])
-            else:
-                for j in self.SignalMap[i[0]]:
-                    TI_List.add(j) 
-            if isinstance(self.SignalMap[i[1]], str):
-                TI_List.add(self.SignalMap[i[1]])
-            else:
-                for j in self.SignalMap[i[1]]:
-                    TI_List.add(j) 
-        print(TI_List)
-        #TI.List = self.SignalMap[self.TradingStrategy]
-
+        try:
+        #init the object
+            self.PreBackTesting()
+            self.Run()
+            self.Query()
+        except:
+            print("BackTesting物件初始化失敗")
+            print("請確認該程序是否有誤")
 
 
     def PreBackTesting(self):
@@ -59,13 +50,13 @@ class BackTesting():
         self.__CalculateTIvalue()
         self.__TI2signal()
         self.__ProduceTable()
+        print("Finished all PreBackTestingWorks\r\n")
 
     def __CalculateTIvalue(self):
         #====================CalculateTIvalue====================
         TI_List = set()
         TIpair = []
         for i in self.TradingStrategy.values():
-            #必須分為"NON_MA_TYPE" or "MA_TYPE"
 
             TIpair.append(self.SignalMap[i[0]])
             TIpair.append(self.SignalMap[i[1]])
@@ -270,7 +261,7 @@ class BackTesting():
 
         if __name__ == "__main__":
             Date.to_csv(f"{self.Path}/SignalforDebug.csv")
-            print("已產生回測之交易信號") 
+                #print("已產生SignalforDebug供確認") 
 
     def __ProduceTable(self):
         #此function為將買賣signal合併為交易信號，最終結果分為兩個files:
@@ -415,7 +406,6 @@ class BackTesting():
         Table.to_csv(f"{self.Path}/Table_SLTP.csv")
         print("Finished Table_SLTP\r\n")
 
-
     def Run(self): 
         #約花14秒
         #此function為將買賣signal合併為交易信號，最終結果分為三個files:
@@ -448,20 +438,20 @@ class BackTesting():
         map_group1 = self.privateMapping
         # {'2': MACD^STOCH}:指標2 is MACD^STOCH
         map_group2 = {value:key for key,value in map_group1.items()}
-        # {'MACD^STOCH': 2}:MACD^STOCH is 指標2
         
-        #應該是轉 map_group2 to 資金比例
-        # map = {}
-        # num = 0
-        # for i in self.Chrom.gene[:self.Chrom.mTS + self.Chrom.kGroup]:
-        #     if i == 0:
-        #         num += 1
-        #     else:
-        #         map[f"{i-1}"] = num
-        # for i in map_group2:
-        #     index = map_group2[f"{i}"]
-        #     map_group2[f"{i}"] = map[f"{index}"]
         
+        #map_group2 to 資金比例
+        map = {}
+        num = 0
+        for i in self.GTSP:
+            if i == 0:
+                num += 1
+            else:
+                map[f"{i-1}"] = num
+        for i in map_group2:
+            index = map_group2[f"{i}"]
+            map_group2[f"{i}"] = map[f"{index}"]
+        # {'MACD^STOCH': 3}:MACD^STOCH is 是第三組(資金權重)
         
         
         #===================================================Detail_GTSP===================================================
@@ -473,11 +463,10 @@ class BackTesting():
         for signal in withoutSLTP_list[3:]:
             now_Signal = withoutSLTP[signal].values                 
             buy_price = 0 
-            weight = self.Weight()
 
             for i in range(len(now_Signal)):
                 record = []
-                Transaction_amount = self.Capital * weight[map_group2[signal]]
+                Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
                     recordDate.append(date[i])
@@ -510,7 +499,7 @@ class BackTesting():
         #detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table.reset_index(drop=True, inplace=True)
         detail_table.to_json(f"{self.Path}/Detail_GTSP.json", orient='records')
-        #detail_table.to_csv(f"{self.Path}/Detail_GTSP.csv")
+        detail_table.to_csv(f"{self.Path}/Detail_GTSP.csv")
         print("Finished Detail_GTSP\r\n")
         
         
@@ -523,11 +512,10 @@ class BackTesting():
         for signal in withSLTP_list[3:]:
             now_Signal = withSLTP[signal].values                 
             buy_price = 0 
-            weight = self.Weight()
 
             for i in range(len(now_Signal)):
                 record = []
-                Transaction_amount = self.Capital * weight[map_group2[signal]]
+                Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
                     recordDate.append(date[i])
@@ -561,11 +549,98 @@ class BackTesting():
         
         detail_table2.reset_index(drop=True, inplace=True)
         detail_table2.to_json(f"{self.Path}/Detail_SLTP.json", orient='records')
-        #detail_table2.to_csv(f"{self.Path}/Detail_SLTP.csv")
+        detail_table2.to_csv(f"{self.Path}/Detail_SLTP.csv")
         print("Finished Detail_SLTP\r\n")
+
+    def Query(self):
+        #將所有可能組合出來放入Folder:
+        #1.Folder_GTSP:存放該GTSP交易明細所有組合之資料夾
+        #2.Folder_SLTP:存放該GTSP且具有SLTP功能之交易明細所有組合之資料夾
+        with open(f'{self.Path}/Detail_GTSP.json') as f1,open(f'{self.Path}/Detail_SLTP.json') as f2:
+            withoutSLTP_table = pd.read_json(f1)
+            withSLTP_table = pd.read_json(f2)
+
+        map_group1 = self.privateMapping# {'2': MACD^STOCH}:指標2 is MACD^STOCH
+        Alltsp:list = self.ADVcombine()
+            
+        #===================================================Folder_GTSP=================================================== 
+        for tsp in Alltsp:
+            table = pd.DataFrame()
+            
+            for i in tsp:
+                temp = withoutSLTP_table[withoutSLTP_table["Trading_Strategy"] == map_group1[i-1]]
+                table = pd.concat([table,temp],axis = 0)
+            table = table.sort_values("Date")
+            total_return_money = table['Return_money'].sum()
+
+            table.reset_index(drop=True, inplace=True)
+            table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json", orient='records')
+            #table.to_csv(f"{self.Path}/Folder_GTSP/{tsp}.csv",index = False)
+        print("Finished Folder_GTSP\r\n")
+        #===================================================Folder_SLTP===================================================    
+        for tsp in Alltsp:
+            table = pd.DataFrame()
+            for i in tsp:
+                temp = withSLTP_table[withSLTP_table["Trading_Strategy"] == map_group1[i-1]]
+                table = pd.concat([table,temp],axis = 0)
+            table = table.sort_values("Date")
+            total_return_money = table['Return_money'].sum()
+
+            table.reset_index(drop=True, inplace=True)
+            table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
+            #table.to_csv(f"{self.Path}/Folder_SLTP/{tsp}.csv",index = False)
+
+        print("Finished Folder_SLTP\r\n")
+
+    def ADVcombine(self) -> list:
+        GTSP = []
+        tem = []
+        n = 0
+        for i in self.GTSP:
+            if i == 0:
+                GTSP.append(tem)
+                tem = []
+                n+=1
+                continue
+            tem.append(i)
+
+        res = []#restore result
+        #TSP 為 每一個不同的 TSG 中 各取一個 TS 組合成的 
+        def backtrack(TSP, start):
+            if len(TSP) == n:
+                return res.append(TSP[:])
+
+            for Kth_Group in range(start, n):
+                for TS in range(len(GTSP[Kth_Group])):
+                    # 每一個 TSG 的 長度都不一樣
+                    TSP.append(GTSP[Kth_Group][TS])
+                    backtrack(TSP,  Kth_Group + 1)
+                    TSP.pop()
+        
+        backtrack([], 0)
+        return res
+
+    # def mapTest(self):
+    #     TI_List = set()
+    #     for i in self.TradingStrategy.values():
+    #         if isinstance(self.SignalMap[i[0]], str):
+    #             TI_List.add(self.SignalMap[i[0]])
+    #         else:
+    #             for j in self.SignalMap[i[0]]:
+    #                 TI_List.add(j) 
+    #         if isinstance(self.SignalMap[i[1]], str):
+    #             TI_List.add(self.SignalMap[i[1]])
+    #         else:
+    #             for j in self.SignalMap[i[1]]:
+    #                 TI_List.add(j) 
+    #     print(TI_List)
+    #     #TI.List = self.SignalMap[self.TradingStrategy]
+
 
 if __name__ == '__main__':
     obj = BackTesting()
     #obj.mapTest()
-    obj.PreBackTesting()
+    #obj.PreBackTesting()
+    #obj.Run()
+    #obj.Query()
     #print(obj)
