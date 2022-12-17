@@ -4,7 +4,6 @@ import json
 
 
 
-
 class Ranking():
     def __init__(self, Setting) -> None:
         setting = Setting
@@ -132,9 +131,6 @@ class Ranking():
         print("完成 TOP21 的篩選")
     #==================================== Top21 ===========================================
 
-    
-    
-  
     def Top555(Table, n, ClosePrice, ColName):
         Collect = np.empty((n, 3))
         for Col in range(n):
@@ -325,20 +321,6 @@ if __name__ == "__main__":
     # cProfile.run("ranking.Top555()")
     # cProfile.run("ranking.Top21()")
     # cProfile.run("ranking.Top15()")
-
-    a = [12,1,15645,90,498,790,8,1651,651,6565,654,97,940651,5101,4,919,4904,5,61,201,16,501,561,6156,109,879,87,9,84,165,1561,61,21,15615,61654,564564,564564,41,213,51,65,64,98,44,54,6,4,4,654,654,564,5646,545645,4564,561561,321,654564,13,3]
-    a = np.array(a)
-    
-    print(np.argsort(a))
-    print(np.argsort(-a))
-    gg = []
-    # c = 0 
-    for i in np.argsort(-a):
-        if len(gg) > 15:
-            break
-        gg.append(i)
-    print(gg)
-
 
 
 

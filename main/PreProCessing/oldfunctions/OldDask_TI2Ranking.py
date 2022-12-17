@@ -9,9 +9,28 @@ from dask.distributed import Client, LocalCluster
 # client = await Client(cluster, asynchronous=True)
 
 
-def Signal2LargeTable(Signal, Buy, n, m):
-    Table = np.zeros((m, n), dtype=np.int0)
+def CalculateTable(Signal, n, m):
+    delayObject = [dask.delayed(Signal2LargeTable)(Signal, buy, n, m) for buy in range(n)]
+    delayObject = dask.compute(*delayObject)
+    Tables, ColName = zip(*delayObject)
     
+    del delayObject
+    return Tables, ColName
+
+def CalculateRanking(RankingType, n, Tables, ColName, ClosePrice):
+    delayObject = [dask.delayed(RankingType)(Table, n, ClosePrice, Cname) for Table, Cname in zip(Tables, ColName)]
+    delayObject = dask.compute(*delayObject)
+
+    MultiTable, ColName = zip(*delayObject)
+    
+    del delayObject
+    return MultiTable, ColName
+
+
+
+def Signal2LargeTable(Signal, Buy, m, n):
+    Table = np.zeros((m, n), dtype=np.int0)
+
     BuySignal = Signal[:, Buy]
     ColName = np.empty(n ,dtype=object)
     
@@ -37,8 +56,8 @@ def Signal2LargeTable(Signal, Buy, n, m):
     return Table, ColName
 
 
-def Ranking(BuyDay, SellDay, ClosePrice) -> list:
-    b, s= 0, 0
+def Ranking(BuyDay:np.array, SellDay:np.array, ClosePrice:np.array) -> list:
+    b, s = 0, 0
     blen = len(BuyDay)
     slen = len(SellDay)
     returnRate = []
@@ -50,16 +69,15 @@ def Ranking(BuyDay, SellDay, ClosePrice) -> list:
             Flag = True
         if Flag:
             returnRate.append((ClosePrice[SellDay[s]] - buyPrice) / buyPrice)
-            # 這是 returnRate
             Flag = False
-
         if BuyDay[b] > SellDay[s]:
             s += 1
         else:
             b += 1
+            
     return  returnRate
 
-def Collects(n, Table, ClosePrice) -> np.array:
+def Collects(n:int, Table:np.array, ClosePrice:np.array) -> np.array:
     Collect = np.empty((n, 3))
     
     for Col in range(n):
@@ -80,16 +98,13 @@ def Collects(n, Table, ClosePrice) -> np.array:
     
     return Collect
 
-def RankingSort(Collect, ColName, SelectRange, HowMuch):
-    #           [ARR, MDD, TF] 
-    # SelectRange  1   2   3     最多就是 3
-    # SelectRange = 3, HowMuch = 5  ==> Top555
-    # SelectRange = 1, HowMuch = 15  ==> Top15 (前 15個 ARR)
-    
+
+def RankingSort(Collect:np.array , ColName:list, HowMuch:int):
+    #   Collect  =  [ARR, MDD, TF] 
     Select = []
-    for i in range(SelectRange):
+    for Col in range(np.shape(Collect)[1]):
         count = 0
-        for Top in np.argsort(-Collect[:, i]):
+        for Top in np.argsort(-Collect[:, Col]): #Sorting descending
             if count == HowMuch:
                 break
             if Top not in Select:
@@ -97,76 +112,68 @@ def RankingSort(Collect, ColName, SelectRange, HowMuch):
                 count += 1
                 
     return Collect[Select], ColName[Select]
-    # ColName = ColName[Select]
-    # Top555 = Collect[Select]
+
+
+def MaxMinNormal(array:np.array) -> np.array:
+    __min = np.min(array)
+    return (array - __min) / (np.max(array) - __min)
+
 
 def Top555(Table, n, ClosePrice, ColName):
     Collect = Collects(n, Table, ClosePrice)
-    return RankingSort(Collect, ColName, 3, 5) 
+    return RankingSort(Collect, ColName, 5)
+ 
+def Top15(Table, n, ClosePrice, ColName):
+    Collect = Collects(n, Table, ClosePrice)['ARR'] 
+    # 只保留 ARR
+    return RankingSort(Collect, ColName, 15) 
+
 
 import time
+import json
 # 如果想分析 用jupyterlab 比較快理解
+
+
 if __name__ == "__main__":
     s = time.time()
     cluster = LocalCluster(n_workers=16, threads_per_worker=1)  
     client = Client(cluster, asynchronous=True)
+
     
-    NorSignal = pd.read_json("Signal.json")
+    SignalSource = pd.read_json("Signal.json").to_numpy()
     ClosePrice_ = pd.read_json("StockData.json")['close'].to_numpy()
-    SignalName = NorSignal.columns[1:]
-    Date = NorSignal['Date']
-    NorSignal = NorSignal.drop(['Date'], axis=1)
 
-    m = len(NorSignal)  # 天數
-    n = len(SignalName) # 種類
-
-    NorSignal = NorSignal.to_numpy()
+    m, n = np.shape(SignalSource)[0], np.shape(SignalSource)[1]
+    # row, col
     
-    Signal = client.scatter(NorSignal, broadcast=True)
+    Signal = client.scatter(SignalSource, broadcast=True)
     Close = client.scatter(ClosePrice_, broadcast=True)
     # Dask 的前置處裡 比較大的 Data 要這樣處理
+    
     print(f"================================================= process 1 =================================================")
-    delayObject = [dask.delayed(Signal2LargeTable)(Signal, buy, n, m) for buy in range(n)]
-    delayObject = dask.compute(*delayObject)
-    Tables, ColName = zip(*delayObject)
 
+    Tables, ColName = CalculateTable(Signal, m, n)
+    
     Tables = client.scatter(Tables, broadcast=True)
     ColName = client.scatter(ColName, broadcast=True)
     
     print(f"================================================= process 2 =================================================")
-    delayObject = [dask.delayed(Top555)(table, n, Close, colname) for table, colname in zip(Tables, ColName)]
-    delayObject = dask.compute(*delayObject)
-
-    Ranking, ColName = zip(*delayObject)
-
-    del delayObject
-    print(f"================================================= process 3 =================================================")
-    CombineTop = np.concatenate(Ranking)
-    ColName = np.concatenate(ColName)
-    # print(np.shape(CombineTop))
+    MultiTable, ColName = CalculateRanking(Top555, n, Tables, ColName, Close)
     
-    # CombineTop = CombineTop[np.argsort(CombineTop[:,1])]
-    CombineTop = CombineTop[np.argsort(CombineTop[:,1])]
+    print(f"================================================= process 3 =================================================")
+    CombineTop = np.concatenate(MultiTable)
+    ColName = np.concatenate(ColName)
 
-    Select = []
-    for i in range(3):
-        count = 0 
+    CombineTop, ColName = RankingSort(CombineTop, ColName, 5)
+    CombineTop[:, 1] = MaxMinNormal(CombineTop[:, 1]) 
 
-        for Top5 in np.argsort( -CombineTop[:, i]):
-            if count == 5:
-                break
-            if Top5 not in Select:
-                Select.append(Top5)
-                count += 1
-                
-    ColName = ColName[Select]
-    Top555 = CombineTop[Select]
-    Top555[:, 1] = (Top555[:, 1] - np.min(Top555[:, 1])) / (np.max(Top555[:, 1]) - np.min(Top555[:, 1]))
+    CombineTop = np.concatenate((ColName[:,np.newaxis], CombineTop), axis=1)
+    CombineTop = pd.DataFrame(CombineTop, columns=["Trading Strategy","ARR", "MDD", "TF"])
 
-    Top555 = np.concatenate((ColName[:,np.newaxis], Top555), axis=1)
-    Top555 = pd.DataFrame(Top555, columns=["Trading Strategy","ARR", "MDD", "TF"])
+    CombineTop.to_json("tmp/newTop555.json", orient="columns")
+    
+    
 
-    Top555.to_json("tmp/newTop555.json", orient="columns")
     e = time.time()
     
     print(f"Time: {e-s}")

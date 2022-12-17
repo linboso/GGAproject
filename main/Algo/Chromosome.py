@@ -115,11 +115,9 @@ class Chromosome():
 
             # [[ReturnTSP.append(ARR[TSP[TS]-1] * Weight[TS+1]) for TS in range(self.kGroup)] for TSP in ALLtsp]
             # 版本 2 
-            
-
+        
             [[ReturnTSP.append(TSP[i][0] * Weight[i+1]) for i in range(self.kGroup)] for TSP in ALLtsp]
 
-            
             # 版本 1 很慢
             # for TSP in ALLtsp:  
                 # for TS in range(self.kGroup):
@@ -129,14 +127,15 @@ class Chromosome():
             return sum(ReturnTSP)*self.Capital/TSPlen
 
         # # ======================= PR =======================
-
-        def RISK() -> float:
-            RiskTSP:list = []
             # MDD = self.Data['MDD']
             # [[RiskTSP.append(min([MDD[TS-1] for TS in TSP]))] for TSP in ALLtsp]
 
+        def RISK() -> float:
+            RiskTSP:list = []
+
             [[RiskTSP.append(min([TS[1]for TS in TSP]))] for TSP in ALLtsp]
-            
+            return sum(RiskTSP)/TSPlen
+        
             # print(f"RiskTSP: {RiskTSP}")
             # for TSP in ALLtsp:
             #     minRiskTsp = sys.maxsize
@@ -148,7 +147,7 @@ class Chromosome():
             #     RiskTSP.append(min([self.Data['MDD'][TS-1] for TS in TSP]))
             # 功能一樣 但是這樣寫還是偏慢
            
-            return sum(RiskTSP)/TSPlen
+            
         
         # ====================== RISK =======================
 
@@ -159,6 +158,7 @@ class Chromosome():
             #     S += -tmp*math.log(tmp, 10)
             # return S
             return -sum([(tmp := len(TSG)/self.mTS) * math.log10(tmp) for TSG in self.getGTSP() ])
+            
 
         # ======================= GB =======================
 
@@ -171,9 +171,8 @@ class Chromosome():
             #     # 此 C = |ci| / T 
             #     # getWeight() 都算好了
             # return S
-
             return -sum([C*math.log10(C) for C in self.getWeight() if C != 0])
-            
+
 
         self.fitness = PR()*RISK()*GB()*WB()
         # print(f"{PR()} <> {RISK()} <> {GB()} <> {WB()}")

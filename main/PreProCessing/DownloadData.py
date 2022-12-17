@@ -4,67 +4,24 @@ import yfinance as yf
 
 
 class DownloadStockData():
-    def __init__(self, Setting):
-        setting = Setting
+    def __init__(self) -> None:
+        pass
 
-        self.stock_id = setting['StockID']
-        self.Tstart = setting['TrainingPeriod']['StartDate']
-        self.Tend = setting['TrainingPeriod']['EndDate']
+    def Download(self, StID, Path, StartDate, EndDate):
+  
+        data:pd.DataFrame = yf.download(StID, StartDate, EndDate)           # 從 Yahoo 下載 Stock-data 
+        data.drop(['Adj Close'], axis=1, inplace=True)                      # drop 掉 "Adj Close" 這一 col 用不到
+        data.columns = ["open","high","low","close","volume"]               # 改小寫
+
+        data.to_json(f"{Path}/StockData.json", orient='columns')
+
+        data = pd.DataFrame(data.index)
+        data.to_json(f"{Path}/Date.json", orient='columns')
         
-        self.Vstart = setting['ValidationPeriod']['StartDate']
-        self.Vend = setting['ValidationPeriod']['EndDate']
         
-        self.path = f"{setting['Path']}/{setting['StockID']}"
-        print(f"儲存在 {self.path}")
-
-
-    def DownloadStockData(self):
-        try:       
-            data:pd.DataFrame = yf.download(self.stock_id, start = self.Tstart, end = self.Tend)
-            data.drop(['Adj Close'], axis=1, inplace=True)
-            data.columns = ["open","high","low","close","volume"]
-            # download Stock-data from yahoo
-            # and drop 1 column, "Adj Close" which is not need to be used
-        except:
-            print("Fail to download Traning Data ")
-
-        try:
-            if not os.path.exists(f"{self.path}/TrainingData/"):
-                os.makedirs(f"{self.path}/TrainingData/")
-                print("Create TrainingData folder")
+    def CheckPath(self, Path):
+        if not os.path.exists(Path):
+            os.makedirs(Path)
+            print("已建立資料夾")
             
-            data.to_json(f"{self.path}/TrainingData/StockData.json", orient='records')
-            data = pd.DataFrame(data.index)
-            data.to_json(f"{self.path}/TrainingData/Date.json", orient='records')
-            
-
-            print(f"Saving TrainingData data at {self.path} \r\n")
-        except:
-            print("Fail to saving file \r\n")
-        #
-        # ValidationData
-        #
-        try:       
-            data:pd.DataFrame = yf.download(self.stock_id, start = self.Vstart, end = self.Vend)
-            data.drop(['Adj Close'], axis=1, inplace=True)
-            data.columns = ["open","high","low","close","volume"]
-        except:
-            print("Fail to download Traning Data ")
-
-        try:
-            if not os.path.exists(f"{self.path}/ValidationData/"):
-                os.makedirs(f"{self.path}/ValidationData/")
-                print("Create ValidationData folder")
-            
-
-            data.to_json(f"{self.path}/ValidationData/StockData.json", orient='records')
-            data = pd.DataFrame(data.index)
-            data.to_json(f"{self.path}/ValidationData/Date.json", orient='records')
-
-
-            print(f"Saving ValidationData data at {self.path}/ValidationData \r\n")
-        except:
-            print("Fail to saving file \r\n")
-        
-
 

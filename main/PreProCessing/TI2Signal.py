@@ -9,11 +9,13 @@ else:
     
 
 class TI2Signal():
-    def __init__(self, Setting):
+    def __init__(self, Setting, SIGNALMAPOFFSET, Path):
+        self.SIGNALMAPOFFSET = SIGNALMAPOFFSET
         if __name__ == "__main__":
-            self.path = f"../{Setting['Path']}/{Setting['StockID']}/TrainingData"
+            self.Path = f"../{Path}/TrainingData"
+            
         else:
-            self.path = f"{Setting['Path']}/{Setting['StockID']}/TrainingData"
+            self.Path = f"{Path}/TrainingData"
 
 
     # Signal 單純判斷 buy and sell 的 時間點
@@ -22,6 +24,8 @@ class TI2Signal():
         TI_Format, TIvale = pd.DataFrame(), pd.DataFrame()
         SignalMap, Date = pd.DataFrame(), pd.DataFrame()
 
+        SignalMapOffset = self.SIGNALMAPOFFSET
+        
         if __name__ == "__main__":
             with open(f'./Case/TIformat.json', encoding="utf-8") as f1, open(f'../SignalMap.json', encoding="utf-8") as f2:
                 TI_Format = json.load(f1)
@@ -34,34 +38,25 @@ class TI2Signal():
             except:
                 print("缺少 TIformat.json or SignalMap.json")
                 return 
-
-
-        # ================================================================================
+            
         try:
-            with open(f"{self.path}/TIvalue.json") as f:
-                TIvale = pd.read_json(f)
+            with open(f"{self.Path}/TIvalue.json") as f1, open(f"{self.Path}/Date.json") as f2:
+                TIvale = pd.read_json(f1)
+                Date = pd.read_json(f2)
 
         except:
-            print(f"缺失 TIvalue.json 檔 \t位置: {self.path}/TIvalue.json")
+            print(f"缺少 TIvalue.json or Date.json")
             return 
 
-        try:
-            with open(f"{self.path}/Date.json") as f:
-                Date = pd.read_json(f)
-        except:
-            print(f"缺失 Date.json 檔 \t位置: {self.path}/Date.json")
-            return 
-
-        # return
    
         #確認所有 必要的資料 是否都在
 
         if __name__ == "__main__":
             ColName = []                # 存 ColName
 
-        Signal, Data = np.empty(len(Date)), np.empty((len(Date), 1)) # 強制要 2D dim
+        Signal, SignalTable = np.empty(len(Date)), np.empty((len(Date), 1)) # 強制要 2D dim
 
-        for TS in SignalMap["NON_MA_TYPE"]:                            
+        for TS in SignalMap[:SignalMapOffset]:                            
             case = TI_Format[TS]['Case']
             Iuput = TI_Format[TS]["InputArray"]
             if case == "1":
@@ -112,35 +107,35 @@ class TI2Signal():
             if __name__ == "__main__":
                 ColName.append(TS)               
 
-            Data = np.concatenate((Data, Signal[:, np.newaxis]), axis=1)
-    
+            SignalTable = np.concatenate((SignalTable, Signal[:, np.newaxis]), axis=1)
+   
 
-        for Combination in SignalMap["MA_TYPE"]:
+        for Combination in SignalMap[SignalMapOffset:]:
 
             Signal = Case.case1(
-                TIvale[Combination[0]],
-                TIvale[Combination[1]]
+                TIvale[Combination[0]], TIvale[Combination[1]]
             ) 
             if __name__ == "__main__":
                 ColName.append(f"{Combination[0]}&{Combination[1]}")
-            Data = np.concatenate((Data, Signal[:, np.newaxis]), axis=1)
+                
+            SignalTable = np.concatenate((SignalTable, Signal[:, np.newaxis]), axis=1)
 
-        Data = np.delete(Data, 0, 1)        # Del 多餘的 first colunm
+        SignalTable = np.delete(SignalTable, 0, 1)        # Del first colunm
         
         if __name__ == "__main__":
-            tmp = pd.concat([Date, pd.DataFrame(Data, columns=ColName)], axis=1)
-            tmp.to_csv(f"{self.path}/SignalforDebug.csv")
+            tmp = pd.concat([Date, pd.DataFrame(SignalTable, columns=ColName)], axis=1)
+            tmp.to_csv(f"{self.Path}/SignalforDebug.csv")
             print("已完成交易信號的產生")   
-    
-        Date = pd.concat([Date, pd.DataFrame(Data)], axis=1)
-        Date.to_json(f"{self.path}/Signal.json", orient='columns')
+
+        SignalTable = pd.DataFrame(SignalTable)
+        SignalTable.to_json(f"{self.Path}/Signal.json", orient='columns')
 
     
 
     #======================================
 
-    def ProduceTable(self):
-        with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
+    def SignleProcessor_ProduceTable(self):
+        with open(f"{self.Path}/Signal.json") as f1, open(f"{self.Path}/StockData.json") as f2:
             Signal:pd.DataFrame = pd.read_json(f1)
             Data:pd.DataFrame = pd.read_json(f2)
 
@@ -197,7 +192,7 @@ class TI2Signal():
         Output = pd.DataFrame(Table, columns=ColName)
         ColName = [] # clean
 
-        Output.to_json(f"{self.path}/Table.json", orient='columns')
+        Output.to_json(f"{self.Path}/Table.json", orient='columns')
 
         # if __name__ == "__main__":
         #     Output.to_csv(f"{self.path}/Table.csv")
@@ -212,7 +207,7 @@ if __name__ == "__main__":
         ti2s = TI2Signal(json.load(f))
     
     
-    # ti2s.ProduceSignal()
+    ti2s.ProduceSignal()
     # ti2s.ProduceTable() ## Dask
     # cProfile.run("ti2s.ProduceSignal()")
     # cProfile.run("ti2s.ProduceTable()")

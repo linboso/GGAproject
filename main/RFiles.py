@@ -3,7 +3,7 @@ import json
 import os
 
 class RFiles():
-    def __init__(self):
+    def __init__(self, SIGNALMAPOFFSET):
         try:
             with open("./Setting.json") as f1, open("./TI_List.json") as f2, open("./SignalMap.json") as f3:
                 Setting = json.load(f1)
@@ -13,7 +13,8 @@ class RFiles():
             self.Setting = Setting
             self.TI_List = TI_List
             self.SignalMap = SignalMap
-
+            self.SIGNALMAPOFFSET = SIGNALMAPOFFSET
+            
             if not os.path.exists(Setting['Path']):
                 os.makedirs(Setting['path'])
         except:
@@ -29,14 +30,14 @@ class RFiles():
                     },
                 "Path":"../data/stock/",
                 # "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI", "MAMA"],
-                "Strategy": "Top777",
+                "Strategy": "Top555",
                 "pSize": 100,
                 "CrossoverRate": 0.8,
                 "MutationRate": 0.03,
                 "InversionRate": 0.3,
-                "Generation": 10,
+                "Generation": 30,
                 "kGroup": 5,
-                "mTS": 21,
+                "mTS": 15,
                 "WeightPart":100,
                 "Capital": 100000          
             }
@@ -47,27 +48,6 @@ class RFiles():
             print("...Creating Setting.json")
         
     
-
-    # def Set(self, **value):
-    #     Setting = self.Setting_File
-    #     try:
-    #         for i in value:
-    #             Setting[str(i)] = value[i]
-    #         self.__SavingFile(Setting)
-    #         print("Change setting  successfully")
-    #     except:
-    #         print("Change setting failed")
-
-
-    # def SignalMap(self):
-    #     return self.SignalMap
-        
-    # def TI_List(self):
-    #     return self.TI_List
-    
-    # def Setting(self):
-    #     return self.Setting_File
-        
 
     def CheckPath(savepath):
         if not os.path.exists(savepath):
@@ -82,7 +62,7 @@ class RFiles():
         else:
             return True
 
-    def print(self):
+    def PrintALL(self):
         data = self.Setting
         print("======================================== Setting Content ========================================")
         print(f"\tStock ID: {data['StockID']}")
@@ -107,8 +87,8 @@ class RFiles():
         print(f"{data['MA_TYPE']}")
         print("========================================    SignalMap    ========================================")
         data = self.SignalMap
-        print(f"\tNON_MA_TYPE Numbers: {len(data['NON_MA_TYPE'])}")
-        print(f"\tMA_TYPE Numbers {len(data['NON_MA_TYPE'])}")
+        print(f"\tNON_MA_TYPE Numbers: {len(data[:self.SIGNALMAPOFFSET])}")
+        print(f"\tMA_TYPE Numbers {len(data[self.SIGNALMAPOFFSET:])}")
         print("=================================================================================================")
 
     def __SavingFile(self, data:dict): 
@@ -123,24 +103,4 @@ class RFiles():
 if __name__ == '__main__':
     baseEnv = RFiles()
     print(baseEnv.SignalMap)
-    # print(baseEnv.Setting_File['TrainingPeriod'])
-    # print(baseEnv.TI_List["MA_TYPE"])
-    # print(baseEnv.SignalMap["NON_MA_TYPE"])
-
     
-    # baseEnv.Set(TechnicalIndicator = ['CCI'])
-
-    # NewDate = {
-    #         "StartDate":"2010-08-30",
-    #         "EndDate":"2012-12-30"
-    #     }
-
-    # baseEnv.Set(ValidationPeriod = NewDate)
-    # baseEnv.Set(TrainingPeriod = {
-    #     "StartDate": "2009-10-01",
-	# 	"EndDate": "2010-12-30"
-    #     })
-
-    #  Way to set new date / Values
-   
-
