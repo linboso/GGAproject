@@ -1,6 +1,7 @@
 import copy
 import pandas as pd
 import numpy as np
+import json
 
 if __name__ == "__main__":
     from Chromosome import Chromosome
@@ -79,6 +80,28 @@ class Population():
 
         print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
 
+
+
+        #取得TradingStrategy
+        with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/{self.Setting["Strategy"]}.json')as x:
+            data = json.load(x)    
+        tradingStrategy = data["Trading Strategy"]   
+        #存成json格式檔案來給backTesting來read
+        block = {
+            "StockID": self.Setting["StockID"],
+            "TrainingPeriod": self.Setting["TrainingPeriod"],
+            "ValidationPeriod": self.Setting["ValidationPeriod"],
+            "SLTP":[10,10],
+            "Capital": self.Setting["Capital"],
+            "GTSP": FitList[0][1].gene.tolist()[:(FitList[0][1].kGroup + FitList[0][1].mTS)],
+            "Weight": FitList[0][1].getWeight().tolist(),
+            "TradingStrategy": tradingStrategy
+        }
+                
+        with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/block.json', "w") as outfile:
+            json.dump(block, outfile)
+
+        #"TradingStrategy"
         # Next Step Process Final GTSP
         # and Vail thw GTSP
 

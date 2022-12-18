@@ -29,7 +29,15 @@ class BackTesting():
             self.TradingStrategy = data['TradingStrategy']
             self.TI_List = []
             self.TIpair = []
-            self.SignalMap = data['SignalMap']
+            mapList = [] 
+            with open("./SignalMap.json") as f:
+                data = json.load(f)
+            for typeTS in data.values():
+                for st in typeTS:
+                    mapList.append(st)
+            self.SignalMap = mapList
+
+            print('SignalMap',self.SignalMap)
             self.privateMapping = {}
             if __name__ == "__main__":
                 self.Path = f"../data/stock/{self.StockID}/ValidationData"#執行路徑被套件調整了==
@@ -579,6 +587,12 @@ class BackTesting():
 
         map_group1 = self.privateMapping# {'2': MACD^STOCH}:指標2 is MACD^STOCH
         Alltsp:list = self.ADVcombine()
+
+        #確認是否有資料夾
+        if not os.path.exists(f'{self.Path}/Folder_GTSP/'):
+            os.makedirs(f'{self.Path}/Folder_GTSP')
+        if not os.path.exists(f'{self.Path}/Folder_SLTP/'):
+            os.makedirs(f'{self.Path}/Folder_SLTP')
             
         #===================================================Folder_GTSP=================================================== 
         for tsp in Alltsp:
@@ -659,7 +673,7 @@ class BackTesting():
 if __name__ == '__main__':
     obj = BackTesting()
     #obj.mapTest()
-    #obj.PreBackTesting()
-    #obj.Run()
-    #obj.Query()
+    obj.PreBackTesting()
+    obj.Run()
+    obj.Query()
     #print(obj)
