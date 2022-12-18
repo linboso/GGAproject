@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import numpy as np
 
+
+# Ti Value 是 Json 匯入的 所以要用 pd
 def case1(ti1: pd.Series, ti2: pd.Series) -> np.array:
     ti1:np.array = ti1.to_numpy()
     ti2:np.array = ti2.to_numpy()
@@ -90,6 +92,7 @@ def case6(ti1:pd.Series, ti2:pd.Series, ti3:pd.Series, ti4:pd.Series) -> np.arra
     return r
 
 
+#Old version 偏慢
 
 # def case2(ti: pd.Series, c1: float, c2: float):
 #     ti = ti.values
@@ -126,12 +129,14 @@ if __name__ ==  '__main__':
     with open(f"../../{Setting['Path']}/{Setting['StockID']}/TrainingData/TIvalue.json") as f:
         data = pd.DataFrame(json.load(f))
         
-    cProfile.run("case1(data['MA5'], data['MA15'])")
-    # print(data.head(5))
+    re = case1(data['MA5'], data['MA20'])
+
+    re = pd.DataFrame(re)
+    re.to_csv("Signal_Debug.csv")
+
+    # cProfile.run("case1(data['MA5'], data['MA15'])")
+
     
-    # result = case1(data['MA5'], data['MA15'])
-    # print(result)
-    ## Fix Case Problem 
 
     
 

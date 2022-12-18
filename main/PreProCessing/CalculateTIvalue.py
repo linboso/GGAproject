@@ -1,95 +1,66 @@
 import pandas as pd
+import numpy as np
 import talib
 from talib import abstract
+import json
 
 
 
 class TIValue():
-    def __init__(self, Setting) -> None:
-        setting = Setting
+    def __init__(self, StockID, TI_List, Path) -> None:     
+        self.StockID = StockID
         
-        self.stock_id = setting['StockID']
-        self.start = setting['TrainingPeriod']['StartDate']
-        self.end = setting['TrainingPeriod']['EndDate']
-        self.TI_List = setting['TechnicalIndicator']
-
+        self.NON_MA_TYEP_List = TI_List['NON_MA_TYPE']
+        self.MA_TYEP_List = TI_List['MA_TYPE']
+        
         if __name__ == "__main__":
-            self.path = f"../{setting['Path']}/{setting['StockID']}/TrainingData"
+            self.Path = f"../{Path}/TrainingData"
         else:
-            self.path = f"{setting['Path']}/{setting['StockID']}/TrainingData"
+            self.Path = f"{Path}/TrainingData"
+
 
     def CalculateTIValue(self):
-        df = pd.DataFrame()
+        StockData, TIValueTable = pd.DataFrame(), pd.DataFrame()
 
-        try:
-            with open(f"{self.path}/StockData.json") as f:
-                df = pd.read_json(f)
-
-        except:
-            print(f"缺失 {self.stock_id} 的 StockData.json 的資料")
-
-
-
-        TIValueTable = pd.DataFrame()
-        # _ALL_TI_LIST = talib.get_functions()
+        with open(f"{self.Path}/StockData.json") as f:
+            StockData = pd.read_json(f)
+        
 
         ColName = []
         
-        for TI in self.TI_List:
-            try:  
-                if TI[-2:].isdigit():                               #如果 最後兩位 是數字
-                    TIValue:pd.DataFrame = eval(f'abstract.{TI[:-2]}(df, timeperiod={TI[-2:]})')
-                    ColName.append(TI)
-                    
-                elif not TI[-2].isdigit() and TI[-1].isdigit():     #如果 最後一位 是數字
-                    TIValue:pd.DataFrame = eval(f'abstract.{TI[:-1]}(df, timeperiod={TI[-1]})')
-                    ColName.append(TI)
-                    
-                # elif TI in CustomCase: # 補充 at未來?
-                else:
-                    TIValue = eval(f'abstract.{TI}(df)')
-                    if type(TIValue) == pd.Series:
-                        ColName.append(TI)
-                    else:
-                        [ColName.append(Name.upper()) for Name in list(TIValue.columns)]
-
+        for TI in self.NON_MA_TYEP_List:
+            TIValue = eval(f'abstract.{TI}(StockData)')
+            if type(TIValue) == pd.DataFrame:
+                [ColName.append(Name.upper()) for Name in list(TIValue.columns)]
+            else:
+                ColName.append(TI)
                 
-            except:
-                print(f"沒有此 {TI} 技術指標\r\n")
-                continue
+            TIValueTable = pd.concat([TIValueTable, TIValue], axis=1, ignore_index=True)
+             #把算出來的Value 合併到 Table 中
+        
+        for TI in self.MA_TYEP_List:
+            TIValue = eval(f'abstract.{TI[0]}(StockData, timeperiod={TI[1]})')
+            ColName.append(f"{TI[0]}{TI[1]}")
 
             TIValueTable = pd.concat([TIValueTable, TIValue], axis=1)
-            #把算出來的Value 合併到 Table 中
-        TIValueTable.columns = ColName
-        # Rename 行
+        TIValueTable.columns = ColName  # Rename 行
 
-        print(f"計算出來的 指標數值有: {list(TIValueTable.columns)}")
-        # print(TIValueTable.head(5))
+        TIValueTable = TIValueTable.reset_index(drop=True)
+        TIValueTable.to_json(f"{self.Path}/TIvalue.json", orient='columns')
         
-        TIValueTable.to_json(f"{self.path}/TIvalue.json" ,orient='records')
-        print(f"儲存 TIvalue.json 在 {self.path}\r\n")
-        
-
-
-
-    def getTIValue(self):
-        table = pd.DataFrame()
-        with open(f"{self.path}/TIvalue.json", 'r') as f:
-            table = pd.read_json(f)
-
-        return table
 
 
 
 
 if __name__ == "__main__":
-    # 獨立執行 測試用
-    import json
+    import cProfile
 
-    with open('../setting.json') as f:
-        TIv = TIValue(json.load(f))
+    with open('../Setting.json') as f1, open('../TI_List.json') as f2:
+        Setting = json.load(f1)
+        Path = Setting['Path'] + "/" + Setting['StockID']
+        TIv = TIValue(Setting['StockID'], json.load(f2), Path)
 
     TIv.CalculateTIValue()
 
-    
+    # cProfile.run("TIv.CalculateTIValue()")
 

@@ -2,66 +2,73 @@
 import json
 import os
 
-class SettingFile():
+class RFiles():
     def __init__(self) -> None:
+
         try:
-            with open("./Setting.json") as f:
-                data = json.load(f)
-                print(data)
-            self.data = data
+            with open("./Setting.json") as f1, open("./TI_List.json") as f2, open("./SignalMap.json") as f3:
+                Setting_File = json.load(f1)
+                TI_List = json.load(f2)
+                SignalMap = json.load(f3)
+                    
+            self.Setting_File = Setting_File
+            self.TI_List = TI_List
+            self.SignalMap = SignalMap
+   
 
-            if not os.path.exists(data['Path']):
-                os.makedirs(data['path'])
-                init_setting = {
-                    "StockID":"0050.TW",
-                    "TrainingPeriod": {
-                            "StartDate":"2009-08-30",
-                            "EndDate":"2010-12-30"
-                        },
-                    "ValidationPeriod": {
-                            "StartDate":"2010-08-30",
-                            "EndDate":"2012-12-30"
-                        },
-                    "Path":"../data/stock",
-                    "TechnicalIndicator":["MA5", "MA20", "MA30", "MACD", "STOCH", "CCI"],
-                    "Strategy": "Top777",
-                    "pSize": 100,
-                    "CrossoverRate": 0.8,
-                    "MutationRate": 0.03,
-                    "InversionRate": 0.3,
-                    "Generation": 10,
-                    "kGroup": 5,
-                    "mTS": 21,
-                    "WeightPart":100,
-                    "Capital": 100000          
-                }
-                #init setting format
-                self.__SavingFile(init_setting)
-                self.data = init_setting
-                print("...Creating Setting.json")
-            # end if 
-
+            if not os.path.exists(Setting_File['Path']):
+                os.makedirs(Setting_File['path'])
         except:
-            print("讀取 Setting.json 失敗")
-            print("檢查 json 格式 是否正確")
-             
+            init_Setting = {
+                "StockID":"0050.TW",
+                "TrainingPeriod": {
+                        "StartDate":"2009-08-30",
+                        "EndDate":"2010-12-30"
+                    },
+                "ValidationPeriod": {
+                        "StartDate":"2010-08-30",
+                        "EndDate":"2012-12-30"
+                    },
+                "Path":"../data/stock/0050.TW/",
+                # "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI", "MAMA"],
+                "Strategy": "Top777",
+                "pSize": 100,
+                "CrossoverRate": 0.8,
+                "MutationRate": 0.03,
+                "InversionRate": 0.3,
+                "Generation": 10,
+                "kGroup": 5,
+                "mTS": 21,
+                "WeightPart":100,
+                "Capital": 100000          
+            }
+            #init setting format
+            
+            self.__SavingFile(init_Setting)
+            self.Setting_File = init_Setting
+            print("...Creating Setting.json")
         
     
 
-    def Set(self, **value):
- 
-        setting = self.data
-        try:
-            for i in value:
-                setting[str(i)] = value[i]
+    # def Set(self, **value):
+    #     Setting = self.Setting_File
+    #     try:
+    #         for i in value:
+    #             Setting[str(i)] = value[i]
+    #         self.__SavingFile(Setting)
+    #         print("Change setting  successfully")
+    #     except:
+    #         print("Change setting failed")
 
-            self.__SavingFile(setting)
-            print("Change setting  successfully")
-        except:
-            print("Change setting failed")
 
-    def Read(self):
-        return self.data
+    # def SignalMap(self):
+    #     return self.SignalMap
+        
+    # def TI_List(self):
+    #     return self.TI_List
+    
+    # def Setting(self):
+    #     return self.Setting_File
         
 
     def CheckPath(savepath):
@@ -78,29 +85,37 @@ class SettingFile():
             return True
 
     def print(self):
-        data = self.data
-        print("============= Setting Data =============")
-        print(f"Stock ID: {data['StockID']}")
-        print(f">   Traning  Period\tStratDate: {data['TrainingPeriod']['StartDate']} ~ {data['TrainingPeriod']['EndDate']}")
-        print(f"> Validation Period\tStratDate: {data['ValidationPeriod']['StartDate']} ~ {data['ValidationPeriod']['EndDate']}")
-        print(f"Path: {data['Path']}")
-        print(f"Technical Indicator: {data['TechnicalIndicator']}")
-        print(f"Strategy: {data['Strategy']}")
-        print(f"CrossoverRate:  {data['CrossoverRate']}")
-        print(f" MutationRate:  {data['MutationRate']}")
-        print(f"InversionRate: {data['InversionRate']}")
-        print(f"Generation: {data['Generation']}")
-        print(f"kGroup: {data['kGroup']}")
-        print(f"mTS: {data['mTS']}")
-        print(f"WeightPart: {data['WeightPart']}")
-        print(f"Capital: {data['Capital']}")
-        print("========================================")
+        data = self.Setting_File
+        print("======================================== Setting Content ========================================")
+        print(f"\tStock ID: {data['StockID']}")
+        print(f"\t>   Traning  Period\tStratDate: {data['TrainingPeriod']['StartDate']} ~ {data['TrainingPeriod']['EndDate']}")
+        print(f"\t> Validation Period\tStratDate: {data['ValidationPeriod']['StartDate']} ~ {data['ValidationPeriod']['EndDate']}")
+        print(f"\tPath: {data['Path']}")
+        # print(f"Technical Indicator: {data['TechnicalIndicator']}")
+        print(f"\tStrategy: {data['Strategy']}")
+        print(f"\tCrossoverRate: {data['CrossoverRate']}")
+        print(f"\tMutationRate: {data['MutationRate']}")
+        print(f"\tInversionRate: {data['InversionRate']}")
+        print(f"\tGeneration: {data['Generation']}")
+        print(f"\tkGroup: {data['kGroup']}")
+        print(f"\tmTS: {data['mTS']}")
+        print(f"\tWeightPart: {data['WeightPart']}")
+        print(f"\tCapital: {data['Capital']}")
+        print("\r\n========================================     TI_List     ========================================")
+        data = self.TI_List
+        print(f"---------------  Total Non-MA-Tpye TI Numbers: {len(data['NON_MA_TYPE'])}  ---------------")
+        print(f"{data['NON_MA_TYPE']}\r\n")
+        print(f"---------------  Total MA-Tpye TI Numbers: {len(data['MA_TYPE'])}  ---------------")
+        print(f"{data['MA_TYPE']}")
+        print("========================================    SignalMap    ========================================")
+        data = self.SignalMap
+        print(f"\tNON_MA_TYPE Numbers: {len(data['NON_MA_TYPE'])}")
+        print(f"\tMA_TYPE Numbers {len(data['NON_MA_TYPE'])}")
+        print("=================================================================================================")
 
-
-    # __ 是 prvate 的用法 無法從外部使用
-    def __SavingFile(self, data:dict, path:str="./setting.json"): 
+    def __SavingFile(self, data:dict): 
         try:
-            with open(path, "w") as f:
+            with open("./Setting.json", "w") as f:
                 json.dump(data, f) # save as .json file
         except:
             print("Failed to saving file")
@@ -109,8 +124,9 @@ class SettingFile():
 
 if __name__ == '__main__':
     baseEnv = SettingFile()
-    # print(baseEnv.data['TrainingPeriod'])
-    # baseEnv.print() 
+    # print(baseEnv.Setting_File['TrainingPeriod'])
+    # print(baseEnv.TI_List["MA_TYPE"])
+    # print(baseEnv.SignalMap["NON_MA_TYPE"])
 
     
     # baseEnv.Set(TechnicalIndicator = ['CCI'])

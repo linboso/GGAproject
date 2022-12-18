@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 
 if __name__ == "__main__":
     from Case import Case
@@ -7,156 +8,134 @@ else:
     from .Case import Case
     
 
-
 class TI2Signal():
-    def __init__(self, Setting) -> None:
-        self.stock_id = Setting['StockID']
-        self.start = Setting['TrainingPeriod']['StartDate']
-        self.end = Setting['TrainingPeriod']['EndDate']
-        self.ti_list = Setting['TechnicalIndicator']
-
+    def __init__(self, Setting, SIGNALMAPOFFSET, Path):
+        self.SIGNALMAPOFFSET = SIGNALMAPOFFSET
         if __name__ == "__main__":
-            self.path = f"../{Setting['Path']}/{Setting['StockID']}/TrainingData"
+            self.Path = f"../{Path}/TrainingData"
+            
         else:
-            self.path = f"{Setting['Path']}/{Setting['StockID']}/TrainingData"
+            self.Path = f"{Path}/TrainingData"
 
 
-
+    # Signal 單純判斷 buy and sell 的 時間點
+    # Table 是有時間順序性質的 ==> Buy 的時間點 必 早於 Sell
     def ProduceSignal(self):
-        ti_format, TIvale ,data = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+        TI_Format, TIvale = pd.DataFrame(), pd.DataFrame()
+        SignalMap, Date = pd.DataFrame(), pd.DataFrame()
 
+        SignalMapOffset = self.SIGNALMAPOFFSET
+        
         if __name__ == "__main__":
-            with open(f'./Case/TIformat1.json', 'r', encoding="utf-8") as f:
-                ti_format = pd.read_json(f)
+            with open(f'./Case/TIformat.json', encoding="utf-8") as f1, open(f'../SignalMap.json', encoding="utf-8") as f2:
+                TI_Format = json.load(f1)
+                SignalMap = json.load(f2)
         else:
             try:
-                with open('./PreProCessing/Case/TIformat.json', 'r', encoding="utf-8") as f:
-                    ti_format = pd.read_json(f)
+                with open('./PreProCessing/Case/TIformat.json', encoding="utf-8") as f1, open('./SignalMap.json', encoding="utf-8") as f2:
+                    TI_Format = json.load(f1)
+                    SignalMap = json.load(f2)
             except:
-                print("缺失 TIformat.json \t位置: ./PreProCessing/Case/TIformat.json")
+                print("缺少 TIformat.json or SignalMap.json")
                 return 
-
-        try:
-            with open(f"{self.path}/TIvalue.json") as f:
-                TIvale = pd.read_json(f)
-        except:
-            print(f"缺失 TIvalue.json 檔 \t位置: {self.path}/TIvalue.json")
-            return 
-
-        try:
-            with open(f"{self.path}/Date.json") as f:
-                data = pd.read_json(f)
-        except:
-            print(f"缺失 Date.json 檔 \t位置: {self.path}/Date.json")
-            return 
-
-        
-        #確認所有 必要的資料 是否都在
-        signal, MovingAvg = [], []
-
-        for TS in self.ti_list: # 有被選擇的 TI list 
             
-            # --- Moving Average Tpye 的指標 要另外處理 ---
-            if TS[-2:].isdigit():                               #如果 最後兩位 是數字
-                MovingAvg.append((int(TS[-2:]), TS))
-            elif not TS[-2].isdigit() and TS[-1].isdigit():     #如果 最後一位 是數字
-                MovingAvg.append((int(TS[-1:]), TS))
+        try:
+            with open(f"{self.Path}/TIvalue.json") as f1, open(f"{self.Path}/Date.json") as f2:
+                TIvale = pd.read_json(f1)
+                Date = pd.read_json(f2)
 
-            else:
-                case = ti_format[TS]['Case']
-                # print(f"TI: {TS:5} \t 屬於第 {case} Case")
-                if case == "1":
-                    signal = Case.case1(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                    )
+        except:
+            print(f"缺少 TIvalue.json or Date.json")
+            return 
 
-                elif case == "2":
-                    signal = Case.case2(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
-                    )
-                elif case == "3":
-                    signal = Case.case3(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
-                    )
-                elif case == "4":
-                    signal = Case.case4(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        ti_format[TS]["InputArray"]['C1'],           # C1
-                        ti_format[TS]["InputArray"]['C2']            # C2
-                    )
-                elif case == "5":
-                    signal = Case.case5(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
-                        ti_format[TS]["InputArray"]['C1']            # C1
-                    )
-                elif case == "6":
-                    signal = Case.case6(
-                        TIvale[ti_format[TS]["InputArray"]['ti1']],    # Get ti 1 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti2']],    # Get ti 2 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti3']],    # Get ti 3 Value
-                        TIvale[ti_format[TS]["InputArray"]['ti4']]     # Get ti 4 Value
-                    )
-                
-
-                signal = pd.DataFrame(signal)
-                signal.columns = [TS]       # 命名 Column
-                data = pd.concat([data, signal], axis=1)
-        
-        MovingAvg = [TS[1] for TS in sorted(MovingAvg)]
-
-        Combinaion = self.__Combine(MovingAvg)
-        for c in Combinaion:
-
-            signal = Case.case1(
-                TIvale[c[0]],
-                TIvale[c[1]]
-            ) 
-
-            signal = pd.DataFrame(signal)
-            signal.columns = [f"{c[0]}&{c[1]}"]
-            data = pd.concat([data, signal], axis=1)
+   
+        #確認所有 必要的資料 是否都在
 
         if __name__ == "__main__":
-            data.to_csv(f"{self.path}/Signal.csv")
-    
-        data.to_json(f"{self.path}/Signal.json", orient='columns')
-        # data.to_json(f"{self.path}/Signal.json", orient='records')
-        print(f"已完成交易信號的產生")   
-    ##
+            ColName = []                # 存 ColName
 
+        Signal, SignalTable = np.empty(len(Date)), np.empty((len(Date), 1)) # 強制要 2D dim
 
-    def __Combine(self, MovingList:list) -> list: 
-        # 利用 backtracking 做組合 
-        # 但要 先確保 list 裡面的指標 要是 由小 --> 大 的排列方式
-        n = len(MovingList)
-        res = []
-        def backtrack(tmp, start):
+        for TS in SignalMap[:SignalMapOffset]:                            
+            case = TI_Format[TS]['Case']
+            Iuput = TI_Format[TS]["InputArray"]
+            if case == "1":
+                Signal = Case.case1(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    TIvale[Iuput['ti2']]     # Get ti 2 Value
+                )
+
+            elif case == "2":
+                Signal = Case.case2(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    Iuput['C1'],             # C1
+                    Iuput['C2']              # C2
+                )
+
+            elif case == "3":
+                Signal = Case.case3(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    TIvale[Iuput['ti2']],    # Get ti 2 Value
+                    Iuput['C1'],             # C1
+                    Iuput['C2']              # C2
+                )
+
+            elif case == "4":
+                Signal = Case.case4(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    TIvale[Iuput['ti2']],    # Get ti 2 Value
+                    Iuput['C1'],             # C1
+                    Iuput['C2']              # C2
+                )
+
+            elif case == "5":
+                Signal = Case.case5(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    TIvale[Iuput['ti2']],    # Get ti 2 Value
+                    TIvale[Iuput['ti3']],    # Get ti 3 Value
+                    Iuput['C1']              # C1
+                )
+
+            elif case == "6":
+                Signal = Case.case6(
+                    TIvale[Iuput['ti1']],    # Get ti 1 Value
+                    TIvale[Iuput['ti2']],    # Get ti 2 Value
+                    TIvale[Iuput['ti3']],    # Get ti 3 Value
+                    TIvale[Iuput['ti4']]     # Get ti 4 Value
+                )
             
-            if len(tmp) == 2:
-                res.append(tmp.copy())
-                return
+            if __name__ == "__main__":
+                ColName.append(TS)               
 
-            for i in range(start, n):
-                tmp.append(MovingList[i])
-                backtrack(tmp,  i + 1)
-                tmp.pop()
+            SignalTable = np.concatenate((SignalTable, Signal[:, np.newaxis]), axis=1)
+   
+
+        for Combination in SignalMap[SignalMapOffset:]:
+
+            Signal = Case.case1(
+                TIvale[Combination[0]], TIvale[Combination[1]]
+            ) 
+            if __name__ == "__main__":
+                ColName.append(f"{Combination[0]}&{Combination[1]}")
+                
+            SignalTable = np.concatenate((SignalTable, Signal[:, np.newaxis]), axis=1)
+
+        SignalTable = np.delete(SignalTable, 0, 1)        # Del first colunm
         
-        backtrack([], 0)
-        return res
+        if __name__ == "__main__":
+            tmp = pd.concat([Date, pd.DataFrame(SignalTable, columns=ColName)], axis=1)
+            tmp.to_csv(f"{self.Path}/SignalforDebug.csv")
+            print("已完成交易信號的產生")   
+
+        SignalTable = pd.DataFrame(SignalTable)
+        SignalTable.to_json(f"{self.Path}/Signal.json", orient='columns')
+
+    
 
     #======================================
 
-    def ProduceTable(self):
-        with open(f"{self.path}/Signal.json") as f1, open(f"{self.path}/StockData.json") as f2:
+    def SignleProcessor_ProduceTable(self):
+        with open(f"{self.Path}/Signal.json") as f1, open(f"{self.Path}/StockData.json") as f2:
             Signal:pd.DataFrame = pd.read_json(f1)
             Data:pd.DataFrame = pd.read_json(f2)
 
@@ -165,8 +144,7 @@ class TI2Signal():
 
         n = len(Signal)
         TSlen = len(Signal_list)
-
-        Signal = Signal.to_numpy()
+        Signal = Signal.to_numpy()      # pd.Series to np.array
 
         Table = np.concatenate(
                     [Data['close'].to_numpy().reshape(n, 1), 
@@ -179,20 +157,17 @@ class TI2Signal():
 
         ColName:list = ["close"]
 
-
-        # print(Table)
         Col = 1
         for buy in range(1, TSlen):
-            Buy_Signal:np.array = Signal[:, buy]   # pd.Series to np.array
+            Buy_Signal:np.array = Signal[:, buy]
 
-            for sell in range(1, TSlen): 
-                Sell_Signal:np.array = Signal[:, sell] #                
+            for sell in range(1, TSlen):
+                Sell_Signal:np.array = Signal[:, sell]                
 
-                # print(f"{buy} : {sell} ==> {Col}")
-                Flag:bool = False # True == 有買了
+                Flag:bool = False                     # True == 有買了
                 for i in range(n):
                     if Buy_Signal[i] == 1 and Sell_Signal[i] == -1:
-                        #當 同時有 Buy & Sell 的信號時
+                        # 當同時有 Buy & Sell 的信號時
                         # 要先確認 Flag
                         if Flag:
                             Table[:, Col][i] = -1
@@ -214,57 +189,28 @@ class TI2Signal():
                 Col += 1
                 ColName.append(f"{Signal_list[buy]}^{Signal_list[sell]}")
 
- 
         Output = pd.DataFrame(Table, columns=ColName)
+        ColName = [] # clean
 
-        if __name__ == "__main__":
-            Output.to_csv(f"{self.path}/Table.csv")
-        Output.to_json(f"{self.path}/Table.json", orient='columns')
-        # Output.to_json(f"{self.path}/Table_test.json", orient='records')
+        Output.to_json(f"{self.Path}/Table.json", orient='columns')
 
-
+        # if __name__ == "__main__":
+        #     Output.to_csv(f"{self.path}/Table.csv")
+        # Output.to_json(f"{self.path}/Table.json", orient='columns')
         print("Finished Producing TradingRule Table\r\n")
-            
-  
+
       
 if __name__ == "__main__":
     # 獨立執行 測試用
-    import json
     import cProfile
     with open('../setting.json') as f:
         ti2s = TI2Signal(json.load(f))
     
-    # ti2s.ProduceSignal()
-    # ti2s.ProduceTable()
+    
+    ti2s.ProduceSignal()
+    # ti2s.ProduceTable() ## Dask
     # cProfile.run("ti2s.ProduceSignal()")
     # cProfile.run("ti2s.ProduceTable()")
 
 
 
-'''
-		"WMA",
-		"TRIMA",
-		"SMA",
-		"MAMA",
-		"KAMA",
-		"EMA",
-		"DEMA",
-		"TRIX",
-		"PLUS_DM",
-		"PLUS_DI",
-		"MINUS_DM",
-		"MINUS_DI",
-		"PSY",
-		"WMS%R",
-		"ULTOSC",
-		"MOM",
-		"BOP",
-		"APO",
-		"MFI",
-		"CMO",
-		"ADX",
-		"ROC",
-		"PPO",
-		"ADXR",
-		"AROON"
-'''
