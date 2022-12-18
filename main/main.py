@@ -20,6 +20,7 @@ if __name__ == "__main__":
     Setting = Files.Setting
     SignalMap = Files.SignalMap
     TI_List = Files.TI_List
+    
 
     SLTP = Setting['SLTP']
     StockID = Setting['StockID']
@@ -28,16 +29,24 @@ if __name__ == "__main__":
     Path = Setting['Path'] + "/" + StockID
     Strategy = Setting['Strategy']
 
+
     Dls = DownloadStockData()                                                                                   # 下載股票資料
     Dls.Download(StockID, f"{Path}/TrainingData", TrainingPeriod['StartDate'], TrainingPeriod['EndDate'])       #TrainingData
     Dls.Download(StockID, f"{Path}/ValidationData", ValidationPeriod['StartDate'], ValidationPeriod['EndDate']) #ValidationData
 
-    # TIv = TIValue(StockID, TI_List, Path)
-    # TIv.CalculateTIValue()
+
+    TIv = TIValue(StockID, TI_List)
+    TIv.CalculateTIValue(f'{Path}/TrainingData')
+    TIv.CalculateTIValue(f'{Path}/ValidationData')
     # 計算所有 指標的 Values
 
-    # TI2Signal(SIGNALMAPOFFSET, Path).ProduceSignal()
+
+    TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/TrainingData')
+    TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/ValidationData')
     # 把value 轉換成 Signal 
+
+
+
 
     with open(f"{Path}/TrainingData/Signal.json") as f1, open(f"{Path}/TrainingData/StockData.json") as f2:
         Signal = pd.read_json(f1).to_numpy()

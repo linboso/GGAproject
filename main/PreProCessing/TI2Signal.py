@@ -9,22 +9,16 @@ else:
     
 
 class TI2Signal():
-    def __init__(self, SIGNALMAPOFFSET, Path):
+    def __init__(self, SIGNALMAPOFFSET):
         self.SIGNALMAPOFFSET = SIGNALMAPOFFSET
-        if __name__ == "__main__":
-            self.Path = f"../{Path}/TrainingData"
-            
-        else:
-            self.Path = f"{Path}/TrainingData"
+        pass
 
 
     # Signal 單純判斷 buy and sell 的 時間點
     # Table 是有時間順序性質的 ==> Buy 的時間點 必 早於 Sell
-    def ProduceSignal(self):
+    def ProduceSignal(self, Path):
         TI_Format, TIvale = pd.DataFrame(), pd.DataFrame()
         SignalMap, Date = pd.DataFrame(), pd.DataFrame()
-
-        SignalMapOffset = self.SIGNALMAPOFFSET
         
         if __name__ == "__main__":
             with open(f'./Case/TIformat.json', encoding="utf-8") as f1, open(f'../SignalMap.json', encoding="utf-8") as f2:
@@ -40,7 +34,7 @@ class TI2Signal():
                 return 
             
         try:
-            with open(f"{self.Path}/TIvalue.json") as f1, open(f"{self.Path}/Date.json") as f2:
+            with open(f"{Path}/TIvalue.json") as f1, open(f"{Path}/Date.json") as f2:
                 TIvale = pd.read_json(f1)
                 Date = pd.read_json(f2)
 
@@ -56,7 +50,7 @@ class TI2Signal():
 
         Signal, SignalTable = np.empty(len(Date)), np.empty((len(Date), 1)) # 強制要 2D dim
 
-        for TS in SignalMap[:SignalMapOffset]:                            
+        for TS in SignalMap[:self.SIGNALMAPOFFSET]:                            
             case = TI_Format[TS]['Case']
             Iuput = TI_Format[TS]["InputArray"]
             if case == "1":
@@ -110,7 +104,7 @@ class TI2Signal():
             SignalTable = np.concatenate((SignalTable, Signal[:, np.newaxis]), axis=1)
    
 
-        for Combination in SignalMap[SignalMapOffset:]:
+        for Combination in SignalMap[self.SIGNALMAPOFFSET:]:
 
             Signal = Case.case1(
                 TIvale[Combination[0]], TIvale[Combination[1]]
@@ -124,16 +118,17 @@ class TI2Signal():
         
         if __name__ == "__main__":
             tmp = pd.concat([Date, pd.DataFrame(SignalTable, columns=ColName)], axis=1)
-            tmp.to_csv(f"{self.Path}/SignalforDebug.csv")
+            tmp.to_csv(f"{Path}/SignalforDebug.csv")
             print("已完成交易信號的產生")   
 
         SignalTable = pd.DataFrame(SignalTable)
-        SignalTable.to_json(f"{self.Path}/Signal.json", orient='columns')
+        SignalTable.to_json(f"{Path}/Signal.json", orient='columns')
 
     
 
     #======================================
-
+    # 這邊用不到
+    '''
     def SignleProcessor_ProduceTable(self):
         with open(f"{self.Path}/Signal.json") as f1, open(f"{self.Path}/StockData.json") as f2:
             Signal:pd.DataFrame = pd.read_json(f1)
@@ -198,7 +193,7 @@ class TI2Signal():
         #     Output.to_csv(f"{self.path}/Table.csv")
         # Output.to_json(f"{self.path}/Table.json", orient='columns')
         print("Finished Producing TradingRule Table\r\n")
-
+'''
       
 if __name__ == "__main__":
     # 獨立執行 測試用

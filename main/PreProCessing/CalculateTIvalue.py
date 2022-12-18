@@ -7,25 +7,19 @@ import json
 
 
 class TIValue():
-    def __init__(self, StockID, TI_List, Path) -> None:     
+    def __init__(self, StockID, TI_List) -> None:     
         self.StockID = StockID
         
         self.NON_MA_TYEP_List = TI_List['NON_MA_TYPE']
         self.MA_TYEP_List = TI_List['MA_TYPE']
         
-        if __name__ == "__main__":
-            self.Path = f"../{Path}/TrainingData"
-        else:
-            self.Path = f"{Path}/TrainingData"
 
-
-    def CalculateTIValue(self):
+    def CalculateTIValue(self, Path):
         StockData, TIValueTable = pd.DataFrame(), pd.DataFrame()
 
-        with open(f"{self.Path}/StockData.json") as f:
+        with open(f"{Path}/StockData.json") as f:
             StockData = pd.read_json(f)
         
-
         ColName = []
         
         for TI in self.NON_MA_TYEP_List:
@@ -46,7 +40,7 @@ class TIValue():
         TIValueTable.columns = ColName  # Rename 行
 
         TIValueTable = TIValueTable.reset_index(drop=True)
-        TIValueTable.to_json(f"{self.Path}/TIvalue.json", orient='columns')
+        TIValueTable.to_json(f"{Path}/TIvalue.json", orient='columns')
         
 
 
@@ -60,7 +54,7 @@ if __name__ == "__main__":
         Path = Setting['Path'] + "/" + Setting['StockID']
         TIv = TIValue(Setting['StockID'], json.load(f2), Path)
 
-    TIv.CalculateTIValue()
+    TIv.CalculateTIValue(Path)
 
     # cProfile.run("TIv.CalculateTIValue()")
 
