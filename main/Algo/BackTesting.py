@@ -164,7 +164,7 @@ class BackTesting():
         else:
             try:
                 with open('./SignalMap.json', 'r', encoding="utf-8") as f:        
-                    SignalMap = pd.read_json(f)
+                    SignalMap = json.load(f)
                     print("signal讀取成功")
             except:
                 print("缺失 SignalMap.json")
