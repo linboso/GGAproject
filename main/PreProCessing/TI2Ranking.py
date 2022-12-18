@@ -2,7 +2,6 @@ import dask
 import pandas as pd
 import numpy as np
 
-from dask.distributed import wait, progress
 from dask.distributed import Client, LocalCluster
 
 class TI2Ranking():
@@ -23,11 +22,11 @@ class TI2Ranking():
                     
         return Collect[Select], ColName[Select]
     
-    def Run(self, Signal, ClosePrice):
+    def Run(self, Signal, ClosePrice, ThreadNumbers):
         
         m, n = np.shape(Signal)[0], np.shape(Signal)[1] 
         # row, col
-        cluster = LocalCluster(n_workers=16, threads_per_worker=1)  
+        cluster = LocalCluster(n_workers=ThreadNumbers, threads_per_worker=1)  
         # client = Client(cluster, asynchronous=True)
         client = Client(cluster, asynchronous=False)
         # 建立 Workers 
