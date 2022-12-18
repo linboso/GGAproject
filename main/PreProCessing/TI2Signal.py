@@ -9,7 +9,7 @@ else:
     
 
 class TI2Signal():
-    def __init__(self, Setting, SIGNALMAPOFFSET, Path):
+    def __init__(self, SIGNALMAPOFFSET, Path):
         self.SIGNALMAPOFFSET = SIGNALMAPOFFSET
         if __name__ == "__main__":
             self.Path = f"../{Path}/TrainingData"

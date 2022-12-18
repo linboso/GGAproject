@@ -9,7 +9,7 @@ else:
 
 
 class Population():
-    def __init__(self, Setting, Strategy) -> None:
+    def __init__(self, Setting, ResultStrategy) -> None:
         self.Setting = Setting
         self.pSize:int = Setting['pSize']
         self.Size:int = Setting['pSize']
@@ -29,12 +29,12 @@ class Population():
 
         if __name__ == "__main__":
             with open(f"../../data/stock/{Setting['StockID']}/TrainingData/Top555.json") as f:
-                StrategyData = pd.read_json(f)
+                self.StrategyData = pd.read_json(f)
             # For Test
         else:
-            StrategyData = Strategy
+            self.StrategyData = ResultStrategy
 
-        self.Chrom:list[Chromosome] = [Chromosome(self.kGroup, self.WeightPart, self.mTS, self.Capital, StrategyData) for _ in range(self.pSize)]
+        self.Chrom:list[Chromosome] = [Chromosome(self.kGroup, self.WeightPart, self.mTS, self.Capital, self.StrategyData) for _ in range(self.pSize)]
         
 
     def Genealogy(self):
@@ -79,8 +79,9 @@ class Population():
         # and Vail thw GTSP
 
 
-    def GenerateOffspring(self):
 
+    def GenerateOffspring(self):
+        import json
         for _ in range(self.Generation):
             self.Selection()
             self.Crossover()
@@ -93,7 +94,40 @@ class Population():
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
         print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
         
-        #Do BackTesting
+
+        if __name__ == "__main__":
+            with open(f'../../data/stock/{self.Setting["StockID"]}/TrainingData/Top555.json') as x:
+                tradingStrategy = json.load(x)["Trading Strategy"]
+            # For Test
+        else:
+            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/Top555.json') as x:
+                tradingStrategy = json.load(x)["Trading Strategy"]
+                
+            # tradingStrategy = self.StrategyData["Trading Strategy"]
+        
+        #存成json格式檔案來給backTesting來read
+
+
+        block = {
+            "StockID": self.Setting["StockID"],
+            "TrainingPeriod": self.Setting["TrainingPeriod"],
+            "ValidationPeriod": self.Setting["ValidationPeriod"],
+            "SLTP":[10,10],
+            "Capital": self.Setting["Capital"],
+            "GTSP": FitList[0][1].gene.tolist()[:(FitList[0][1].kGroup + FitList[0][1].mTS)],
+            "Weight": FitList[0][1].getWeight().tolist(),
+            "TradingStrategy": tradingStrategy
+        }
+        if __name__ == "__main__":
+            with open(f'../../data/stock/{self.Setting["StockID"]}/block.json', "w") as outfile:
+                json.dump(block, outfile)
+                print("block stored successfully")
+            # For Test
+        else:
+            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/block.json', "w") as outfile:
+                json.dump(block, outfile) 
+                print("block stored successfully")
+            
             
         
     # END of Selection
@@ -267,26 +301,17 @@ class Population():
     # END of Crossover
 
 
-
-
-            
-
-            
-
-
 if __name__ == "__main__":
     import cProfile
     import json
     import timeit
+    
+    with open(f"../Setting.json") as f1:
+        Settg = json.load(f1)
 
-    # from .Chromosome import Chromosome
-
-    with open(f"../setting.json") as f2:
-        Settg = json.load(f2)
-
-    p = Population(Setting=Settg)
-
+    p = Population(Settg, pd.DataFrame())
     # p.GenerateOffspring()
+
     # p.GenerateOffspring_With_logFile()
 
     # cProfile.run('p.Selection()')
@@ -296,10 +321,6 @@ if __name__ == "__main__":
 
 
     cProfile.run('p.GenerateOffspring_With_logFile()')
-
-
-    # for c in range(len(p.Chrom)):
-    #     print(f"{c}: {p.Chrom[c].gene.tolist()}")
 
 
     

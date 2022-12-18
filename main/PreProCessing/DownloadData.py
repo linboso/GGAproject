@@ -13,6 +13,8 @@ class DownloadStockData():
         data.drop(['Adj Close'], axis=1, inplace=True)                      # drop 掉 "Adj Close" 這一 col 用不到
         data.columns = ["open","high","low","close","volume"]               # 改小寫
 
+        self.CheckPath(Path)
+        
         data.to_json(f"{Path}/StockData.json", orient='columns')
 
         data = pd.DataFrame(data.index)

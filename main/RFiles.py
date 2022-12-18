@@ -31,6 +31,7 @@ class RFiles():
                 "Path":"../data/stock/",
                 # "TechnicalIndicator":["MA5", "MA20", "RSI", "MACD", "STOCH", "CCI", "MAMA"],
                 "Strategy": "Top555",
+                "SLTP": [10, 10],
                 "pSize": 100,
                 "CrossoverRate": 0.8,
                 "MutationRate": 0.03,
@@ -71,6 +72,7 @@ class RFiles():
         print(f"\tPath: {data['Path']}")
         # print(f"Technical Indicator: {data['TechnicalIndicator']}")
         print(f"\tStrategy: {data['Strategy']}")
+        print(f"\tSLTP: {data['SLTP']}")
         print(f"\tCrossoverRate: {data['CrossoverRate']}")
         print(f"\tMutationRate: {data['MutationRate']}")
         print(f"\tInversionRate: {data['InversionRate']}")
