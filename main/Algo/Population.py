@@ -79,27 +79,8 @@ class Population():
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
 
         print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
-
-
-
-        #取得TradingStrategy
-        with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/{self.Setting["Strategy"]}.json')as x:
-            data = json.load(x)    
-        tradingStrategy = data["Trading Strategy"]   
-        #存成json格式檔案來給backTesting來read
-        block = {
-            "StockID": self.Setting["StockID"],
-            "TrainingPeriod": self.Setting["TrainingPeriod"],
-            "ValidationPeriod": self.Setting["ValidationPeriod"],
-            "SLTP":[10,10],
-            "Capital": self.Setting["Capital"],
-            "GTSP": FitList[0][1].gene.tolist()[:(FitList[0][1].kGroup + FitList[0][1].mTS)],
-            "Weight": FitList[0][1].getWeight().tolist(),
-            "TradingStrategy": tradingStrategy
-        }
-                
-        with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/block.json', "w") as outfile:
-            json.dump(block, outfile)
+  
+        
 
         #"TradingStrategy"
         # Next Step Process Final GTSP
@@ -121,6 +102,37 @@ class Population():
         print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
         
         #Do BackTesting
+        #取得TradingStrategy
+        if __name__ == "__main__":
+            with open(f'../../data/stock/{self.Setting["StockID"]}/TrainingData/Top555.json') as x:
+                data = json.load(x)
+            # For Test
+        else:
+            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/{self.Setting["Strategy"]}.json')as x:
+                data = json.load(x)    
+        tradingStrategy = data["Trading Strategy"] 
+
+          
+        #存成json格式檔案來給backTesting來read
+        block = {
+            "StockID": self.Setting["StockID"],
+            "TrainingPeriod": self.Setting["TrainingPeriod"],
+            "ValidationPeriod": self.Setting["ValidationPeriod"],
+            "SLTP":[10,10],
+            "Capital": self.Setting["Capital"],
+            "GTSP": FitList[0][1].gene.tolist()[:(FitList[0][1].kGroup + FitList[0][1].mTS)],
+            "Weight": FitList[0][1].getWeight().tolist(),
+            "TradingStrategy": tradingStrategy
+        }
+        if __name__ == "__main__":
+            with open(f'../../data/stock/{self.Setting["StockID"]}/block.json', "w") as outfile:
+                json.dump(block, outfile)
+                print("block stored successfully")
+            # For Test
+        else:
+            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/block.json', "w") as outfile:
+                json.dump(block, outfile)  
+                print("block stored successfully")
             
         
     # END of Selection
