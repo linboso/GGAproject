@@ -14,7 +14,6 @@ else:
 class BackTesting():
     def __init__(self) -> None:
         try:
-            print("BackTestingBlock階段開始")
             with open("./BackTestingBlock.json") as f:
                 data = json.load(f)
                 #print(data)
@@ -26,38 +25,24 @@ class BackTesting():
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
-            #self.TradingStrategy = data['TradingStrategy']
-            i = 0
-            self.TradingStrategy = {}
-            for ts in data['TradingStrategy']:
-                self.TradingStrategy[f'{i}'] = ts
-                i+=1
-            print(self.TradingStrategy)
+            self.TradingStrategy = data['TradingStrategy']
             self.TI_List = []
             self.TIpair = []
-            mapList = [] 
-            with open("./SignalMap.json") as f:
-                data = json.load(f)
-            # for typeTS in data.values():
-            #     for st in typeTS:
-            #         mapList.append(st)
-            self.SignalMap = data
-
-            print('SignalMap',self.SignalMap)
+            self.SignalMap = data['SignalMap']
+            self.Path = f"../data/stock/{self.StockID}/ValidationData"
             self.privateMapping = {}
-            if __name__ == "__main__":
-                self.Path = f"../data/stock/{self.StockID}/ValidationData"#執行路徑被套件調整了==
-            else:
-                self.Path = f"../data/stock/{self.StockID}/ValidationData"
         except:
             print("讀取 BackTestingBlock.json 失敗")
             print("請確認該檔案是否存在")
         print()
-
+        try:
         #init the object
-        self.PreBackTesting()
-        self.Run()
-        self.Query()
+            self.PreBackTesting()
+            self.Run()
+            self.Query()
+        except:
+            print("BackTesting物件初始化失敗")
+            print("請確認該程序是否有誤")
     
     def reWeight(self):
         try:
@@ -172,14 +157,12 @@ class BackTesting():
 
         # ================================================================================
         if __name__ == "__main__":
-            with open(f'./TI_List.json', 'r', encoding="utf-8") as f:
+            with open(f'./SignalMap.json', 'r', encoding="utf-8") as f:
                 SignalMap = json.load(f)
-                print("TI_List讀取成功")
         else:
             try:
                 with open('./SignalMap.json', 'r', encoding="utf-8") as f:        
-                    SignalMap = json.load(f)
-                    print("signal讀取成功")
+                    SignalMap = pd.read_json(f)
             except:
                 print("缺失 SignalMap.json")
                 return 
@@ -324,12 +307,9 @@ class BackTesting():
             Date = pd.read_json(f3)
 
         Signal_list = Signal.columns
-        Data = Data.reset_index()
+
         #===================================================Table_GTSP===================================================
-        Table = pd.concat([Date, Data['close']], axis=1,ignore_index=True,) #create a new table
-        Table.columns = ['Date','close']
-        print(Table)
-        Table.to_csv(f"{self.Path}/check_type.csv")
+        Table = pd.concat([Date, Data['close']], axis=1) #create a new table
         for buy in Signal_list[0:]:
             for sell in Signal_list[0:]: 
                 Buy_Signal = Signal[buy].values   
@@ -509,11 +489,7 @@ class BackTesting():
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)          
                 elif now_Signal[i] == -1:
-                    #if回報趨近0
-                    try:
-                        Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
-                    except:
-                        Return_money = 0
+                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
@@ -534,8 +510,7 @@ class BackTesting():
 
         #detail_table.columns = ["Date", "Trading_Strategy", "Transaction_Type", "Stock_price", "Transaction_amount", "Return_money", "Rate_of_Return"]
         detail_table.reset_index(drop=True, inplace=True)
-        detail_table.to_json(f"{self.Path}/Detail_GTSP.json")
-        #detail_table.to_json(f"{self.Path}/Detail_GTSP.json", orient='records')
+        detail_table.to_json(f"{self.Path}/Detail_GTSP.json", orient='records')
         detail_table.to_csv(f"{self.Path}/Detail_GTSP.csv")
         print("Finished Detail_GTSP\r\n")
         
@@ -563,11 +538,7 @@ class BackTesting():
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)                      
                 elif now_Signal[i] == -1:
-                    #if回報趨近0
-                    try:
-                        Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
-                    except:
-                        Return_money = 0
+                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
@@ -589,8 +560,7 @@ class BackTesting():
 
         
         detail_table2.reset_index(drop=True, inplace=True)
-        detail_table2.to_json(f"{self.Path}/Detail_SLTP.json")
-        #detail_table2.to_json(f"{self.Path}/Detail_SLTP.json", orient='records')
+        detail_table2.to_json(f"{self.Path}/Detail_SLTP.json", orient='records')
         detail_table2.to_csv(f"{self.Path}/Detail_SLTP.csv")
         print("Finished Detail_SLTP\r\n")
 
@@ -604,12 +574,6 @@ class BackTesting():
 
         map_group1 = self.privateMapping# {'2': MACD^STOCH}:指標2 is MACD^STOCH
         Alltsp:list = self.ADVcombine()
-
-        #確認是否有資料夾
-        if not os.path.exists(f'{self.Path}/Folder_GTSP/'):
-            os.makedirs(f'{self.Path}/Folder_GTSP')
-        if not os.path.exists(f'{self.Path}/Folder_SLTP/'):
-            os.makedirs(f'{self.Path}/Folder_SLTP')
             
         #===================================================Folder_GTSP=================================================== 
         for tsp in Alltsp:
@@ -622,7 +586,6 @@ class BackTesting():
             total_return_money = table['Return_money'].sum()
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json")
             table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_GTSP/{tsp}.csv",index = False)
         print("Finished Folder_GTSP\r\n")
@@ -636,8 +599,7 @@ class BackTesting():
             total_return_money = table['Return_money'].sum()
 
             table.reset_index(drop=True, inplace=True)
-            table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json")
-            #table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
+            table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_SLTP/{tsp}.csv",index = False)
 
         print("Finished Folder_SLTP\r\n")
@@ -690,7 +652,7 @@ class BackTesting():
 if __name__ == '__main__':
     obj = BackTesting()
     #obj.mapTest()
-    obj.PreBackTesting()
-    obj.Run()
-    obj.Query()
+    #obj.PreBackTesting()
+    #obj.Run()
+    #obj.Query()
     #print(obj)
