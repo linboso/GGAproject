@@ -13,11 +13,11 @@ from Algo.BackTesting import BackTesting
 
 import cProfile
 
-# Files = RFiles()
-# Setting = Files.Setting
-# SignalMap = Files.SignalMap
-# TI_List = Files.TI_List
-# Files.print()
+Files = RFiles()
+Setting = Files.Setting
+SignalMap = Files.SignalMap
+TI_List = Files.TI_List
+Files.print()
 
 # # DownloadStockData(Setting=Setting).DownloadStockData()
 # # 下載 股票資料
@@ -37,11 +37,15 @@ import cProfile
 
 # population = Population(Setting=Setting)
 # population.GenerateOffspring_With_logFile()
-# # cProfile.run('population.GenerateOffspring_With_logFile()')
-# # population.GenerateOffspring()
-# # population.Genealogy()
-#iterate
+# # # cProfile.run('population.GenerateOffspring_With_logFile()')
+# population.GenerateOffspring()
+# population.Genealogy()
+# #iterate
 
 obj = BackTesting()
+obj.PreBackTesting()
+obj.Run()
+obj.Query()
+
 
 #chromosome 用 array 算 fintness?

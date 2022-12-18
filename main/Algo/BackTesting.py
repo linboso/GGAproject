@@ -41,9 +41,9 @@ class BackTesting():
         print()
 
         #init the object
-        self.PreBackTesting()
-        self.Run()
-        self.Query()
+        #self.PreBackTesting()
+        #self.Run()
+        #self.Query()
     
     def reWeight(self):
         try:
@@ -192,6 +192,8 @@ class BackTesting():
 
         if __name__ == "__main__":
             ColName = []                # 存 ColName
+        else:
+            ColName = [] 
 
         Signal, Data = np.empty(len(Date)), np.empty((len(Date), 1)) # 強制要 2D dim  
         
@@ -659,7 +661,8 @@ class BackTesting():
 if __name__ == '__main__':
     obj = BackTesting()
     #obj.mapTest()
-    #obj.PreBackTesting()
-    #obj.Run()
-    #obj.Query()
+    obj.PreBackTesting()
+    obj.Run()
+    obj.Query()
     #print(obj)
+    print('successful')
