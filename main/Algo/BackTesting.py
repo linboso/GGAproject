@@ -26,16 +26,22 @@ class BackTesting():
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
-            self.TradingStrategy = data['TradingStrategy']
+            #self.TradingStrategy = data['TradingStrategy']
+            i = 0
+            self.TradingStrategy = {}
+            for ts in data['TradingStrategy']:
+                self.TradingStrategy[f'{i}'] = ts
+                i+=1
+            print(self.TradingStrategy)
             self.TI_List = []
             self.TIpair = []
             mapList = [] 
             with open("./SignalMap.json") as f:
                 data = json.load(f)
-            for typeTS in data.values():
-                for st in typeTS:
-                    mapList.append(st)
-            self.SignalMap = mapList
+            # for typeTS in data.values():
+            #     for st in typeTS:
+            #         mapList.append(st)
+            self.SignalMap = data
 
             #print('SignalMap',self.SignalMap)
             self.privateMapping = {}
@@ -166,9 +172,9 @@ class BackTesting():
 
         # ================================================================================
         if __name__ == "__main__":
-            with open(f'./SignalMap.json', 'r', encoding="utf-8") as f:
+            with open(f'./TI_List.json', 'r', encoding="utf-8") as f:
                 SignalMap = json.load(f)
-                print("signal讀取成功")
+                print("TI_List讀取成功")
         else:
             try:
                 with open('./SignalMap.json', 'r', encoding="utf-8") as f:        
@@ -318,9 +324,12 @@ class BackTesting():
             Date = pd.read_json(f3)
 
         Signal_list = Signal.columns
-
+        Data = Data.reset_index()
         #===================================================Table_GTSP===================================================
-        Table = pd.concat([Date, Data['close']], axis=1) #create a new table
+        Table = pd.concat([Date, Data['close']], axis=1,ignore_index=True,) #create a new table
+        Table.columns = ['Date','close']
+        print(Table)
+        Table.to_csv(f"{self.Path}/check_type.csv")
         for buy in Signal_list[0:]:
             for sell in Signal_list[0:]: 
                 Buy_Signal = Signal[buy].values   
@@ -500,7 +509,11 @@ class BackTesting():
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)          
                 elif now_Signal[i] == -1:
-                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    #if回報趨近0
+                    try:
+                        Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    except:
+                        Return_money = 0
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
@@ -523,7 +536,7 @@ class BackTesting():
         detail_table.reset_index(drop=True, inplace=True)
         detail_table.to_json(f"{self.Path}/Detail_GTSP.json")
         #detail_table.to_json(f"{self.Path}/Detail_GTSP.json", orient='records')
-        #detail_table.to_csv(f"{self.Path}/Detail_GTSP.csv")
+        detail_table.to_csv(f"{self.Path}/Detail_GTSP.csv")
         print("Finished Detail_GTSP\r\n")
         
         
@@ -550,7 +563,11 @@ class BackTesting():
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)                      
                 elif now_Signal[i] == -1:
-                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    #if回報趨近0
+                    try:
+                        Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    except:
+                        Return_money = 0
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
@@ -574,7 +591,7 @@ class BackTesting():
         detail_table2.reset_index(drop=True, inplace=True)
         detail_table2.to_json(f"{self.Path}/Detail_SLTP.json")
         #detail_table2.to_json(f"{self.Path}/Detail_SLTP.json", orient='records')
-        #detail_table2.to_csv(f"{self.Path}/Detail_SLTP.csv")
+        detail_table2.to_csv(f"{self.Path}/Detail_SLTP.csv")
         print("Finished Detail_SLTP\r\n")
 
     def Query(self):
