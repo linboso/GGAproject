@@ -43,7 +43,7 @@ class BackTesting():
             #         mapList.append(st)
             self.SignalMap = data
 
-            #print('SignalMap',self.SignalMap)
+            print('SignalMap',self.SignalMap)
             self.privateMapping = {}
             if __name__ == "__main__":
                 self.Path = f"../data/stock/{self.StockID}/ValidationData"#執行路徑被套件調整了==
@@ -612,11 +612,6 @@ class BackTesting():
             os.makedirs(f'{self.Path}/Folder_SLTP')
             
         #===================================================Folder_GTSP=================================================== 
-        returnOfMoneyTable = {
-            "below-15%":0,"-15%~-11%":0,"-10%~-6%":0,"-6%~-1%":0,
-            "0%~5%":0,"6%~10":0,"11%~15%":0,"MoreThan15%":0 
-        }
-        
         for tsp in Alltsp:
             table = pd.DataFrame()
             
@@ -625,35 +620,13 @@ class BackTesting():
                 table = pd.concat([table,temp],axis = 0)
             table = table.sort_values("Date")
             total_return_money = table['Return_money'].sum()
-            
-            #實驗數據收集
-            rate = int((total_return_money/self.Capital)*100)
-            if rate < -15:returnOfMoneyTable["below-15%"]+=1
-            elif -15 < rate <= -11:returnOfMoneyTable["-15%~-11%"]+=1
-            elif -10 < rate <= -6:returnOfMoneyTable["-10%~-6%"]+=1
-            elif -6 < rate <= -1:returnOfMoneyTable["-6%~-1%"]+=1
-            elif   0 < rate <= 5:returnOfMoneyTable["0%~5%"]+=1
-            elif   6 < rate <= 10:returnOfMoneyTable["6%~10"]+=1
-            elif  11 < rate <= 15:returnOfMoneyTable["11%~15%"]+=1
-            elif  rate > 15:returnOfMoneyTable["MoreThan15%"]+=1
-
 
             table.reset_index(drop=True, inplace=True)
             table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json")
             table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_GTSP/{tsp}.csv",index = False)
-        if __name__ == "__main__":
-            with open(f'{self.Path}/Folder_GTSP/returnOfMoneyTable.json', "w") as f:
-                json.dump(returnOfMoneyTable, f)
-                print("returnOfMoneyTable_GTSP stored successfully")
-            # For Test
-        
         print("Finished Folder_GTSP\r\n")
         #===================================================Folder_SLTP===================================================    
-        returnOfMoneyTable = {
-            "below-15%":0,"-15%~-11%":0,"-10%~-6%":0,"-6%~-1%":0,
-            "0%~5%":0,"6%~10":0,"11%~15%":0,"MoreThan15%":0 
-        }
         for tsp in Alltsp:
             table = pd.DataFrame()
             for i in tsp:
@@ -662,26 +635,11 @@ class BackTesting():
             table = table.sort_values("Date")
             total_return_money = table['Return_money'].sum()
 
-            #實驗數據收集
-            rate = int((total_return_money/self.Capital)*100)
-            if rate < -15:returnOfMoneyTable["below-15%"]+=1
-            elif -15 < rate <= -11:returnOfMoneyTable["-15%~-11%"]+=1
-            elif -10 < rate <= -6:returnOfMoneyTable["-10%~-6%"]+=1
-            elif -6 < rate <= -1:returnOfMoneyTable["-6%~-1%"]+=1
-            elif   0 < rate <= 5:returnOfMoneyTable["0%~5%"]+=1
-            elif   6 < rate <= 10:returnOfMoneyTable["6%~10"]+=1
-            elif  11 < rate <= 15:returnOfMoneyTable["11%~15%"]+=1
-            elif  rate > 15:returnOfMoneyTable["MoreThan15%"]+=1
-
             table.reset_index(drop=True, inplace=True)
             table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json")
             #table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_SLTP/{tsp}.csv",index = False)
-        if __name__ == "__main__":
-            with open(f'{self.Path}/Folder_SLTP/returnOfMoneyTable.json', "w") as f:
-                json.dump(returnOfMoneyTable, f)
-                print("returnOfMoneyTable_SLTP stored successfully")
-            # For Test
+
         print("Finished Folder_SLTP\r\n")
 
     def ADVcombine(self) -> list:
