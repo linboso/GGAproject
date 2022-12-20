@@ -1,5 +1,5 @@
 
-from PreProCessing.DownloadData import DownloadStockData
+#from PreProCessing.DownloadData import DownloadStockData
 from PreProCessing.CalculateTIvalue import TIValue
 from PreProCessing.TI2Signal import TI2Signal
 from PreProCessing.TI2Ranking import TI2Ranking
@@ -30,9 +30,9 @@ if __name__ == "__main__":
     Strategy = Setting['Strategy']
 
 
-    Dls = DownloadStockData()                                                                                   # 下載股票資料
-    Dls.Download(StockID, f"{Path}/TrainingData", TrainingPeriod['StartDate'], TrainingPeriod['EndDate'])       #TrainingData
-    Dls.Download(StockID, f"{Path}/ValidationData", ValidationPeriod['StartDate'], ValidationPeriod['EndDate']) #ValidationData
+    # Dls = DownloadStockData()                                                                                   # 下載股票資料
+    # Dls.Download(StockID, f"{Path}/TrainingData", TrainingPeriod['StartDate'], TrainingPeriod['EndDate'])       #TrainingData
+    # Dls.Download(StockID, f"{Path}/ValidationData", ValidationPeriod['StartDate'], ValidationPeriod['EndDate']) #ValidationData
 
 
     TIv = TIValue(StockID, TI_List)
@@ -48,25 +48,25 @@ if __name__ == "__main__":
 
 
 
-    with open(f"{Path}/TrainingData/Signal.json") as f1, open(f"{Path}/TrainingData/StockData.json") as f2:
-        Signal = pd.read_json(f1).to_numpy()
-        ClosePrice = pd.read_json(f2)['close'].to_numpy()
+    # with open(f"{Path}/TrainingData/Signal.json") as f1, open(f"{Path}/TrainingData/StockData.json") as f2:
+    #     Signal = pd.read_json(f1).to_numpy()
+    #     ClosePrice = pd.read_json(f2)['close'].to_numpy()
         
     # time.sleep(1)
 
     # 這是用來 確保 Parent and Child 的區別
-    s = time.time()
+    # s = time.time()
     
-    t2r = TI2Ranking()
-    t2r.Run(Signal, ClosePrice, ThreadNumbers=16)
-    ResultStrategy = eval(f"t2r.{Strategy}('{Path}/TrainingData')")
+    # t2r = TI2Ranking()
+    # t2r.Run(Signal, ClosePrice, ThreadNumbers=4)
+    # ResultStrategy = eval(f"t2r.{Strategy}('{Path}/TrainingData')")
     # 執行不同的策略為
     
-    e = time.time()
-    print(f"Finish time: {e-s}")
+    # e = time.time()
+    # print(f"Finish time: {e-s}")
     
-    ResultStrategy = pd.DataFrame(ResultStrategy)
-    print(ResultStrategy)
+    # ResultStrategy = pd.DataFrame(ResultStrategy)
+    # print(ResultStrategy)
     
     # population = Population(Setting, ResultStrategy)
     # population.GenerateOffspring_With_logFile()
