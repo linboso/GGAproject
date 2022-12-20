@@ -61,7 +61,6 @@ class BackTesting():
                 Signal= pd.read_json(f)
 
         chosenTS = set([i[0] for i in self.TradingStrategy.values()] + [i[1] for i in self.TradingStrategy.values()])
-        #print(chosenTS)
         chosenTS = [dontChosenTS for dontChosenTS in Signal.columns if dontChosenTS not in chosenTS]
         Signal = Signal.drop(chosenTS,axis = 1).reset_index(drop=True)#delete not chosen TS  
         Signal.to_json(f"{self.Path}/chosenSignal.json", orient='columns')     
@@ -116,12 +115,31 @@ class BackTesting():
         keep = []
         for i in self.TradingStrategy.values():
             keep.append(f"{i[0]}^{i[1]}")
-        print(keep)
+        #print(keep)
         dropIt = [dontKeep for dontKeep in Table.columns if dontKeep not in keep]
         del dropIt[0:2]  #保留'Date', 'close'
         Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
 
         Table = Table.sort_index()
+
+        #儲存前將columnName從index改為英文表示
+        with open(f"./SignalMap.json") as SignalMap:
+            SignalMap = pd.read_json(SignalMap).squeeze()
+        SignalMap = SignalMap.to_list()
+        columnsName = ['Date','close']
+        for col in Table.columns[2:]:
+            ts = col.split('^')
+            ts1, ts2 ='',''
+            if type(SignalMap[int(ts[0])]) == list: 
+                ts1 = f'{SignalMap[int(ts[0])][0]}&{SignalMap[int(ts[0])][1]}'
+            else:ts1 = f'{SignalMap[int(ts[0])]}'
+            if type(SignalMap[int(ts[1])]) == list: 
+                ts2 = f'{SignalMap[int(ts[1])][0]}&{SignalMap[int(ts[1])][1]}'
+            else:ts2 = f'{SignalMap[int(ts[1])]}'
+            columnsName.append(f'{ts1}^{ts2}')
+        #順便存privateMapping供run使用
+        self.privateMapping = {v : k for v,k in enumerate(columnsName[2:])}
+        Table.columns = columnsName
         Table.to_json(f"{self.Path}/Table_GTSP.json", orient='records')
         Table.to_csv(f"{self.Path}/Table_GTSP.csv")
         print("Finished Table_GTSP\r\n")  
@@ -181,9 +199,10 @@ class BackTesting():
                 New_Signal.columns = [f"{buy}^{sell}"]
                 Table = pd.concat([Table, New_Signal], axis=1)
 
-        #By training data choosing TS
-        Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
         
+        Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
+        Table.columns = columnsName#儲存前將columnName從index改為英文表示
+
         Table.to_json(f"{self.Path}/Table_SLTP.json", orient='records')
         Table.to_csv(f"{self.Path}/Table_SLTP.csv")
         print("Finished Table_SLTP\r\n")
@@ -194,21 +213,19 @@ class BackTesting():
         #1.Buy&Hold.json:為該區間使用B&H的效果(目的是為了比對GTSP系統是否有效果)
         #2.Detail_GTSP.json:為該GTSP的最終交易訊號
         #3.Detail_SLTP.josn:為該GTSP的最終交易訊號且具有停損停利之功能
-        
-        with open(f'{self.Path}/Table_GTSP.json') as f1, open(f'{self.Path}/Table_SLTP.json') as f2:
-            withoutSLTP = pd.read_json(f1)
-            withSLTP = pd.read_json(f2)
-        
-        date  = withoutSLTP["Date"].values
-        price = withoutSLTP["close"].values    
+      
         
         #===================================================Buy&Hold===================================================
-        bh_return_rate = (price[-1] - price[0])/price[0]
-        bh_return_money = bh_return_rate * self.Capital
+        with open(f'{self.Path}/Date.json') as Date, open(f'{self.Path}/StockData.json') as StockData:
+            Date = pd.read_json(Date)
+            StockData = pd.read_json(StockData)
+        date = list(Date["Date"])
+        close = StockData["close"]
+        
+        bh_return_rate = (close[-1] - close[0])/close[0]
+        bh_return_money = int(bh_return_rate * self.Capital)
         buy_and_hold = {
-          "Date": f"{date[0]} ~ {date[-1]}",
-          "return_rate": bh_return_rate,
-          "return_money": bh_return_money,
+          "Date": f"{date[0]} ~ {date[-1]}", "return_rate": bh_return_rate, "return_money": bh_return_money,
         }
         with open(f'{self.Path}/Buy&Hold.json', "w") as outfile:
             json.dump(buy_and_hold, outfile)
@@ -216,10 +233,9 @@ class BackTesting():
                 
         #=====================================define map_group:用來mapping data=========================================
         map_group1 = self.privateMapping
+        #print(map_group1)
         # {'2': MACD^STOCH}:指標2 is MACD^STOCH
         map_group2 = {value:key for key,value in map_group1.items()}
-        
-        
         #map_group2 to 資金比例
         map = {}
         num = 0
@@ -232,7 +248,14 @@ class BackTesting():
             index = map_group2[f"{i}"]
             map_group2[f"{i}"] = map[f"{index}"]
         # {'MACD^STOCH': 3}:MACD^STOCH is 是第三組(資金權重)
-        
+        #print(map_group2)
+
+        with open(f'{self.Path}/Table_GTSP.json') as f1, open(f'{self.Path}/Table_SLTP.json') as f2:
+            withoutSLTP = pd.read_json(f1)
+            withSLTP = pd.read_json(f2)
+
+        date  = withoutSLTP["Date"].values
+        price = withoutSLTP["close"].values    
         
         #===================================================Detail_GTSP===================================================
         withoutSLTP_list = withoutSLTP.columns               
@@ -245,7 +268,7 @@ class BackTesting():
             buy_price = 0 
 
             for i in range(len(now_Signal)):
-                record = []
+                #record = []
                 Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
@@ -294,7 +317,7 @@ class BackTesting():
             buy_price = 0 
 
             for i in range(len(now_Signal)):
-                record = []
+                #record = []
                 Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
                     buy_price = price[i] 
@@ -340,10 +363,16 @@ class BackTesting():
             withoutSLTP_table = pd.read_json(f1)
             withSLTP_table = pd.read_json(f2)
 
+        if not os.path.exists(f'{self.Path}/Folder_GTSP'):
+            os.makedirs(f'{self.Path}/Folder_GTSP')
+        if not os.path.exists(f'{self.Path}/Folder_SLTP'):
+            os.makedirs(f'{self.Path}/Folder_SLTP')
+
         map_group1 = self.privateMapping# {'2': MACD^STOCH}:指標2 is MACD^STOCH
         Alltsp:list = self.ADVcombine()
             
         #===================================================Folder_GTSP=================================================== 
+        
         for tsp in Alltsp:
             table = pd.DataFrame()
             
@@ -414,9 +443,9 @@ class BackTesting():
             print("請確認該檔案是否存在")  
 
 if __name__ == '__main__':
-    obj = BackTesting("0050.TW")
+    obj = BackTesting("2413.TW")
     obj.chosenSignal()
     obj.ProduceTable()
-    #obj.Run()
-    #obj.Query()
+    obj.Run()
+    obj.Query()
     #print(obj)

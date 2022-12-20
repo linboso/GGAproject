@@ -1,12 +1,12 @@
 {
-	"StockID": "0050.TW",
+	"StockID": "2413.TW",
 	"TrainingPeriod": {
 		"StartDate": "2019-01-01",
 		"EndDate": "2021-12-30"
 	},
 	"ValidationPeriod": {
-		"StartDate": "2010-08-30",
-		"EndDate": "2012-12-30"
+		"StartDate": "2022-01-01",
+		"EndDate": "2022-12-15"
 	},
 	"Path": "../data/stock/",
 	"Strategy": "Top555",

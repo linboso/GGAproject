@@ -9,6 +9,7 @@ from Algo.Population import Population
 
 import time
 import pandas as pd
+from Algo.BackTesting import BackTesting
 
 # 多核版本
 
@@ -45,7 +46,11 @@ if __name__ == "__main__":
     TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/ValidationData')
     # 把value 轉換成 Signal 
 
-
+    obj = BackTesting("2413.TW")
+    obj.chosenSignal()
+    obj.ProduceTable()
+    obj.Run()
+    obj.Query()
 
 
     # with open(f"{Path}/TrainingData/Signal.json") as f1, open(f"{Path}/TrainingData/StockData.json") as f2:
