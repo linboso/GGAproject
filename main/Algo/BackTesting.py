@@ -16,14 +16,13 @@ class BackTesting():
         
         try:
             if __name__ == "__main__":
-                print("executing")
                 with open(f"../data/stock/{StockID}/block.json") as f:
                     data = json.load(f)
-                    print(data)
+                    print("block:",data)
             else:
                 with open(f"../data/stock/{StockID}/block.json") as f:
                     data = json.load(f)
-                    #print(data)
+                    print("block:",data)
             #loading data
             self.StockID = data['StockID']  
             self.TrainingPeriod = data['TrainingPeriod']
@@ -32,7 +31,8 @@ class BackTesting():
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
-            self.TradingStrategy = data['TradingStrategy']          
+            self.TradingStrategy = {v : k for v,k in enumerate(data['TradingStrategy'])}
+            #print(self.TradingStrategy)
         except:
             print("讀取 BackTestingBlock.json 失敗")
             print("請確認該檔案是否存在")
@@ -51,73 +51,31 @@ class BackTesting():
         #     print("BackTesting物件初始化失敗")
         #     print("請確認該程序是否有誤")
     
-         
-    def TI2signal(self):
-        TI_List = set()
-        TIpair = []
-        for i in self.TradingStrategy.values():
+    def chosenSignal(self):
+        #此function根據block裡training結果來保留選定的交易策略
+        if __name__ == "__main__":
+            with open(f"../data/stock/{self.StockID}/ValidationData/Signal.json") as f:
+                Signal = pd.read_json(f)
+        else:
+            with open(f"../data/stock/{self.StockID}/ValidationData/Signal.json") as f:
+                Signal= pd.read_json(f)
 
-            TIpair.append(self.SignalMap[i[0]])
-            TIpair.append(self.SignalMap[i[1]])
-            if isinstance(self.SignalMap[i[0]], str):
-                TI_List.add(self.SignalMap[i[0]])
-            else:
-                for j in self.SignalMap[i[0]]:
-                    TI_List.add(j) 
-            if isinstance(self.SignalMap[i[1]], str):
-                TI_List.add(self.SignalMap[i[1]])
-            else:
-                for j in self.SignalMap[i[1]]:
-                    TI_List.add(j) 
-        self.TIpair = TIpair
-        self.TI_List = list(TI_List)
-        print('TIpair:',self.TIpair)
-        print('TI_List:',TI_List)
-        # df = pd.DataFrame()
-        #根據training出結果保留交易策略
-        # chosenTS = []
-        # for i in self.TIpair:
-        #     if isinstance(i, str):chosenTS.append(i)
-        #     else:chosenTS.append(f'{i[0]}&{i[1]}') 
-        # chosenTS = [dontChosenTS for dontChosenTS in Date.columns if dontChosenTS not in chosenTS]
-        # Date = Date.drop(chosenTS,axis = 1).reset_index(drop=True)#delete not chosen TS  
-        # Date.to_json(f"{self.Path}/Signal.json", orient='columns')
-
-        # if __name__ == "__main__":
-        #     Date.to_csv(f"{self.Path}/SignalforDebug.csv")
-        #print("已產生SignalforDebug供確認") 
+        chosenTS = set([i[0] for i in self.TradingStrategy.values()] + [i[1] for i in self.TradingStrategy.values()])
+        #print(chosenTS)
+        chosenTS = [dontChosenTS for dontChosenTS in Signal.columns if dontChosenTS not in chosenTS]
+        Signal = Signal.drop(chosenTS,axis = 1).reset_index(drop=True)#delete not chosen TS  
+        Signal.to_json(f"{self.Path}/chosenSignal.json", orient='columns')     
 
     def ProduceTable(self):
         #此function為將買賣signal合併為交易信號，最終結果分為兩個files:
         #1.Table_GTSP.json:為該GTSP的最終交易訊號
         #2.Table_SLTP.josn:為該GTSP的最終交易訊號且具有停損停利之功能
 
-        keep = []
-        for i in range(0,len(self.TIpair),2):
-            tmp = []
-            if isinstance(self.TIpair[i], str):
-                tmp.append(self.TIpair[i])
-            else:
-                tmp.append(f'{self.TIpair[i][0]}&{self.TIpair[i][1]}')
-            if isinstance(self.TIpair[i+1], str):
-                tmp.append(self.TIpair[i+1])
-            else:
-                tmp.append(f'{self.TIpair[i+1][0]}&{self.TIpair[i+1][1]}')
-            keep.append(f'{tmp[0]}^{tmp[1]}')
-        #print(keep)
-        privateMapping = {}
-        for i in range(len(keep)):
-            privateMapping[i] = keep[i]
-        self.privateMapping = privateMapping
-        #print('privateMapping:',privateMapping)
-            
-
-        
-        with open(f"{self.Path}/Signal.json") as f1, open(f"{self.Path}/StockData.json") as f2, open(f"{self.Path}/Date.json") as f3:
+        with open(f"{self.Path}/chosenSignal.json") as f1, open(f"{self.Path}/StockData.json") as f2, open(f"{self.Path}/Date.json") as f3:
             Signal = pd.read_json(f1)
             Data = pd.read_json(f2)#停損停利用
             Date = pd.read_json(f3)
-
+        Data = Data.reset_index(drop=True)
         Signal_list = Signal.columns
 
         #===================================================Table_GTSP===================================================
@@ -155,15 +113,18 @@ class BackTesting():
                 Table = pd.concat([Table, New_Signal], axis=1)
         
         #By training data choosing TS
-        dropIt = [dontkeep for dontkeep in Table.columns if dontkeep not in keep]
+        keep = []
+        for i in self.TradingStrategy.values():
+            keep.append(f"{i[0]}^{i[1]}")
+        print(keep)
+        dropIt = [dontKeep for dontKeep in Table.columns if dontKeep not in keep]
         del dropIt[0:2]  #保留'Date', 'close'
         Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
 
-        
+        Table = Table.sort_index()
         Table.to_json(f"{self.Path}/Table_GTSP.json", orient='records')
         Table.to_csv(f"{self.Path}/Table_GTSP.csv")
         print("Finished Table_GTSP\r\n")  
-    
 
         #===================================================Table_SLTP===================================================
         Table = pd.concat([Date, Data['close']], axis=1) #create a new table
@@ -221,10 +182,7 @@ class BackTesting():
                 Table = pd.concat([Table, New_Signal], axis=1)
 
         #By training data choosing TS
-        dropIt = [dontkeep for dontkeep in Table.columns if dontkeep not in keep]
-        del dropIt[0:2]  #保留'Date', 'close'
         Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
-                
         
         Table.to_json(f"{self.Path}/Table_SLTP.json", orient='records')
         Table.to_csv(f"{self.Path}/Table_SLTP.csv")
@@ -240,11 +198,9 @@ class BackTesting():
         with open(f'{self.Path}/Table_GTSP.json') as f1, open(f'{self.Path}/Table_SLTP.json') as f2:
             withoutSLTP = pd.read_json(f1)
             withSLTP = pd.read_json(f2)
-        #with open(f'{self.Path}/{self.StockID}/TraningData/{self.Strategy}.json') as s:
-            #chosenTS = pd.read_json(s) 
         
+        date  = withoutSLTP["Date"].values
         price = withoutSLTP["close"].values    
-        date  = withoutSLTP["Date"].values       
         
         #===================================================Buy&Hold===================================================
         bh_return_rate = (price[-1] - price[0])/price[0]
@@ -258,7 +214,7 @@ class BackTesting():
             json.dump(buy_and_hold, outfile)
         
                 
-        #define map_group:用來mapping data
+        #=====================================define map_group:用來mapping data=========================================
         map_group1 = self.privateMapping
         # {'2': MACD^STOCH}:指標2 is MACD^STOCH
         map_group2 = {value:key for key,value in map_group1.items()}
@@ -459,7 +415,8 @@ class BackTesting():
 
 if __name__ == '__main__':
     obj = BackTesting("0050.TW")
-    #obj.TI2signal()
+    obj.chosenSignal()
+    obj.ProduceTable()
     #obj.Run()
     #obj.Query()
     #print(obj)
