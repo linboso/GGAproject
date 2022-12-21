@@ -28,7 +28,7 @@ class BackTesting():
             self.TrainingPeriod = data['TrainingPeriod']
             self.ValidationPeriod = data['ValidationPeriod']
             #self.SL, self.TP = data['SLTP'][0], data['SLTP'][1]
-            self.SL, self.TP = 3,10#收集數據用寫死停損停利
+            self.SL, self.TP = 0.03,0.1  #收集數據用 (寫死停損停利)
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
@@ -152,7 +152,6 @@ class BackTesting():
         #===================================================Table_SLTP===================================================
         Table = pd.concat([Date, Data['close']], axis=1) #create a new table
         close = Data["close"].values
-        
         for buy in Signal_list[0:]:
             for sell in Signal_list[0:]: 
                 Buy_Signal = Signal[buy].values   
@@ -510,6 +509,6 @@ if __name__ == '__main__':
     obj = BackTesting("2413.TW")
     obj.chosenSignal()
     obj.ProduceTable()
-    obj.Run()
-    obj.Query()
+    #obj.Run()
+    #obj.Query()
     #print(obj)
