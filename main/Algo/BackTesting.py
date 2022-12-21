@@ -27,7 +27,8 @@ class BackTesting():
             self.StockID = data['StockID']  
             self.TrainingPeriod = data['TrainingPeriod']
             self.ValidationPeriod = data['ValidationPeriod']
-            self.SL, self.TP = data['SLTP'][0], data['SLTP'][1]
+            #self.SL, self.TP = data['SLTP'][0], data['SLTP'][1]
+            self.SL, self.TP = 3,10#收集數據用寫死停損停利
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
@@ -120,7 +121,7 @@ class BackTesting():
         del dropIt[0:2]  #保留'Date', 'close'
         Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
 
-        Table = Table.sort_index()
+        Table = Table.sort_values(by=['Date'])
 
         #儲存前將columnName從index改為英文表示
         with open(f"./SignalMap.json") as SignalMap:
@@ -137,8 +138,12 @@ class BackTesting():
                 ts2 = f'{SignalMap[int(ts[1])][0]}&{SignalMap[int(ts[1])][1]}'
             else:ts2 = f'{SignalMap[int(ts[1])]}'
             columnsName.append(f'{ts1}^{ts2}')
-        #順便存privateMapping供run使用
+        #順便存privateMapping供run使用======
         self.privateMapping = {v : k for v,k in enumerate(columnsName[2:])}
+        with open(f'{self.Path}/TradingStrategy.json', "w") as outfile:
+            json.dump(self.privateMapping, outfile)
+        #=================================
+
         Table.columns = columnsName
         Table.to_json(f"{self.Path}/Table_GTSP.json", orient='records')
         Table.to_csv(f"{self.Path}/Table_GTSP.csv")
@@ -199,7 +204,8 @@ class BackTesting():
                 New_Signal.columns = [f"{buy}^{sell}"]
                 Table = pd.concat([Table, New_Signal], axis=1)
 
-        
+        Table = Table.sort_values(by=['Date'])
+
         Table = Table.drop(dropIt,axis = 1).reset_index(drop=True)#delete not chosen TS
         Table.columns = columnsName#儲存前將columnName從index改為英文表示
 
@@ -213,19 +219,19 @@ class BackTesting():
         #1.Buy&Hold.json:為該區間使用B&H的效果(目的是為了比對GTSP系統是否有效果)
         #2.Detail_GTSP.json:為該GTSP的最終交易訊號
         #3.Detail_SLTP.josn:為該GTSP的最終交易訊號且具有停損停利之功能
-      
+        with open(f'{self.Path}/Table_GTSP.json') as f1, open(f'{self.Path}/Table_SLTP.json') as f2:
+            withoutSLTP = pd.read_json(f1)
+            withSLTP = pd.read_json(f2)
         
         #===================================================Buy&Hold===================================================
         with open(f'{self.Path}/Date.json') as Date, open(f'{self.Path}/StockData.json') as StockData:
             Date = pd.read_json(Date)
             StockData = pd.read_json(StockData)
-        date = list(Date["Date"])
         close = StockData["close"]
-        
         bh_return_rate = (close[-1] - close[0])/close[0]
         bh_return_money = int(bh_return_rate * self.Capital)
         buy_and_hold = {
-          "Date": f"{date[0]} ~ {date[-1]}", "return_rate": bh_return_rate, "return_money": bh_return_money,
+          "Date": f"{self.ValidationPeriod}", "return_rate": f"{int(bh_return_rate*100)}%", "return_money": bh_return_money,
         }
         with open(f'{self.Path}/Buy&Hold.json', "w") as outfile:
             json.dump(buy_and_hold, outfile)
@@ -261,31 +267,39 @@ class BackTesting():
         withoutSLTP_list = withoutSLTP.columns               
         
         #record用column方式並起來
-        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(7)]
+        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, share ,recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(8)]
 
         for signal in withoutSLTP_list[3:]:
             now_Signal = withoutSLTP[signal].values                 
             buy_price = 0 
+            nowShare = 0
 
             for i in range(len(now_Signal)):
-                #record = []
+                
                 Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
+                    nowShare = int(Transaction_amount/price[i])
                     buy_price = price[i] 
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
                     recordStock_price.append(price[i])
-                    recordTransaction_amount.append(Transaction_amount)
+                    share.append(nowShare)
+                    recordTransaction_amount.append(int(nowShare*price[i]))
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)          
                 elif now_Signal[i] == -1:
-                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    try:
+                        #Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                        Return_money = int(nowShare*price[i] - nowShare*buy_price)
+                    except:
+                        Return_money = 0 #本次運算小到無法表示數值
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
                     recordStock_price.append(price[i])
-                    recordTransaction_amount.append(Transaction_amount)
+                    share.append(nowShare)
+                    recordTransaction_amount.append(int(nowShare*price[i]))
                     recordReturn_money.append(Return_money)
                     recordRate_of_Return.append((Return_money/Transaction_amount))      
         
@@ -294,6 +308,7 @@ class BackTesting():
             "Trading_Strategy":Trading_Strategy, 
             "Transaction_Type":recordTransaction_Type, 
             "Stock_price":recordStock_price, 
+            "Share":share,
             "Transaction_amount":recordTransaction_amount, 
             "Return_money":recordReturn_money, 
             "Rate_of_Return":recordRate_of_Return
@@ -310,31 +325,39 @@ class BackTesting():
         withSLTP_list = withSLTP.columns
 
         #record用column方式並起來
-        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(7)]             
+        recordDate, Trading_Strategy, recordTransaction_Type, recordStock_price, share, recordTransaction_amount, recordReturn_money, recordRate_of_Return = [[] for x in range(8)]             
         
         for signal in withSLTP_list[3:]:
             now_Signal = withSLTP[signal].values                 
-            buy_price = 0 
+            buy_price = 0
+            nowShare = 0 
 
             for i in range(len(now_Signal)):
                 #record = []
                 Transaction_amount = self.Capital * self.Weight[map_group2[signal]]
                 if now_Signal[i] == 1:
+                    nowShare = int(Transaction_amount/price[i])
                     buy_price = price[i] 
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
                     recordStock_price.append(price[i])
-                    recordTransaction_amount.append(Transaction_amount)
+                    share.append(nowShare)
+                    recordTransaction_amount.append(nowShare*price[i])
                     recordReturn_money.append(None)
                     recordRate_of_Return.append(None)                      
                 elif now_Signal[i] == -1:
-                    Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                    try:
+                        #Return_money = int((price[i] - buy_price) / buy_price * Transaction_amount)
+                        Return_money = int(nowShare*price[i] - nowShare*buy_price)
+                    except:
+                        Return_money = 0 #本次運算小到無法表示數值
                     recordDate.append(date[i])
                     Trading_Strategy.append(signal)
                     recordTransaction_Type.append(now_Signal[i])
                     recordStock_price.append(price[i])
-                    recordTransaction_amount.append(Transaction_amount)
+                    share.append(nowShare)
+                    recordTransaction_amount.append(nowShare*price[i])
                     recordReturn_money.append(Return_money)
                     recordRate_of_Return.append((Return_money/Transaction_amount))  
 
@@ -343,7 +366,8 @@ class BackTesting():
             "Date" :recordDate,
             "Trading_Strategy":Trading_Strategy, 
             "Transaction_Type":recordTransaction_Type, 
-            "Stock_price":recordStock_price, 
+            "Stock_price":recordStock_price,
+            "Share":share, 
             "Transaction_amount":recordTransaction_amount, 
             "Return_money":recordReturn_money, 
             "Rate_of_Return":recordRate_of_Return
@@ -372,7 +396,10 @@ class BackTesting():
         Alltsp:list = self.ADVcombine()
             
         #===================================================Folder_GTSP=================================================== 
-        
+        log = {'below-15%':0,'-15%~-11%':0,'-10%~-6%':0,'-5%~-1%':0,
+                '0%~5%':0,'6%~10%':0,'11%~15%':0,'MoreThan15%':0,'AvgReturnRate':0
+        }
+        numTS = 0 #群組交易策略總共數量
         for tsp in Alltsp:
             table = pd.DataFrame()
             
@@ -382,11 +409,32 @@ class BackTesting():
             table = table.sort_values("Date")
             total_return_money = table['Return_money'].sum()
 
+            ratio = (total_return_money/self.Capital)*100
+            if ratio < -15: log['below-15%']+=1
+            elif -15 <= ratio < -11: log['-15%~-11%']+=1
+            elif -10 <= ratio <  -6: log['-10%~-6%']+=1
+            elif  -5 <= ratio <  -1: log['-5%~-1%']+=1
+            elif   0 <= ratio <   5: log['0%~5%']+=1
+            elif   6 <= ratio <  10: log['6%~10%']+=1
+            elif  11 <= ratio <  15: log['11%~15%']+=1
+            elif  ratio >  15: log['MoreThan15%']+=1
+            numTS +=1
+            log['AvgReturnRate'] += total_return_money
+
+
             table.reset_index(drop=True, inplace=True)
             table.to_json(f"{self.Path}/Folder_GTSP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_GTSP/{tsp}.csv",index = False)
+        
+        log['AvgReturnRate'] = log['AvgReturnRate']/(numTS*self.Capital)
+        with open(f"{self.Path}/Folder_GTSP/log.json", "w") as outfile:
+            json.dump(log, outfile)
         print("Finished Folder_GTSP\r\n")
         #===================================================Folder_SLTP===================================================    
+        log = {'below-15%':0,'-15%~-11%':0,'-10%~-6%':0,'-5%~-1%':0,
+                '0%~5%':0,'6%~10%':0,'11%~15%':0,'MoreThan15%':0,'AvgReturnRate':0
+        }
+        numTS = 0
         for tsp in Alltsp:
             table = pd.DataFrame()
             for i in tsp:
@@ -395,10 +443,26 @@ class BackTesting():
             table = table.sort_values("Date")
             total_return_money = table['Return_money'].sum()
 
+            ratio = (total_return_money/self.Capital)*100
+            if ratio < -15: log['below-15%']+=1
+            elif -15 <= ratio < -11: log['-15%~-11%']+=1
+            elif -10 <= ratio <  -6: log['-10%~-6%']+=1
+            elif  -5 <= ratio <  -1: log['-5%~-1%']+=1
+            elif   0 <= ratio <   5: log['0%~5%']+=1
+            elif   6 <= ratio <  10: log['6%~10%']+=1
+            elif  11 <= ratio <  15: log['11%~15%']+=1
+            elif  ratio >  15: log['MoreThan15%']+=1
+            numTS +=1
+            log['AvgReturnRate'] += total_return_money
+
+
             table.reset_index(drop=True, inplace=True)
             table.to_json(f"{self.Path}/Folder_SLTP/{tsp}_{total_return_money}.json", orient='records')
             #table.to_csv(f"{self.Path}/Folder_SLTP/{tsp}.csv",index = False)
-
+        
+        log['AvgReturnRate'] = log['AvgReturnRate']/(numTS*self.Capital)
+        with open(f"{self.Path}/Folder_SLTP/log.json", "w") as outfile:
+            json.dump(log, outfile)
         print("Finished Folder_SLTP\r\n")
 
     def ADVcombine(self) -> list:

@@ -36,17 +36,17 @@ if __name__ == "__main__":
     # Dls.Download(StockID, f"{Path}/ValidationData", ValidationPeriod['StartDate'], ValidationPeriod['EndDate']) #ValidationData
 
 
-    TIv = TIValue(StockID, TI_List)
-    TIv.CalculateTIValue(f'{Path}/TrainingData')
-    TIv.CalculateTIValue(f'{Path}/ValidationData')
+    # TIv = TIValue(StockID, TI_List)
+    # TIv.CalculateTIValue(f'{Path}/TrainingData')
+    # TIv.CalculateTIValue(f'{Path}/ValidationData')
     # 計算所有 指標的 Values
 
 
-    TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/TrainingData')
-    TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/ValidationData')
+    # TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/TrainingData')
+    # TI2Signal(SIGNALMAPOFFSET).ProduceSignal(f'{Path}/ValidationData')
     # 把value 轉換成 Signal 
 
-    obj = BackTesting("2413.TW")
+    obj = BackTesting("0050.TW")
     obj.chosenSignal()
     obj.ProduceTable()
     obj.Run()
