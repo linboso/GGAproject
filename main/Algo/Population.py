@@ -28,9 +28,8 @@ class Population():
         self.WeightPart_len:int = Setting['WeightPart'] + Setting['kGroup'] + 1
 
         if __name__ == "__main__":
-            with open(f"../../data/stock/{Setting['StockID']}/TrainingData/Top555.json") as f:
+            with open(f"../../data/stock/{Setting['StockID']}/TrainingData/Top777.json") as f:
                 self.StrategyData = pd.read_json(f)
-            # For Test
         else:
             self.StrategyData = ResultStrategy
 
@@ -63,9 +62,14 @@ class Population():
             e = time.time()
             print(f"Time: {e-s}\r\n")
             # gc.collect()
-            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/{i+1}-th.txt', 'w') as f:
-                f.writelines(f"Fitness: {chrom.fitness:10f} \t{chrom.gene.tolist()}\n" for chrom in self.Chrom)
-                f.write(f"Generate Time: {e-s:3.5f}")
+            if __name__ == "__main__":
+                with open(f'../{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/History/{i+1}-th.txt', 'w') as f:
+                    f.writelines(f"Fitness: {chrom.fitness:10f} \t{chrom.gene.tolist()}\n" for chrom in self.Chrom)
+                    f.write(f"Generate Time: {e-s:3.5f}")
+            else:
+                with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/History/{i+1}-th.txt', 'w') as f:
+                    f.writelines(f"Fitness: {chrom.fitness:10f} \t{chrom.gene.tolist()}\n" for chrom in self.Chrom)
+                    f.write(f"Generate Time: {e-s:3.5f}")
             
 
         ETime = time.time()
@@ -73,7 +77,8 @@ class Population():
 
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
 
-        print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
+        # print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
+        print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].getGTSP()}")
 
         # Next Step Process Final GTSP
         # and Vail thw GTSP
@@ -90,20 +95,16 @@ class Population():
 
         print(f"Finish Iterate\r\n")
         
-        #準備選出 Fitness Value 最高的 Chromosome
         FitList = sorted([(chrom.Fitness(), chrom) for chrom in self.Chrom], reverse=True, key=lambda x:x[0])
-        print(f"最高的 => {FitList[0][1].fitness}: {FitList[0][1].gene.tolist()}")
-        
+
 
         if __name__ == "__main__":
-            with open(f'../../data/stock/{self.Setting["StockID"]}/TrainingData/Top555.json') as x:
-                tradingStrategy = json.load(x)["Trading Strategy"]
+            with open(f'../../data/stock/{self.Setting["StockID"]}/TrainingData/Top777.json') as x:
+                tradingStrategy = pd.read_json(x)
             # For Test
         else:
-            with open(f'{self.Setting["Path"]}/{self.Setting["StockID"]}/TrainingData/Top555.json') as x:
-                tradingStrategy = json.load(x)["Trading Strategy"]
-                
-            # tradingStrategy = self.StrategyData["Trading Strategy"]
+            tradingStrategy = self.StrategyData
+
         
         #存成json格式檔案來給backTesting來read
 
@@ -115,8 +116,8 @@ class Population():
             "SLTP":[10,10],
             "Capital": self.Setting["Capital"],
             "GTSP": FitList[0][1].gene.tolist()[:(FitList[0][1].kGroup + FitList[0][1].mTS)],
-            "Weight": FitList[0][1].getWeight().tolist(),
-            "TradingStrategy": tradingStrategy
+            "Weight": FitList[0][1].getWeight(),
+            "TradingStrategy": tradingStrategy["Trading Strategy"].tolist()
         }
         if __name__ == "__main__":
             with open(f'../../data/stock/{self.Setting["StockID"]}/block.json', "w") as outfile:
@@ -312,7 +313,7 @@ if __name__ == "__main__":
     p = Population(Settg, pd.DataFrame())
     # p.GenerateOffspring()
 
-    # p.GenerateOffspring_With_logFile()
+    p.GenerateOffspring_With_logFile()
 
     # cProfile.run('p.Selection()')
     # cProfile.run('p.Mutation()')
@@ -320,7 +321,7 @@ if __name__ == "__main__":
     # cProfile.run('p.Crossover()')
 
 
-    cProfile.run('p.GenerateOffspring_With_logFile()')
+    # cProfile.run('p.GenerateOffspring_With_logFile()')
 
 
     

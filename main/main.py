@@ -11,9 +11,10 @@ import time
 import pandas as pd
 
 # 多核版本
-
+# 這是用來 確保 Parent and Child 的區別
 if __name__ == "__main__": 
     SIGNALMAPOFFSET = 20
+
 
     Files = RFiles(SIGNALMAPOFFSET)
     Files.PrintALL()
@@ -46,15 +47,11 @@ if __name__ == "__main__":
     # 把value 轉換成 Signal 
 
 
-
-
     with open(f"{Path}/TrainingData/Signal.json") as f1, open(f"{Path}/TrainingData/StockData.json") as f2:
         Signal = pd.read_json(f1).to_numpy()
         ClosePrice = pd.read_json(f2)['close'].to_numpy()
-        
-    # time.sleep(1)
 
-    # 這是用來 確保 Parent and Child 的區別
+    
     s = time.time()
     
     t2r = TI2Ranking()
@@ -68,8 +65,6 @@ if __name__ == "__main__":
     ResultStrategy = pd.DataFrame(ResultStrategy)
     print(ResultStrategy)
     
-    # population = Population(Setting, ResultStrategy)
-    # population.GenerateOffspring_With_logFile()
-    # cProfile.run('population.GenerateOffspring_With_logFile()')
-    # population.GenerateOffspring()
-    # population.Genealogy()
+    population = Population(Setting, ResultStrategy)
+
+    population.GenerateOffspring()

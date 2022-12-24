@@ -165,7 +165,7 @@ class TI2Ranking():
         
         CombineTop = CombineTop[:,:][:15]
         # 保留前 15 筆資料
-        CombineTop = pd.DataFrame(CombineTop, columns=["Trading Strategy","ARR"])
+        CombineTop = pd.DataFrame(CombineTop, columns=["Trading Strategy","ARR", "MDD", "TF"])
         CombineTop.to_json(f"{Path}/Top15.json", orient="columns")
         return CombineTop
         
@@ -190,7 +190,7 @@ class TI2Ranking():
         
         CombineTop = CombineTop[:,:][:21]
 
-        CombineTop = pd.DataFrame(CombineTop, columns=["Trading Strategy","ARR"])
+        CombineTop = pd.DataFrame(CombineTop, columns=["Trading Strategy","ARR", "MDD", "TF"])
         CombineTop.to_json(f"{Path}/Top21.json", orient="columns")
         return CombineTop
 

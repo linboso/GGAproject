@@ -83,6 +83,7 @@ class Chromosome():
 
         Arr = self.Data['ARR'].to_numpy()
         Mdd = self.Data['MDD'].to_numpy()
+
         GTSP = [[(Arr[i-1], Mdd[i-1]) for i in TSG] for TSG in GTSP]
 
         res:list[tuple] = []
