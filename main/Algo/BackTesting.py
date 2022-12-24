@@ -27,8 +27,8 @@ class BackTesting():
             self.StockID = data['StockID']  
             self.TrainingPeriod = data['TrainingPeriod']
             self.ValidationPeriod = data['ValidationPeriod']
-            #self.SL, self.TP = data['SLTP'][0], data['SLTP'][1]
-            self.SL, self.TP = 0.03,0.1  #收集數據用 (寫死停損停利)
+            #self.SL, self.TP = data['SLTP'][0]/100, data['SLTP'][1]/100
+            self.SL, self.TP = 0.05,0.1  #收集數據用 (寫死停損停利)
             self.Capital = data['Capital']
             self.GTSP = data['GTSP']
             self.Weight = data['Weight']
